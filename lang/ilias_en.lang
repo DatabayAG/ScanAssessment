@@ -1,0 +1,28 @@
+scan_assessment#:#Scan Assessment
+scas_cats#:#Categories
+scas_cat_add_new#:#Add New Category
+scas_cat_edit#:#Edit Category
+scas_cat_edit#:#Edit Category
+scas_settings#:#Settings
+scas_cats_deleted_successfully_s#:#The category was deleted.
+scas_cats_deleted_successfully_p#:#The categories were deleted.
+scas_sure_delete_cats_s#:#Are you sure you want to delete the category?
+scas_sure_delete_cats_p#:#Are you sure you want to delete the categories?
+scas_app_settings#:#Scan Assessment Settings
+scas_cat#:#Category
+scas_cat_info#:#Please choose the category this test should be listed in.
+scas_active#:#Active
+scas_active_info#:#If all other preconditions are fulfilled and this option is set, the test is listed in the app.
+scas_preconditions#:#Preconditions
+scas_pc_is_active#:#Test Online? 
+scas_pc_is_active_info#:#Please set this test to 'online'.
+scas_pc_is_rnd_or_fixed_test#:#Mode 'Random Set of Questions' or 'Fixed Set of Questions'? 
+scas_pc_is_rnd_or_fixed_test_info#:#Please choose the test mode 'Random Set of Questions' or 'Fixed Set of Questions'.
+scas_pc_has_valid_questions#:#Valid Questions?
+scas_pc_has_valid_questions_info#:#Only questions of type 'Multiple Choice Question (Single Answer)' and 'Multiple Choice Question (Multiple Answers)' are supported.
+scas_cant_save_pc#:#Please ensure all preconditions are fulfilled.
+scas_cant_delete_cat_in_use#:#Category '%s' can't be deleted because is currently used by test '%s'.
+scas_return#:#Retrun Results
+scas_scan#:#Scan & Revision
+scas_user_packages#:#User Packages
+scas_layout#:#Layout
