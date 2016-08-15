@@ -5,7 +5,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
 
 /**
  * Class ilScanAssessmentDefaultController
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentDefaultController extends ilScanAssessmentController
 {

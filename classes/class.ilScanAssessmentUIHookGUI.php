@@ -6,7 +6,7 @@ require_once 'Services/Link/classes/class.ilLink.php';
 
 /**
  * Class ilScanAssessmentUIHookGUI
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  * @ilCtrl_isCalledBy ilScanAssessmentUIHookGUI: ilUIPluginRouterGUI
  */
 class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
@@ -70,9 +70,19 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 						)
 					));
 
-					$ilTabs->addTab('layout', $this->plugin_object->txt('scas_layout'), '');
+					$ilTabs->addTab('layout', $this->plugin_object->txt('scas_layout'), $this->plugin_object->getLinkTarget(
+						'ilScanAssessmentLayoutController.default',
+						array(
+							'ref_id' => (int)$_GET['ref_id']
+						)
+					));
 
-					$ilTabs->addTab('user_packages', $this->plugin_object->txt('scas_user_packages'), '');
+					$ilTabs->addTab('user_packages', $this->plugin_object->txt('scas_user_packages'), $this->plugin_object->getLinkTarget(
+						'ilScanAssessmentUserPackagesController.default',
+						array(
+							'ref_id' => (int)$_GET['ref_id']
+						)
+					));
 
 					$ilTabs->addTab('scan', $this->plugin_object->txt('scas_scan'), '');
 

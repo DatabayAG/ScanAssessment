@@ -3,7 +3,7 @@
 
 /**
  * Class ilScanAssessmentCommandDispatcher
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentCommandDispatcher
 {

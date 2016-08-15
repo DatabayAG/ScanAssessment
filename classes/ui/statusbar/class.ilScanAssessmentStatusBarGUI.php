@@ -5,7 +5,7 @@ require_once 'Services/UIComponent/Tooltip/classes/class.ilTooltipGUI.php';
 
 /**
  * Class ilScanAssessmentStatusBarGUI
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentStatusBarGUI
 {

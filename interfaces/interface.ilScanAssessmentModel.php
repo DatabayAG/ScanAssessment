@@ -3,7 +3,7 @@
 
 /**
  * Class ilScanAssessmentModel
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 interface ilScanAssessmentModel
 {

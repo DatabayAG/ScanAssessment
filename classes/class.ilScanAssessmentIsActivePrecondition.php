@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/class.ilScanAssessmentPreconditionBase.php';
 
 /**
  * Class ilScanAssessmentIsActivePrecondition
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentIsActivePrecondition extends ilScanAssessmentPreconditionBase
 {

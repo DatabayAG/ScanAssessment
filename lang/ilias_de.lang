@@ -37,3 +37,12 @@ scas_per_user#:#Pro Teilnehmer
 scas_matriculation#:#Codierung der Matrikelnummer
 scas_matrix#:#Matrix
 scas_textfield#:#Textfeld
+scas_layout#:#Gestaltung
+scas_upload#:#Datei hochladen
+scas_upload_info#:#Datei hochladen
+scas_user_packages#:#Teilnehmerpakete
+scas_creation#:#Erzeugung von Teilnehmerpaketen
+scas_creation_info#:#Erzeugung von Teilnehmerpaketen
+scas_creation_personalised#:#Personalisiert
+scas_creation_non_personalised#:#Nicht personalisiert
+scas_create_demo_pdf#:#Demo PDF erzeugen

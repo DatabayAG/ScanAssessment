@@ -37,3 +37,12 @@ scas_per_user#:#Per User
 scas_matriculation#:#Codification of matriculation number
 scas_matrix#:#Matrix
 scas_textfield#:#Textfield
+scas_layout#:#Layout
+scas_upload#:#File upload
+scas_upload_info#:#File upload
+scas_user_packages#:#Memberpackages
+scas_creation#:#Creation of Memberpackages
+scas_creation_info#:#Creation of Memberpackages
+scas_creation_personalised#:#Personalised
+scas_creation_non_personalised#:#Not Personalised
+scas_create_demo_pdf#:#Create Demo PDF

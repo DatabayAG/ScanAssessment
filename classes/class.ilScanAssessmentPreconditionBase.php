@@ -5,7 +5,7 @@ require_once dirname(__FILE__) . '/../interfaces/interface.ilScanAssessmentStatu
 
 /**
  * Class ilScanAssessmentPreconditionBase
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 abstract class ilScanAssessmentPreconditionBase implements ilScanAssessmentStatusBarItem
 {

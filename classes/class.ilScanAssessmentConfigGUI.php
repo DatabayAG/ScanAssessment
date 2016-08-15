@@ -5,7 +5,7 @@ require_once 'Services/Component/classes/class.ilPluginConfigGUI.php';
 
 /**
  * Class ilScanAssessmentConfigGUI
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 {

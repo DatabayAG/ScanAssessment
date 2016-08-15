@@ -5,7 +5,7 @@ require_once 'Services/UIComponent/classes/class.ilUserInterfaceHookPlugin.php';
 
 /**
  * Class ilScanAssessmentPlugin
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPlugin extends ilUserInterfaceHookPlugin
 {

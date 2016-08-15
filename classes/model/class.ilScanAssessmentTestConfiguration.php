@@ -6,7 +6,7 @@ require_once dirname(__FILE__) . '/../../interfaces/interface.ilScanAssessmentMo
 
 /**
  * Class ilScanAssessmentTestConfiguration
- * @author Michael Jansen <mjansen@databay.de>
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAssessmentModel
 {
