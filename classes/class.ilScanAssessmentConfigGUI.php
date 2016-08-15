@@ -101,7 +101,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 	protected function listCategories()
 	{
 		$button = ilLinkButton::getInstance();
-		$button->setCaption(ilScanAssessmentPlugin::getInstance()->txt('tqae_cat_add_new'), false);
+		$button->setCaption(ilScanAssessmentPlugin::getInstance()->txt('scas_cat_add_new'), false);
 		$button->setUrl($this->ctrl->getLinkTarget($this, 'add'));
 		$this->toolbar->addButtonInstance($button);
 		

@@ -14,7 +14,7 @@ class ilScanAssessmentIsRandomOrFixedTestPrecondition extends ilScanAssessmentPr
 	 */
 	public function getLabel()
 	{
-		return $this->plugin->txt('tqae_pc_is_rnd_or_fixed_test');
+		return $this->plugin->txt('scas_pc_is_rnd_or_fixed_test');
 	}
 
 	/**
@@ -22,7 +22,7 @@ class ilScanAssessmentIsRandomOrFixedTestPrecondition extends ilScanAssessmentPr
 	 */
 	public function getTooltip()
 	{
-		return $this->plugin->txt('tqae_pc_is_rnd_or_fixed_test_info');
+		return $this->plugin->txt('scas_pc_is_rnd_or_fixed_test_info');
 	}
 
 	/**

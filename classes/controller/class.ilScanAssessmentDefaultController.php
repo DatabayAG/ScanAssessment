@@ -45,13 +45,40 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('tqae_app_settings'));
+		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_app_settings'));
 
-		$active = new ilCheckboxInputGUI($this->getCoreController()->getPluginObject()->txt('tqae_active'), 'active');
-		$active->setInfo($this->getCoreController()->getPluginObject()->txt('tqae_active_info'));
+		$active = new ilCheckboxInputGUI($this->getCoreController()->getPluginObject()->txt('scas_active'), 'active');
+		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_active_info'));
 		$active->setValue(1);
 		$form->addItem($active);
 
+		$select_mode = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_mode'), 'mode');
+		$select_mode->setInfo($this->getCoreController()->getPluginObject()->txt('scas_mode_info'));
+		$modes = array('inline' => $this->getCoreController()->getPluginObject()->txt('scas_mode_inline'),
+					   'sheet' => $this->getCoreController()->getPluginObject()->txt('scas_answer_sheet')
+		);
+		$select_mode->setOptions($modes);
+		$form->addItem($select_mode);
+
+		$shuffle = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_shuffling'), 'shuffling');
+		$shuffle->setInfo($this->getCoreController()->getPluginObject()->txt('scas_shuffling_info'));
+		$shuffle_modes = array('inline' => $this->getCoreController()->getPluginObject()->txt('scas_per_assessment'),
+					   'sheet' => $this->getCoreController()->getPluginObject()->txt('scas_per_user')
+		);
+		$shuffle->setOptions($shuffle_modes);
+		$form->addItem($shuffle);
+
+		$matriculation_number = new ilCheckboxInputGUI($this->getCoreController()->getPluginObject()->txt('scas_matriculation'), 'matriculation');
+
+		$mat_sub_form = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_matriculation'), 'coding');
+		$mat_sub_item = array('matrix' => $this->getCoreController()->getPluginObject()->txt('scas_matrix'),
+							   'textfield' => $this->getCoreController()->getPluginObject()->txt('scas_textfield')
+		);
+		$mat_sub_form->setOptions($mat_sub_item);
+		
+		$matriculation_number->addSubItem($mat_sub_form);
+		$form->addItem($matriculation_number);
+	
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;

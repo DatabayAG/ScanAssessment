@@ -194,7 +194,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		{
 			if(!$this->arePreconditionsFulfilled())
 			{
-				throw new ilException('tqae_cant_save_pc');
+				throw new ilException('scas_cant_save_pc');
 			}
 		}
 	}

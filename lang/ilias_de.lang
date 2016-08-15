@@ -26,3 +26,14 @@ scas_return#:#Rückführung
 scas_scan#:#Scan & Revision
 scas_user_packages#:#Teilnehmerpakete
 scas_layout#:#Gestaltung
+scas_mode#:#Modus des Teilnehmerpakets
+scas_mode_info#:#Modus des Teilnehmerpakets
+scas_mode_inline#:#Inline-Beantwortung
+scas_answer_sheet#:#Antwortbogen
+scas_shuffling#:#Randomisierung
+scas_shuffling_info#:#Randomisierung
+scas_per_assessment#:#Pro Test
+scas_per_user#:#Pro Teilnehmer
+scas_matriculation#:#Codierung der Matrikelnummer
+scas_matrix#:#Matrix
+scas_textfield#:#Textfeld

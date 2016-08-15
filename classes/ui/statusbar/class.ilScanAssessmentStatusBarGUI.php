@@ -31,7 +31,7 @@ class ilScanAssessmentStatusBarGUI
 		$panel = ilPanelGUI::getInstance();
 		$panel->setHeadingStyle(ilPanelGUI::HEADING_STYLE_SUBHEADING);
 		$panel->setPanelStyle(ilPanelGUI::PANEL_STYLE_SECONDARY);
-		$panel->setHeading(ilScanAssessmentPlugin::getInstance()->txt('tqae_preconditions'));
+		$panel->setHeading(ilScanAssessmentPlugin::getInstance()->txt('scas_preconditions'));
 
 		$tpl = ilScanAssessmentPlugin::getInstance()->getTemplate('tpl.status_bar.html', false, false);
 

@@ -14,7 +14,7 @@ class ilScanAssessmentIsActivePrecondition extends ilScanAssessmentPreconditionB
 	 */
 	public function getLabel()
 	{
-		return $this->plugin->txt('tqae_pc_is_active');
+		return $this->plugin->txt('scas_pc_is_active');
 	}
 
 	/**
@@ -22,7 +22,7 @@ class ilScanAssessmentIsActivePrecondition extends ilScanAssessmentPreconditionB
 	 */
 	public function getTooltip()
 	{
-		return $this->plugin->txt('tqae_pc_is_active_info');
+		return $this->plugin->txt('scas_pc_is_active_info');
 	}
 
 	/**

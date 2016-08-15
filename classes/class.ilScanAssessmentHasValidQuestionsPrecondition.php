@@ -23,7 +23,7 @@ class ilScanAssessmentHasValidQuestionsPrecondition extends ilScanAssessmentPrec
 	 */
 	public function getLabel()
 	{
-		return $this->plugin->txt('tqae_pc_has_valid_questions');
+		return $this->plugin->txt('scas_pc_has_valid_questions');
 	}
 
 	/**
@@ -31,7 +31,7 @@ class ilScanAssessmentHasValidQuestionsPrecondition extends ilScanAssessmentPrec
 	 */
 	public function getTooltip()
 	{
-		return $this->plugin->txt('tqae_pc_has_valid_questions_info');
+		return $this->plugin->txt('scas_pc_has_valid_questions_info');
 	}
 
 	/**

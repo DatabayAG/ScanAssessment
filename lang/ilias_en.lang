@@ -26,3 +26,14 @@ scas_return#:#Retrun Results
 scas_scan#:#Scan & Revision
 scas_user_packages#:#User Packages
 scas_layout#:#Layout
+scas_mode#:#Mode of User package
+scas_mode_info#:#Mode of User package
+scas_mode_inline#:#Inline-Answers
+scas_answer_sheet#:#Answer sheet
+scas_shuffling#:#Shuffeling
+scas_shuffling_info#:#Shuffeling
+scas_per_assessment#:#Per Test
+scas_per_user#:#Per User
+scas_matriculation#:#Codification of matriculation number
+scas_matrix#:#Matrix
+scas_textfield#:#Textfield
