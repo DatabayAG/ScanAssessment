@@ -76,10 +76,20 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$form->addItem($creation);
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
+		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+
 
 		return $form;
 	}
 
+	public function analyseCmd()
+	{
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/ScanService.php';
+		$demo = new ScanService();
+		echo print_r($demo->getMarkerPosition('/tmp/pruefung.jpg'));
+		exit();
+	}
+	
 	/**
 	 * @return string
 	 */

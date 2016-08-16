@@ -27,7 +27,6 @@ class ScanService  {
 				break;
 			}
 		}
-
 		return $im2;
 	}
 
@@ -35,47 +34,25 @@ class ScanService  {
 	{
 		$im = imagecreatefromjpeg($fn);
 		$im = $this->removeBlackBorder($im);
-		$this->red = imageColorAllocate($im, 255,0,0);
-		$this->green= imageColorAllocate($im, 0,255,0);
-		$this->yellow = imagecolorallocate($im, 255,255,100);
 
-		$schwelle = 150;
-		if($withDebug) {
-			$marker = $this->findMarker($im, FALSE, TRUE, $schwelle);
-			if($marker===FALSE) {
-				$schwelle = 200;
-				#vdf($schwelle);
+		$threshold = 150;
+		$marker = $this->findMarker($im, FALSE, $withDebug, $threshold);
+		if($marker===FALSE) 
+		{
+			$threshold = 200;
+			$im = imagecreatefromjpeg($fn);
+			$im = $this->removeBlackBorder($im);
+			$marker = $this->findMarker($im, FALSE, $withDebug, $threshold);
+		}
 
-				// Wenn nichts gefunden wurde, dann nochmal mit höherer Schwelle versuchen
-				$im = imagecreatefromjpeg($fn);
-				$im = $this->removeBlackBorder($im);
-				$this->red = imageColorAllocate($im, 255,0,0);
-				$this->green= imageColorAllocate($im, 0,255,0);
-				$this->yellow = imagecolorAllocate($im, 255,255,100);
-				$marker = $this->findMarker($im, FALSE, TRUE, $schwelle);
-				#vdf($marker);
-			}
-			imagejpeg($im, projectPath . '/cache/debug_image.jpg');
-			chmod(projectPath . '/cache/debug_image.jpg', 0664);
+		if($withDebug)
+		{
+			imagejpeg($im, '/tmp/debug_image2.jpg');
+			chmod( '/tmp/debug_image2.jpg', 0664);
 			$im = imagecreatefromjpeg($fn);
 			$im = $this->removeBlackBorder($im);
 		}
-		$schwelle = 150;
-		$marker = $this->findMarker($im, false, false, $schwelle);
-		if($marker===FALSE) {
-			$schwelle = 200;
-			#vdf($schwelle);
 
-			// Wenn nichts gefunden wurde, dann nochmal mit höherer Schwelle versuchen
-			$im = imagecreatefromjpeg($fn);
-			$im = $this->removeBlackBorder($im);
-			$this->red = imageColorAllocate($im, 255,0,0);
-			$this->green= imageColorAllocate($im, 0,255,0);
-			$this->yellow = imagecolorAllocate($im, 255,255,100);
-			$marker = $this->findMarker($im, FALSE, FALSE, $schwelle);
-			#vdf($marker);
-		}
-		#var_dump($marker);exit;
 		imageJpeg($im, $fn."-rotated.jpg", 90);
 		chmod($fn."-rotated.jpg", 0664);
 		return $marker;
@@ -115,9 +92,7 @@ class ScanService  {
 		}
 		$im = imagecreatefromjpeg($fn);
 		$im = $this->removeBlackBorder($im);
-		
 
-		
 		$this->red = imageColorAllocate($im, 255,0,0);
 		$this->green= imageColorAllocate($im, 0,255,0);
 
@@ -478,53 +453,45 @@ class ScanService  {
 		return false;
 	}
 
-	public function findMarker(&$im, $rotated=false, $debug=false, $schwelle=150) {
+	public function findMarker(&$im, $rotated=false, $debug=false, $threshold=150) {
 		$white = imageColorAllocate($im, 255,255,255);
 
 		$imSIK = imageCreateTrueColor(imageSx($im), imageSy($im));
 		imageCopy($imSIK, $im, 0,0,0,0,imageSx($im), imageSy($im));
 
-		$find = $this->findLeft($im, 'top', $debug, $schwelle);
-#vd(array(__LINE__,$schwelle));var_dump($find);#exit;
-#vdf($find);
-		if($find===FALSE) {
-			// Rotieren
+		$find = $this->findLeft($im, 'top', $debug, $threshold);
 
+		if($find===FALSE) 
+		{
 			if($rotated) {
 				echo "Problem!";
 				return;
 			}
 
 			$im = imagerotate($im,180, $white);
-			$find = $this->findLeft($im, 'top', $debug, $schwelle);
+			$find = $this->findLeft($im, 'top', $debug, $threshold);
 		}
-		#\classes\FlashMessage::add(vdr(($find)), "info");
-		if($find!==FALSE) {
-			#echo "Links oben gefunden!<br>";
-			$find2 = $this->findExactLeft($im, $find, $debug);
-#svdf(array("find2",$find2));
-			if($rotated==true)  {
+
+		if($find !== FALSE) {
+
+			$find2 = $this->findExactLeft($im, $find, $threshold, $debug);
+			if($rotated==true)  
+			{
 				imagerectangle($im, $find2["x"] - $find2["d"] / 2, $find2["y"] - $find2["d"] / 2, $find2["x"] + $find2["d"] / 2, $find2["y"] + $find2["d"] / 2, $this->yellow);
 			}
+			
+			$find3 = $this->findLeft($im, 'bottom', $debug, $threshold);
 
-
-			$find3 = $this->findLeft($im, 'bottom', $debug, $schwelle);
-#vdf(array("find3",$find3));
 			if($find3!==FALSE) {
-				#echo "Links unten gefunden!<br>";
 
-				#vdf($find3);
-
-				$find4 = $this->findExactLeft($im, $find3, $debug);
-#vdf(array("find4", $find4));
-
+				$find4 = $this->findExactLeft($im, $find3, $threshold, $debug);
 				if($debug) imagerectangle($im, $find4["x"]-$find4["d"]/2, $find4["y"]-$find4["d"]/2,$find4["x"]+$find4["d"]/2, $find4["y"]+$find4["d"]/2, $this->yellow );
 
 				$dx = $find4["x"] - $find2["x"];
 				$dy = $find4["y"] - $find2["y"];
 
 				$winkel = 180 / 3.141592 * atan($dx / $dy);
-#vdf(array("winkel", $winkel));
+
 				if($rotated==false && abs($winkel)>0.05) {
 					// ggf. ausrichten
 
@@ -539,32 +506,26 @@ class ScanService  {
 					imageCopy($im2, $im, 0,0,$randX/2, $randY/2, imageSx($im2), imageSy($im2));
 					$im = $im2;
 
-					imageJpeg($im, projectPath.'/cache/debug_findmarker.jpg');
+					imageJpeg($im, '/tmp/debug_findmarker.jpg');
 
-					return $this->findMarker($im, TRUE, $debug, $schwelle);
+					return $this->findMarker($im, TRUE, $debug, $threshold);
 				} else {
 
-					imageJpeg($im, projectPath.'/cache/debug_findmarker.jpg');
+					imageJpeg($im, '/tmp/debug_findmarker.jpg');
 
 					if($debug) imagerectangle($im, $find2["x"] - $find2["d"] / 2, $find2["y"] - $find2["d"] / 2, $find2["x"] + $find2["d"] / 2, $find2["y"] + $find2["d"] / 2, $this->yellow);
 					if($debug) imagerectangle($im, $find4["x"]-$find4["d"]/2, $find4["y"]-$find4["d"]/2,$find4["x"]+$find4["d"]/2, $find4["y"]+$find4["d"]/2, $this->yellow );
 					return array($find2, $find4);
 				}
 
-			} else {
-				#vdf("LU!");
-			}
-
-
-
+			} 
 		} else {
-			return FALSE;
-			#echo "NICHT Gefunden!";
+			return false;
 		}
 		return false;
 	}
 
-	public function findExactLeft(&$im, $find, $debug=false) {
+	public function findExactLeft(&$im, $find, $threshold ,$debug=false) {
 
 		$dx =  $find[1][0] - $find[0][0];
 		$dy =  $find[1][1] - $find[0][1];
@@ -579,14 +540,14 @@ class ScanService  {
 
 		for($i=0.1;$i<2;$i+=0.1) {
 			$gray = $this->getGray($im, $mx+$dx2*$i, $my+$dy2*$i);
-			if($gray>$this->schwelle) {
+			if($gray > $threshold) {
 				$i1 = $i;
 				break;
 			}
 		}
 		for($i=0.1;$i<2;$i+=0.1) {
 			$gray = $this->getGray($im, $mx-$dx2*$i, $my-$dy2*$i);
-			if($gray>$this->schwelle) {
+			if($gray > $threshold) {
 				$i2 = $i;
 				break;
 			}
@@ -610,38 +571,40 @@ class ScanService  {
 
 	}
 
-	public function findLeft(&$im, $topbottom='top', $debug=false, $schwelle=150) {
-
-
+	public function findLeft(&$im, $topbottom='top', $debug = false, $threshold=150) {
+		
+		$debug = false;
 		$w = imageSx($im);
 		$h = imageSy($im);
 
-
-
-		$this->dx = 3;
-		$this->dy = 3;
-		$this->schwelle = $schwelle;
+		$dx = 3;
+		$dy = 3;
 
 		$X = array();
 		$found = false;
 		$subDX = 0;
 		$beginD = -1;
-		for($d=55;$d<$w/4*3;$d+=$this->dy) {
+		for($d=55; $d < $w / 4 * 3; $d += $dy) {
 
-			$len = $this->getLength($d, $im, $topbottom, $debug);
+			$len = $this->getLength($d, $im, $dx, $topbottom, $threshold, $debug);
 
 			if($beginD==-1) $minD = $d/3*2;
 			else $minD = $beginD;
-			if( ($beginD==-1 && $len<$d/3*2 ) || ($beginD!=-1 && $len-$subDX/2<=$beginD) ) {
-				if($found == false) {
-					#if($topbottom=="bottom") \classes\FlashMessage::add($len, "info");
+			if( ($beginD == -1 && $len < $d/3*2 ) || 
+				($beginD != -1 && $len - $subDX/2 <= $beginD) 
+			) 
+			{
+				if($found == false) 
+				{
 					$found = true;
 					$subDX = 0;
 					$beginD = $len;
 					$foundBegin = array($len, $d-$len);
 					$foundLast = array($len, $d-$len);
-				} else {
-					$subDX += $this->dy;
+				} 
+				else 
+				{
+					$subDX += $dy;
 					$foundLast = array($len, $d-$len);
 				}
 				if($debug) {
@@ -651,9 +614,10 @@ class ScanService  {
 						imageLine($im, 0 + $subDX / 2, imageSy($im)- ($d - $subDX / 2), $len, imageSy($im)- ($d - $len), $this->red);
 					}
 				}
-				#if($topbottom=="bottom") vd(array(0+$subDX/2,$d-$subDX/2, $len, $d-$len));
 				$X[$d] = $len-$subDX/2;
-			} else {
+			} 
+			else 
+			{
 				if($found == true) {
 					$foundEnd = array($foundBegin, $foundLast);
 
@@ -661,15 +625,16 @@ class ScanService  {
 
 					if($l>0) {
 
-						#file_get_contents("http://develop1/pc/index.php?action=newmsg&from=scan&msg=" . urlencode(print_r(array( $d, $l, $w, ($w / $l), $d / $foundEnd[1][0], $foundEnd ), 1)));
-#vdf($w / $l);
-						if (($w / $l) > 35 && ($w / $l) < 60) {
-							#\classes\FlashMessage::add($w/$l, "info");
-							if($debug) imageLine($im, $foundBegin[0], $foundBegin[1], $foundLast[0], $foundLast[1], $this->yellow);
+						if (($w / $l) > 35 && ($w / $l) < 60) 
+						{
 
-							#file_get_contents("http://develop1/pc/index.php?action=newmsg&from=scan&msg=".urlencode(print_r(array( $d, $l, $w, ($w/$l),  $d/$foundEnd[1][0], $foundEnd),1)));
+							if($debug) 
+							{
+								imageLine($im, $foundBegin[0], $foundBegin[1], $foundLast[0], $foundLast[1], $this->yellow);
+							}
 
-							if($topbottom=="bottom") {
+							if($topbottom=="bottom") 
+							{
 								$foundEnd[0][1] = imageSy($im)-$foundEnd[0][1];
 								$foundEnd[1][1] = imageSy($im)-$foundEnd[1][1];
 							}
@@ -682,56 +647,61 @@ class ScanService  {
 			}
 
 		}
-		#file_get_contents("http://develop1/pc/index.php?action=newmsg&from=scan&msg=".urlencode(print_r($X,1)));
-		return FALSE;
+
+		return false;
 	}
 
-	public function getLength($d, &$im, $topbottom='top', $debug=false) {
-		for($x=0;$x<$d;$x+=$this->dx) {
+	/**
+	 * @param        $d
+	 * @param        $im
+	 * @param string $topbottom
+	 * @param        $threshold
+	 * @param bool   $debug
+	 * @return int
+	 */
+	public function getLength($d, &$im, $dx, $topbottom='top', $threshold,  $debug=false) {
 
-			if($topbottom=="top") $y = $d-$x;
-			else $y = imageSy($im)-$d+$x;
+		$debug = true;
+		for($x=0;$x<$d;$x+=$dx) 
+		{
+
+			if($topbottom=="top")
+			{
+				$y = $d-$x;
+			}
+			else
+			{
+				$y = imageSy($im)-$d+$x;
+			}
 
 			$gray = $this->getGray($im, $x, $y);
 
-			if($gray<$this->schwelle) {
+			if($gray < $threshold) {
 
 				$len = 15;
 				$gMittel = $gray;
-				for($i=1;$i<$len;$i++) {
-					if($topbottom=="top") {
+				for($i=1;$i<$len;$i++) 
+				{
+					if($topbottom=="top") 
+					{
 						$y2 = $d-($x+$i);
-					} else {
+					} 
+					else 
+					{
 						$y2 = imageSy($im)-$d+($x+$i);
 					}
 					$gMittel += $this->getGray($im, $x, $y2);
 				}
-				if($gMittel/$len<$this->schwelle) {
+				if($gMittel/$len < $threshold) 
+				{
 					return $x;
 				}
-
-				/*
-				if($topbottom=="top") {
-					$y2 = $d-($x+1);
-				} else {
-					$y2 = imageSy($im)-$d+($x+1);
-				}
-				$gray2 = $this->getGray($im, $x+1, $y2);
-
-				if($topbottom=="top") {
-					$y2 = $d-($x+2);
-				} else {
-					$y2 = imageSy($im)-$d+($x+2);
-				}
-				$gray3 = $this->getGray($im, $x+2, $y2);
-				if($gray2<$this->schwelle && $gray3<$this->schwelle) {
-					return $x;
-				}
-				*/
-
 			}
 
-			if($debug) imagesetpixel($im, $x, $y, $this->yellow);
+			if($debug)
+			{
+				imagesetpixel($im, $x, $y, 0x00ffff);
+			} 
 
 		}
 		return $x;

@@ -160,6 +160,14 @@ class ilPdfGenerationHelper
 	}
 
 	/**
+	 * @param $html
+	 */
+	public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=false, $reseth=true, $align='', $autopadding=true)
+	{
+		$this->pdf->writeHTMLCell($w, $h, $x, $y, $html, $border, $ln, $fill, $reseth, $align, $autopadding);
+	}
+
+	/**
 	 * @param string $filename
 	 */
 	public function output($filename='pruefung.pdf') 
