@@ -11,10 +11,26 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfGenerationHe
  */
 class ilPdfPreviewBuilder
 {
+	/**
+	 * @var ilObjTest
+	 */
 	protected $test;
 
+	/**
+	 * @var assQuestion[]
+	 */
 	protected $questions;
-	
+
+	/**
+	 * @var array
+	 */
+	protected $circleStyle;
+
+	/**
+	 * @var array
+	 */
+	protected $answer_positions = array();
+
 	/**
 	 * ilPdfPreviewBuilder constructor.
 	 * @param ilObjTest $test
@@ -23,73 +39,85 @@ class ilPdfPreviewBuilder
 	{
 		$this->test			= $test;
 		$this->questions	= array();
-	}
-
-	public function createDemoPdf()
-	{
-		$this->instantiateQuestions();
-		$a = new ilPdfGenerationHelper();
-
-		$this->addQrCodeToPage($a);
-
-		$a->pdf->setCellMargins(15);
-		$a->addPage();
-		$circleStyle = array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
-
-		foreach($this->questions as $question)
-		{
-			$a->pdf->startTransaction();
-			$start_page = $a->pdf->getPage();
-
-			$this->writeQuestionToPdf($a, $question, $circleStyle);
-
-			$end_page = $a->pdf->getPage();
-			if  ($end_page != $start_page) 
-			{
-				$a->pdf->rollbackTransaction(true);
-				$a->addPage();
-				$this->addQrCodeToPage($a);
-				$this->writeQuestionToPdf($a, $question, $circleStyle);
-			} 
-			else 
-			{
-				$a->pdf->commitTransaction();
-			}
-		}
-
-		$a->output();
-	}
-
-	protected function addQrCodeToPage($a)
-	{
-		$page = $a->pdf->getPage();
-		$a->pdf->setQRCodeOnThisPage(true);
-		$a->pdf->setQRCodeOnThisPage(true);
-		$a->createQRCode('DemoCode');
+		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
 	}
 
 	/**
-	 * @param $a
-	 * @param $question
+	 * 
+	 */
+	public function createDemoPdf()
+	{
+		$this->instantiateQuestions();
+		$pdf_h = new ilPdfGenerationHelper();
+
+		$this->addQrCodeToPage($pdf_h);
+
+		$pdf_h->pdf->setCellMargins(15);
+		$pdf_h->addPage();
+		
+		foreach($this->questions as $question)
+		{
+			$pdf_h->pdf->startTransaction();
+			$start_page = $pdf_h->pdf->getPage();
+
+			$this->writeQuestionToPdf($pdf_h, $question, $this->circleStyle);
+
+			$end_page = $pdf_h->pdf->getPage();
+			if  ($end_page != $start_page) 
+			{
+				$pdf_h->pdf->rollbackTransaction(true);
+				$this->addQrCodeToPage($pdf_h);
+				$pdf_h->addPage();
+				$this->writeQuestionToPdf($pdf_h, $question, $this->circleStyle);
+			} 
+			else 
+			{
+				$pdf_h->pdf->commitTransaction();
+			}
+		}
+
+		$this->printDebug($pdf_h);
+		$pdf_h->output();
+	}
+
+	protected function printDebug($pdf_h)
+	{
+		$pdf_h->addPage();
+		$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
+	}
+
+	/**
+	 * @param $pdf_h
+	 */
+	protected function addQrCodeToPage($pdf_h)
+	{
+		$page = $pdf_h->pdf->getPage();
+		$pdf_h->pdf->setQRCodeOnThisPage(true);
+		$pdf_h->createQRCode('DemoCode');
+	}
+
+	/**
+	 * @param $pdf_h
+	 * @param assQuestion $question
 	 * @param $circleStyle
 	 */
-	protected function writeQuestionToPdf($a, $question, $circleStyle)
+	protected function writeQuestionToPdf($pdf_h, $question, $circleStyle)
 	{
-		$a->writeHTML($question->getTitle());
-		$a->pdf->Ln(1);
-		$a->writeHTML($question->getQuestion());
-		$a->pdf->Ln(6);
+		$pdf_h->writeHTML($question->getTitle());
+		$pdf_h->pdf->Ln(1);
+		$pdf_h->writeHTML($question->getQuestion());
+		$pdf_h->pdf->Ln(2);
 		foreach($question->getAnswers() as $key => $answer)
 		{
-			$a->pdf->Rect(35, $a->pdf->GetY(), PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
-			$a->pdf->setCellMargins(28, 2);
-			//$a->writeHTML('<div style="border:1px solid red;">' . $answer->getAnswerText() .'</div>');
-			$a->writeHTML($answer->getAnswerText());
+			$pdf_h->pdf->setCellMargins(26, 2);
+			$pdf_h->pdf->Rect(35, $pdf_h->pdf->GetY() + 2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
+			$pdf_h->writeHTML($answer->getAnswerText());
 
+			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $pdf_h->pdf->GetX() .' '. $pdf_h->pdf->GetY();
 		}
-		$a->pdf->setCellMargins(15);
-		$a->pdf->Ln(2);
-		$a->writeHTML('<hr/>');
+		$pdf_h->pdf->setCellMargins(15);
+		$pdf_h->pdf->Ln(2);
+		$pdf_h->writeHTML('<hr/>');
 	}
 	protected function instantiateQuestions()
 	{
