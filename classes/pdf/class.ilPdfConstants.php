@@ -14,7 +14,7 @@ define('PDF_BOTTOMRIGHT_QR_MARGIN_X', 5);
 define('PDF_BOTTOMRIGHT_QR_MARGIN_Y', 5);
 
 define('PDF_ANSWERCIRCLE_W', 5);
-define('PDF_ANSWERBOX_W', 8);
+define('PDF_ANSWERBOX_W', 5);
 define('PDF_ANSWERBOX_H', 5);
 
 define('DRAWRULE_MAXTRIES', 1000);

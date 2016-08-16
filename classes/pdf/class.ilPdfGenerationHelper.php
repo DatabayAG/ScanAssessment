@@ -50,8 +50,8 @@ class ilPdfGenerationHelper
 		$this->pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 
 		$this->pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
-		$this->pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-		$this->pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+		$this->pdf->setHeaderMargin(PDF_MARGIN_HEADER);
+		$this->pdf->setFooterMargin(PDF_MARGIN_FOOTER);
 
 		$this->pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
 
@@ -90,18 +90,22 @@ class ilPdfGenerationHelper
 		}
 	}
 
+	/**
+	 * @param $code
+	 */
 	public function createQRCode($code) {
 
-		if(stristr($code,"DemoCode")) 
+		if ($code == "") 
+		{
+			$code = "NoCodeGiven";
+		}
+		else if(stristr($code,"DemoCode")) 
 		{
 			$code = "DemoCode";
 		}
 
 		$this->removeOldQRFiles();
 
-		if ($code == "") {
-			$code = "NoCodeGiven";
-		}
 		$QR = new myQR();
 		$output_image = $QR->create($code, 'M', 10, 1, 'jpeg');
 		$filename = $this->qr_images_path . '/qr_' . $code . "_".microtime(true).'.jpg';
@@ -121,6 +125,9 @@ class ilPdfGenerationHelper
 		imagejpeg($output_image, $filename, 100);
 	}
 
+	/**
+	 * @param $pdfFile
+	 */
 	public function addPdfPage($pdfFile) 
 	{
 		$backgroundPDF = $this->pdf->getBackgroundPDF();
@@ -132,6 +139,9 @@ class ilPdfGenerationHelper
 		$this->pdf->setPageHeaderHTML($pageHeaderHTML);
 	}
 
+	/**
+	 * @param string $pdfTemplate
+	 */
 	public function addPage($pdfTemplate="") 
 	{
 		if($pdfTemplate!='') 
@@ -141,11 +151,17 @@ class ilPdfGenerationHelper
 		$this->pdf->AddPage();
 	}
 
+	/**
+	 * @param $html
+	 */
 	public function writeHTML($html) 
 	{
 		$this->pdf->writeHTMLCell(0, 0, '', '', $html, 0, 1, 0, TRUE, '', TRUE);
 	}
 
+	/**
+	 * @param string $filename
+	 */
 	public function output($filename='pruefung.pdf') 
 	{
 		$qr_image = $this->pdf->getQrImg();

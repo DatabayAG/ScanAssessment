@@ -87,17 +87,16 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	}
 
 	/**
-	 * @param $name
+	 * @param $id
 	 * @param $txt
 	 * @param $target
 	 */
-	protected function appendStepTab($name, $txt, $target)
+	protected function appendStepTab($id, $txt, $target)
 	{
-		/**
-		* @var $ilTabs ilTabsGUI
-		*/
+		/** @var $ilTabs ilTabsGUI */
 		global $ilTabs;
-		$ilTabs->addTab($name, $this->plugin_object->txt($txt), $this->plugin_object->getLinkTarget(
+
+		$ilTabs->addTab($id, $this->plugin_object->txt($txt), $this->plugin_object->getLinkTarget(
 			$target,
 			array(
 				'ref_id' => (int)$_GET['ref_id']

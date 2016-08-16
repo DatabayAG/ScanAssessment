@@ -4,10 +4,10 @@
 require_once dirname(__FILE__) . '/class.ilScanAssessmentPreconditionBase.php';
 
 /**
- * Class ilScanAssessmentIsRandomOrFixedTestPrecondition
+ * Class ilScanAssessmentIsFixedTestPrecondition
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentIsRandomOrFixedTestPrecondition extends ilScanAssessmentPreconditionBase
+class ilScanAssessmentIsFixedTestPrecondition extends ilScanAssessmentPreconditionBase
 {
 	/**
 	 *  {@inheritdoc}
@@ -30,6 +30,6 @@ class ilScanAssessmentIsRandomOrFixedTestPrecondition extends ilScanAssessmentPr
 	 */
 	public function isFulfilled()
 	{
-		return $this->test->isRandomTest() || $this->test->isFixedTest();
+		return $this->test->isFixedTest();
 	}
 }

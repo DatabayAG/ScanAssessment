@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfPreviewBuilder.php');
 
 /**
  * Class ilScanAssessmentLayoutController
@@ -73,16 +74,11 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 
 		return $form;
 	}
-
+	
 	public function createDemoPdfCmd()
 	{
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilPdfGenerationHelper.php';
-		$a = new ilPdfGenerationHelper();
-		$a->pdf->setQRCodeOnThisPage(true);
-		$a->createQRCode('DemoCode');
-		$a->addPage();
-		$a->writeHTML('HELLO');
-		$a->output();
+		$demo = new ilPdfPreviewBuilder($this->test);
+		$demo->createDemoPdf();
 	}
 	
 	/**
