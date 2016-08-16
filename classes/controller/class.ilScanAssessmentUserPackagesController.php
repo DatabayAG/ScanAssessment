@@ -28,6 +28,26 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->isPreconditionFulfilled();
+	}
+
+	/**
+	 * 
+	 */
+	protected function isPreconditionFulfilled()
+	{
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
+		$activated = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
+		if(! $activated->isFulfilled())
+		{
+			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
+			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+				'ilScanAssessmentLayoutController.default',
+				array(
+					'ref_id' => (int)$_GET['ref_id']
+				)
+			));
+		}
 	}
 
 	/**
@@ -116,14 +136,23 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
-		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStatusBarGUI.php');
-		$status_bar = new ilScanAssessmentStatusBarGUI();
-		foreach($this->configuration->getPreconditions() as $precondition)
-		{
-			$status_bar->addItem($precondition);
-		}
-		$tpl->setVariable('STATUS', $status_bar->getHtml());
+		$sidebar = $this->renderSteps();
+		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function renderSteps()
+	{
+		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStepsGUI.php');
+		$status_bar = new ilScanAssessmentStepsGUI();
+		foreach($this->configuration->getSteps() as $steps)
+		{
+			$status_bar->addItem($steps);
+		}
+		return $status_bar->getHtml();
 	}
 }

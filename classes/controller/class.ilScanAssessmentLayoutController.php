@@ -25,11 +25,28 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
-
+		
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->isPreconditionFulfilled();
 	}
 
+	protected function isPreconditionFulfilled()
+	{
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
+		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
+		if(! $activated->isFulfilled())
+		{
+			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
+			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+				'ilScanAssessmentDefaultController.default',
+				array(
+					'ref_id' => (int)$_GET['ref_id']
+				)
+			));
+		}
+	}
+	
 	/**
 	 * @return ilPropertyFormGUI
 	 */
@@ -123,8 +140,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
-
-
+		
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 

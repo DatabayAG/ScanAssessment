@@ -68,33 +68,43 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 						ilLink::_getLink((int)$_GET['ref_id'], 'tst')
 					);
 
-					$ilTabs->addTab('settings', $this->plugin_object->txt('scas_settings'), $this->plugin_object->getLinkTarget(
-						'ilScanAssessmentDefaultController.default',
-						array(
-							'ref_id' => (int)$_GET['ref_id']
-						)
-					));
-
-					$ilTabs->addTab('layout', $this->plugin_object->txt('scas_layout'), $this->plugin_object->getLinkTarget(
-						'ilScanAssessmentLayoutController.default',
-						array(
-							'ref_id' => (int)$_GET['ref_id']
-						)
-					));
-
-					$ilTabs->addTab('user_packages', $this->plugin_object->txt('scas_user_packages'), $this->plugin_object->getLinkTarget(
-						'ilScanAssessmentUserPackagesController.default',
-						array(
-							'ref_id' => (int)$_GET['ref_id']
-						)
-					));
-
-					$ilTabs->addTab('scan', $this->plugin_object->txt('scas_scan'), '');
-
-					$ilTabs->addTab('return', $this->plugin_object->txt('scas_return'), '');
+					$this->addStepsTabs($ilTabs, $lng);
 				}
 			}
 		}
+	}
+
+	/**
+	 * @param $ilTabs
+	 * @param $lng
+	 */
+	protected function addStepsTabs($ilTabs, $lng)
+	{
+
+		$ilTabs->addTab('settings', $this->plugin_object->txt('scas_settings'), $this->plugin_object->getLinkTarget(
+			'ilScanAssessmentDefaultController.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+
+		$ilTabs->addTab('layout', $this->plugin_object->txt('scas_layout'), $this->plugin_object->getLinkTarget(
+			'ilScanAssessmentLayoutController.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+
+		$ilTabs->addTab('user_packages', $this->plugin_object->txt('scas_user_packages'), $this->plugin_object->getLinkTarget(
+			'ilScanAssessmentUserPackagesController.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+
+		$ilTabs->addTab('scan', $this->plugin_object->txt('scas_scan'), '');
+
+		$ilTabs->addTab('return', $this->plugin_object->txt('scas_return'), '');
 	}
 
 	/**
