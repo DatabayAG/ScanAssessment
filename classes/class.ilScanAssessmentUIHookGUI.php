@@ -43,6 +43,13 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 				$tabs = $a_par['tabs'];
 				if(!$this->plugin_object->isPluginRequest())
 				{
+					if(!in_array('info_short', array_map('strtolower', array_map(function($value) {
+						return $value['text'];
+					}, $tabs->target))))
+					{
+						return;
+					}
+
 					$tabs->addNonTabbedLink(
 						'scan_assessment',
 						$this->plugin_object->txt('scan_assessment'),
@@ -60,8 +67,6 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 						$lng->txt('back'),
 						ilLink::_getLink((int)$_GET['ref_id'], 'tst')
 					);
-
-
 
 					$ilTabs->addTab('settings', $this->plugin_object->txt('scas_settings'), $this->plugin_object->getLinkTarget(
 						'ilScanAssessmentDefaultController.default',

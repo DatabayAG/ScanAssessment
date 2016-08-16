@@ -46,3 +46,15 @@ scas_creation_info#:#Creation of Memberpackages
 scas_creation_personalised#:#Personalised
 scas_creation_non_personalised#:#Not Personalised
 scas_create_demo_pdf#:#Create Demo PDF
+scas_steps#:#Steps
+scas_steps#:#Position
+scas_is_activated#:#Is activated
+scas_is_activated_info#:#Is activated
+scas_layout_completed#:#Layout complete
+scas_layout_completed_info#:#Layout complete
+scas_user_packages_exported#:#User Packages exported
+scas_user_packages_exported_info#:#User Packages exported
+scas_scan_completed#:#Scanning complete
+scas_scan_completed_info#:#Scanning complete
+scas_results_returned#:#Results returned to test
+scas_results_returned_info#:#Results returned to test

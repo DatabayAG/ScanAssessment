@@ -1,18 +1,29 @@
 <?php
 require_once 'Services/PDFGeneration/classes/tcpdf/tcpdf.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/fpdi/fpdi.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilPdfStyler.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilPdfAppendMarker.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/qr_img0.50i/php/class.qr_img.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilPdfConstants.php';
 
+/**
+ * Class ilPdfGenerationHelper
+ */
 class ilPdfGenerationHelper
 {
 	/**
-	 * @var PDFStyler
+	 * @var ilPdfAppendMarker
 	 */
 	public $pdf;
 
+	/**
+	 * @var string
+	 */
 	protected $qr_images_path = '';
-	
+
+	/**
+	 * ilPdfGenerationHelper constructor.
+	 * @param null $backgroundPDF
+	 */
 	public function __construct($backgroundPDF = NULL) 
 	{
 		$this->qr_images_path = ilUtil::getDataDir() .'/temp_qr_images';
@@ -24,7 +35,7 @@ class ilPdfGenerationHelper
 	 */
 	protected function initializePDFStructure($backgroundPDF)
 	{
-		$this->pdf = new PdfStyler(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+		$this->pdf = new ilPdfAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
 
 		$this->pdf->setBackgroundPDF($backgroundPDF);
 
@@ -48,7 +59,7 @@ class ilPdfGenerationHelper
 
 		$this->pdf->setFontSubsetting(TRUE);
 
-		$this->pdf->SetFont('dejavusans', '', 10, '', TRUE);
+		$this->pdf->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE, '', TRUE);
 	}
 
 	protected function removeOldQRFiles()
@@ -121,8 +132,10 @@ class ilPdfGenerationHelper
 		$this->pdf->setPageHeaderHTML($pageHeaderHTML);
 	}
 
-	public function addPage($pdfTemplate="") {
-		if($pdfTemplate!='') {
+	public function addPage($pdfTemplate="") 
+	{
+		if($pdfTemplate!='') 
+		{
 			$this->pdf->setBackgroundPDF($pdfTemplate);
 		}
 		$this->pdf->AddPage();

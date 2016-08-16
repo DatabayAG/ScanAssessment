@@ -140,14 +140,23 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
+		$sidebar = $this->renderPreconditions($tpl);
+		$tpl->setVariable('STATUS', $sidebar);
+
+		return $tpl->get();
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function renderPreconditions()
+	{
 		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStatusBarGUI.php');
 		$status_bar = new ilScanAssessmentStatusBarGUI();
 		foreach($this->configuration->getPreconditions() as $precondition)
 		{
 			$status_bar->addItem($precondition);
 		}
-		$tpl->setVariable('STATUS', $status_bar->getHtml());
-
-		return $tpl->get();
+		 return $status_bar->getHtml();
 	}
 }

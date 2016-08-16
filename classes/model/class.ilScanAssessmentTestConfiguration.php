@@ -33,6 +33,14 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	protected $active = 0;
 
 	/**
+	 * @return int
+	 */
+	public function getActive()
+	{
+		return $this->active;
+	}
+
+	/**
 	 * @return string
 	 * @description Return the Name of your Database Table
 	 * @deprecated
@@ -77,6 +85,11 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	protected $preconditions = array();
 
 	/**
+	 * @var ilScanAssessmentStepsBase[]
+	 */
+	protected $steps = array();
+
+	/**
 	 * @var bool
 	 */
 	protected $init_complete = false;
@@ -101,6 +114,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		{
 			$this->test = ilObjectFactory::getInstanceByObjId($a_id);
 			$this->initPreconditions();
+			$this->initSteps();
 		}
 
 		$this->obj_id = $a_id;
@@ -111,9 +125,9 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	 */
 	public function initPreconditions()
 	{
-		ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentIsActivePrecondition.php');
-		ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentIsRandomOrFixedTestPrecondition.php');
-		ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentHasValidQuestionsPrecondition.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsActivePrecondition.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsRandomOrFixedTestPrecondition.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentHasValidQuestionsPrecondition.php');
 		
 		$this->preconditions[] = new ilScanAssessmentIsActivePrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->preconditions[] = new ilScanAssessmentIsRandomOrFixedTestPrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
@@ -126,6 +140,32 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	public function getPreconditions()
 	{
 		return $this->preconditions;
+	}
+
+	/**
+	 *
+	 */
+	public function initSteps()
+	{
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentUserPackagesExportedStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentScanStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentReturnResultsStep.php');
+		
+		$this->steps[] = new ilScanAssessmentIsActivatedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentLayoutStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentUserPackagesExportedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentScanStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentReturnResultsStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+	}
+
+	/**
+	 * @return ilScanAssessmentStepsBase[]
+	 */
+	public function getSteps()
+	{
+		return $this->steps;
 	}
 
 	/**

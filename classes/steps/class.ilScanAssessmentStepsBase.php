@@ -1,13 +1,13 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once dirname(__FILE__) . '/../interfaces/interface.ilScanAssessmentStatusBarItem.php';
+require_once dirname(__FILE__) . '/../../interfaces/interface.ilScanAssessmentStatusBarItem.php';
 
 /**
- * Class ilScanAssessmentPreconditionBase
+ * Class ilScanAssessmentStepsBase
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-abstract class ilScanAssessmentPreconditionBase implements ilScanAssessmentStatusBarItem
+abstract class ilScanAssessmentStepsBase implements ilScanAssessmentStatusBarItem
 {
 	/**
 	 * @var ilScanAssessmentPlugin
@@ -20,7 +20,7 @@ abstract class ilScanAssessmentPreconditionBase implements ilScanAssessmentStatu
 	protected $test;
 
 	/**
-	 * ilScanAssessmentPreconditionBase constructor.
+	 * ilScanAssessmentStepsBase constructor.
 	 * @param ilScanAssessmentPlugin $plugin
 	 * @param ilObjTest                     $test
 	 */

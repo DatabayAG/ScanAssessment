@@ -46,3 +46,14 @@ scas_creation_info#:#Erzeugung von Teilnehmerpaketen
 scas_creation_personalised#:#Personalisiert
 scas_creation_non_personalised#:#Nicht personalisiert
 scas_create_demo_pdf#:#Demo PDF erzeugen
+scas_steps#:#Schritt
+scas_is_activated#:#Ist aktiviert
+scas_is_activated_info#:#Ist aktiviert
+scas_layout_completed#:#Layout fertig
+scas_layout_completed_info#:#Layout fertig
+scas_user_packages_exported#:#Teilnehmerpakete exportiert
+scas_user_packages_exported_info#:#Teilnehmerpakete exportiert
+scas_scan_completed#:#Scannen abgeschlossen
+scas_scan_completed_info#:#Scannen abgeschlossen
+scas_results_returned#:#Ergebnisse an Test übergeben
+scas_results_returned_info#:#Ergebnisse an Test übergeben

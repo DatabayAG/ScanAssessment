@@ -66,7 +66,6 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$a->addPage();
 		$a->writeHTML('HELLO');
 		$a->output();
-		$b = 0;
 	}
 	
 	/**
@@ -125,14 +124,25 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
-		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStatusBarGUI.php');
-		$status_bar = new ilScanAssessmentStatusBarGUI();
-		foreach($this->configuration->getPreconditions() as $precondition)
-		{
-			$status_bar->addItem($precondition);
-		}
-		$tpl->setVariable('STATUS', $status_bar->getHtml());
+
+		$sidebar = $this->renderSteps();
+		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();
 	}
+
+	/**
+	 * @return string
+	 */
+	protected function renderSteps()
+	{
+		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStepsGUI.php');
+		$status_bar = new ilScanAssessmentStepsGUI();
+		foreach($this->configuration->getSteps() as $steps)
+		{
+			$status_bar->addItem($steps);
+		}
+		return $status_bar->getHtml();
+	}
+
 }
