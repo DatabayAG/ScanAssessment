@@ -68,45 +68,43 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 						ilLink::_getLink((int)$_GET['ref_id'], 'tst')
 					);
 
-					$this->addStepsTabs($ilTabs, $lng);
+					$this->addStepsTabs();
 				}
 			}
 		}
 	}
 
 	/**
-	 * @param $ilTabs
-	 * @param $lng
+	 * 
 	 */
-	protected function addStepsTabs($ilTabs, $lng)
+	protected function addStepsTabs()
 	{
-
-		$ilTabs->addTab('settings', $this->plugin_object->txt('scas_settings'), $this->plugin_object->getLinkTarget(
-			'ilScanAssessmentDefaultController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
-
-		$ilTabs->addTab('layout', $this->plugin_object->txt('scas_layout'), $this->plugin_object->getLinkTarget(
-			'ilScanAssessmentLayoutController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
-
-		$ilTabs->addTab('user_packages', $this->plugin_object->txt('scas_user_packages'), $this->plugin_object->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
-
-		$ilTabs->addTab('scan', $this->plugin_object->txt('scas_scan'), '');
-
-		$ilTabs->addTab('return', $this->plugin_object->txt('scas_return'), '');
+		$this->appendStepTab('settings',		'scas_settings',		'ilScanAssessmentDefaultController.default');
+		$this->appendStepTab('layout',			'scas_layout',			'ilScanAssessmentLayoutController.default');
+		$this->appendStepTab('user_packages',	'scas_user_packages',	'ilScanAssessmentUserPackagesController.default');
+		$this->appendStepTab('scan',			'scas_scan',			'');
+		$this->appendStepTab('return',			'scas_return',			'');
 	}
 
+	/**
+	 * @param $name
+	 * @param $txt
+	 * @param $target
+	 */
+	protected function appendStepTab($name, $txt, $target)
+	{
+		/**
+		* @var $ilTabs ilTabsGUI
+		*/
+		global $ilTabs;
+		$ilTabs->addTab($name, $this->plugin_object->txt($txt), $this->plugin_object->getLinkTarget(
+			$target,
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+	}
+	
 	/**
 	 *
 	 */
