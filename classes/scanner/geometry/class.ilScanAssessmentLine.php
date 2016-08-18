@@ -1,5 +1,5 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/Geometry/class.ilScanAssessmentPoint.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentPoint.php';
 /**
  * Created by PhpStorm.
  * User: gvollbach
