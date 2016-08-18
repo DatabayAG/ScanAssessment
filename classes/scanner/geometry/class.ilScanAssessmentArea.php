@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class ilScanAssessmentArea
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentArea
 {
 	/**

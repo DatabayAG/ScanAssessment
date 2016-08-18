@@ -1,10 +1,8 @@
 <?php
 
 /**
- * Created by PhpStorm.
- * User: gvollbach
- * Date: 18.08.16
- * Time: 14:35
+ * Class ilScanAssessmentImageHelper
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentImageHelper
 {

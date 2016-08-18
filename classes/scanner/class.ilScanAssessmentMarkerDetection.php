@@ -13,10 +13,10 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 class ilScanAssessmentMarkerDetection
 {
 
-	/**
+	/** 
 	 * @var bool
 	 */
-	protected $debug = true;
+	protected $debug = false;
 	
 	/**
 	 * @var
@@ -74,14 +74,11 @@ class ilScanAssessmentMarkerDetection
 	 * @param      $im
 	 * @param bool $rotated
 	 * @param int  $threshold
+	 * @var ilScanAssessmentVector $locate_top_left
+	 * @var ilScanAssessmentVector $locate_bottom_left
 	 * @return array|bool
 	 */
 	public function findMarker(&$im, $rotated = false, $threshold=150) {
-
-		/**
-		 * @var ilScanAssessmentVector $locate_top_left
-		 * @var ilScanAssessmentVector $locate_bottom_left
-		 */
 
 		$locate_top_left = null;
 		$locate_bottom_left = null;
@@ -160,6 +157,7 @@ class ilScanAssessmentMarkerDetection
 				break;
 			}
 		}
+
 		for($i=0.1;$i<2;$i+=0.1) 
 		{
 			$gray = $this->image_helper->getGray($im, $mx-$dx2*$i, $my-$dy2*$i);
@@ -187,19 +185,20 @@ class ilScanAssessmentMarkerDetection
 	 * @param        $im
 	 * @param string $top_bottom
 	 * @param int    $threshold
+	 * @var ilScanAssessmentPoint $found_start
+	 * @var ilScanAssessmentPoint $found_end
 	 * @return bool|ilScanAssessmentLine
 	 */
 	public function probeMarkerPosition(&$im, $top_bottom='top', $threshold=150) 
 	{
-		$w = imagesx($im);
-		$dy = 3;
-		$found = false;
-		$subDX = 0;
-		$beginD = -1;
-		/** @var ilScanAssessmentPoint $found_start */
-		$found_start = null;
-		/** @var ilScanAssessmentPoint $found_end */
-		$found_end =  null;
+		$w				= imagesx($im);
+		$dy				= 3;
+		$found			= false;
+		$subDX			= 0;
+		$beginD			= -1;
+		$found_start	= null;
+		$found_end		= null;
+
 		for($d=55; $d < $w / 4 * 3; $d += $dy) 
 		{
 
@@ -211,11 +210,11 @@ class ilScanAssessmentMarkerDetection
 			{
 				if($found == false)
 				{
-					$found = true;
-					$subDX = 0;
-					$beginD = $len;
-					$found_start = new ilScanAssessmentPoint($len, $d-$len);
-					$found_end =  new ilScanAssessmentPoint($len, $d-$len);
+					$found			= true;
+					$subDX			= 0;
+					$beginD			= $len;
+					$found_start	= new ilScanAssessmentPoint($len, $d-$len);
+					$found_end		= new ilScanAssessmentPoint($len, $d-$len);
 				}
 				else
 				{
@@ -236,7 +235,12 @@ class ilScanAssessmentMarkerDetection
 				if($found == true) 
 				{
 					$found_line = new ilScanAssessmentLine($found_start, $found_end);
-					$l = sqrt( ($found_start->getX() - $found_end->getX())*($found_start->getX() - $found_end->getX()) + ($found_start->getY() - $found_end->getY())*($found_start->getY() - $found_end->getY()) );
+					$l = sqrt( 
+								($found_start->getX() - $found_end->getX()) *
+								($found_start->getX() - $found_end->getX()) + 
+								($found_start->getY() - $found_end->getY()) *
+								($found_start->getY() - $found_end->getY()) 
+							);
 
 					if($l > 0) 
 					{
@@ -246,8 +250,8 @@ class ilScanAssessmentMarkerDetection
 
 							if($top_bottom=="bottom")
 							{
-								$found_line->getStart()->setY(imagesy($im) - $found_line->getStart()->getY());
-								$found_line->getEnd()->setY(imagesy($im) - $found_line->getEnd()->getY());
+								$found_line->getStart()->setY( imagesy($im) - $found_line->getStart()->getY() );
+								$found_line->getEnd()->setY( imagesy($im) - $found_line->getEnd()->getY() );
 							}
 							return $found_line;
 							break;
@@ -272,7 +276,7 @@ class ilScanAssessmentMarkerDetection
 	{
 		for($x=0;$x<$d;$x++)
 		{
-			if($top_bottom=="top")
+			if($top_bottom == 'top')
 			{
 				$y = $d-$x;
 			}
@@ -289,7 +293,7 @@ class ilScanAssessmentMarkerDetection
 				$mean = $gray;
 				for($i=1;$i<$len;$i++)
 				{
-					if($top_bottom=="top")
+					if($top_bottom == 'top')
 					{
 						$y2 = $d-($x+$i);
 					}
@@ -344,9 +348,11 @@ class ilScanAssessmentMarkerDetection
 	{
 		if($this->isDebug())
 		{
-			imageline($this->getTempImage(), $line->getStart()->getX(), $line->getStart()->getY(),
+			imageline(
+				$this->getTempImage(), $line->getStart()->getX(), $line->getStart()->getY(),
 				$line->getEnd()->getX(), $line->getEnd()->getY(),
-				$color);
+				$color
+			);
 		}
 	}
 
@@ -356,9 +362,9 @@ class ilScanAssessmentMarkerDetection
 	 */
 	protected function drawDebugPixel($point , $color)
 	{
-		if($this->isDebug())
+		if(!$this->isDebug())
 		{
-			imagesetpixel($this->getTempImage(),$point->getX(), $point->getY(), $color);
+			imagesetpixel($this->getTempImage(), $point->getX(), $point->getY(), $color);
 		}
 	}
 

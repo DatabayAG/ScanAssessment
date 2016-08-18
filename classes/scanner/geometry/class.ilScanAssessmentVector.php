@@ -1,5 +1,10 @@
 <?php
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentPoint.php';
+
+/**
+ * Class ilScanAssessmentVector
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentVector
 {
 	/**
@@ -54,6 +59,4 @@ class ilScanAssessmentVector
 	{
 		$this->length = $length;
 	}
-	
-	
 }

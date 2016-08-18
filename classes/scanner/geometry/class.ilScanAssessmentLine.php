@@ -1,10 +1,9 @@
 <?php
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentPoint.php';
+
 /**
- * Created by PhpStorm.
- * User: gvollbach
- * Date: 18.08.16
- * Time: 12:57
+ * Class ilScanAssessmentLine
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentLine
 {
@@ -17,11 +16,6 @@ class ilScanAssessmentLine
 	 * @var ilScanAssessmentPoint
 	 */
 	private $end;
-
-	/**
-	 * @var
-	 */
-	private $length;
 
 	/**
 	 * ilScanAssessmentLine constructor.

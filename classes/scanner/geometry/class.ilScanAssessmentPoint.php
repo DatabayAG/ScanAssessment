@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Class ilScanAssessmentPoint
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentPoint
 {
 
@@ -23,7 +26,7 @@ class ilScanAssessmentPoint
 		$this->x = $x;
 		$this->y = $y;
 	}
-	
+
 	/**
 	 * @return float
 	 */
