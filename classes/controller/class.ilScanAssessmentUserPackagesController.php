@@ -87,13 +87,15 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$file = '/tmp/pruefung_r.jpg';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
 		$demo = new ilScanAssessmentMarkerDetection();
-		
+		$time_start = microtime(true);
 		echo print_r($demo->getMarkerPosition($file));
+
+		$time_end = microtime(true);
+		$time = $time_end - $time_start;
+
+		echo '<br><br>' . $time;
 		//echo print_r($demo->getQRPosition($file, false));
 		imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
-		/*require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner2.php';
-		$scanner = new ilScanAssessmentScanner2($file);
-		echo print_r($scanner->scan());*/
 		exit();
 	}
 	

@@ -11,17 +11,17 @@ class ilScanAssessmentLine
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
-	protected $start;
+	private $start;
 
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
-	protected $end;
+	private $end;
 
 	/**
 	 * @var
 	 */
-	protected $length;
+	private $length;
 
 	/**
 	 * ilScanAssessmentLine constructor.

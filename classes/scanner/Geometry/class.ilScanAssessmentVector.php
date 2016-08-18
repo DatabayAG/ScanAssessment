@@ -5,12 +5,12 @@ class ilScanAssessmentVector
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
-	protected $position;
+	private $position;
 
 	/**
 	 * @var float
 	 */
-	protected $length;
+	private $length;
 
 	/**
 	 * ilScanAssessmentVector constructor.
