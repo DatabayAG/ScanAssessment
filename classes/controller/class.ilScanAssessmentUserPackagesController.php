@@ -84,9 +84,16 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 	public function analyseCmd()
 	{
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/ScanService.php';
-		$demo = new ScanService();
-		echo print_r($demo->getMarkerPosition('/tmp/pruefung.jpg'));
+		$file = '/tmp/pruefung_r.jpg';
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
+		$demo = new ilScanAssessmentMarkerDetection();
+		
+		echo print_r($demo->getMarkerPosition($file));
+		//echo print_r($demo->getQRPosition($file, false));
+		imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
+		/*require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner2.php';
+		$scanner = new ilScanAssessmentScanner2($file);
+		echo print_r($scanner->scan());*/
 		exit();
 	}
 	
