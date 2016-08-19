@@ -118,6 +118,24 @@ class ilPdfPreviewBuilder
 		$pdf_h->pdf->setCellMargins(15);
 		$pdf_h->pdf->Ln(2);
 		$pdf_h->writeHTML('<hr/>');
+
+		$pageData = array(
+			'TOPLEFT'         => array(
+				"x" => PDF_TOPLEFT_SYMBOL_X,
+				"y" => PDF_TOPLEFT_SYMBOL_Y,
+				"w" => PDF_TOPLEFT_SYMBOL_W
+			),
+			'BOTTOMLEFT'      => array(
+				"x" => PDF_TOPLEFT_SYMBOL_X,
+				"y" => $pdf_h->pdf->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y,
+				"w" => PDF_TOPLEFT_SYMBOL_W
+			),
+			'BOTTOMRIGHT'     => array(
+				"x" => $pdf_h->pdf->getPageWidth() - PDF_BOTTOMRIGHT_QR_MARGIN_X,
+				"y" => $pdf_h->pdf->getPageHeight() - PDF_BOTTOMRIGHT_QR_MARGIN_Y,
+				"w" => PDF_BOTTOMRIGHT_QR_W
+			));
+		$a = 0;
 	}
 	protected function instantiateQuestions()
 	{

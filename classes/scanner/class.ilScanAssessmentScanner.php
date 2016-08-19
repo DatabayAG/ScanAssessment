@@ -45,11 +45,12 @@ class ilScanAssessmentScanner
 	{
 		if($this->getImage() === null)
 		{
+			$this->image_helper = new ilScanAssessmentImageHelper();
 			$im = imagecreatefromjpeg($fn);
+			$im = $this->image_helper->removeBlackBorder($im);
 			$this->setImage($im);
 			$this->setTempImage($im);
 			$this->setThreshold(self::LOWER_THRESHOLD);
-			$this->image_helper = new ilScanAssessmentImageHelper();
 		}
 	}
 

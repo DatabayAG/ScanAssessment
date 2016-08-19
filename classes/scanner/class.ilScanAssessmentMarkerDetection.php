@@ -1,5 +1,5 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/qr_img0.50i/php/class.qr_img.php';
+
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner.php';
 
 
@@ -22,7 +22,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	public function getMarkerPosition()
 	{
 
-		$im = $this->image_helper->removeBlackBorder($this->getImage());
+		$im = $this->getImage();
 
 		$this->setThreshold(self::LOWER_THRESHOLD);
 		$marker = $this->findMarker($im, false, $this->getThreshold());
@@ -119,7 +119,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 		for($i = 0.1; $i < 2; $i += 0.1)
 		{
-			$gray = $this->image_helper->getGray($im, new ilScanAssessmentPoint($mx + $dx2 * $i, $my + $dy2 * $i));
+			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($mx + $dx2 * $i, $my + $dy2 * $i));
 			if($gray > $threshold)
 			{
 				$i1 = $i;
@@ -129,7 +129,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 		for($i = 0.1; $i < 2; $i += 0.1) 
 		{
-			$gray = $this->image_helper->getGray($im, new ilScanAssessmentPoint($mx - $dx2 * $i, $my - $dy2 * $i));
+			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($mx - $dx2 * $i, $my - $dy2 * $i));
 			if($gray > $threshold)
 			{
 				$i2 = $i;
@@ -253,7 +253,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$y = imagesy($im) - $d + $x;
 			}
 
-			$gray = $this->image_helper->getGray($im, new ilScanAssessmentPoint($x, $y));
+			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($x, $y));
 
 			if($gray < $threshold) {
 
@@ -269,7 +269,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 					{
 						$y2 = imagesy($im) - $d + ($x + $i);
 					}
-					$mean += $this->image_helper->getGray($im, new ilScanAssessmentPoint($x, $y2));
+					$mean += $this->image_helper->getGrey($im, new ilScanAssessmentPoint($x, $y2));
 				}
 				if($mean / $len < $threshold)
 				{

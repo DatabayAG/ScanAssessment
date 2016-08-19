@@ -12,7 +12,8 @@ class ilScanAssessmentImageHelper
 	 * @param ilScanAssessmentPoint $point
 	 * @return array
 	 */
-	public function getColor(&$im2, ilScanAssessmentPoint $point) {
+	public function getColor(&$im2, ilScanAssessmentPoint $point) 
+	{
 		$color = imagecolorat($im2, $point->getX(), $point->getY());
 		$blue = 0x0000ff & $color;
 		$green = 0x00ff00 & $color;
@@ -28,10 +29,11 @@ class ilScanAssessmentImageHelper
 	 * @param ilScanAssessmentPoint $point
 	 * @return float
 	 */
-	public function getGray(&$im2, ilScanAssessmentPoint $point)
+	public function getGrey(&$im2, ilScanAssessmentPoint $point)
 	{
 		$rgb = $this->getColor($im2, $point);
-		return( ($rgb[0]+$rgb[1]+$rgb[2])/3 );
+		$grey =  ($rgb[0] + $rgb[1] + $rgb[2]) / 3 ;
+		return $grey;
 	}
 
 	public function removeBlackBorder($img) 
@@ -40,7 +42,7 @@ class ilScanAssessmentImageHelper
 
 		for($y = imagesy($img) - 1; $y > imagesy($img) - 100; $y--) 
 		{
-			if($this->getGray($img, new ilScanAssessmentPoint(round(imagesx($img)) / 2 , $y)) > 50) 
+			if($this->getGrey($img, new ilScanAssessmentPoint(round(imagesx($img)) / 2 , $y)) > 50) 
 			{
 				$img2 = imagecreatetruecolor(imagesx($img), $y);
 				imagecopy($img2, $img, 0,0,0,0,imagesx($img), $y);
@@ -50,7 +52,7 @@ class ilScanAssessmentImageHelper
 
 		for($x = imagesx($img) - 1;  $x > imagesx($img) - 100; $x--) 
 		{
-			if($this->getGray($img, new ilScanAssessmentPoint($x, round( imagesy ( $img) ) / 2 ) ) > 50 ) 
+			if($this->getGrey($img, new ilScanAssessmentPoint($x, round( imagesy ( $img) ) / 2 ) ) > 50 ) 
 			{
 				$img2 = imagecreatetruecolor($x, imagesy($img));
 				imagecopy($img2, $img, 0,0,0,0,$x, imagesy($img));

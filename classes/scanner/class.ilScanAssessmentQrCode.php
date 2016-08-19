@@ -22,11 +22,11 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 		{
 			return false;
 		} 
-		$foundAt = $res[0];
-		return $foundAt;
+		$position = $res[0];
+		return $position;
 	}
 
-	public function findQR(&$im, $rotate = false) {
+	protected function findQR(&$im, $rotate = false) {
 
 		$threshold = $this->getThreshold();
 
@@ -55,8 +55,8 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 			{
 				if($i>=20) 
 				{
-					$c = $this->image_helper->getGray($im, new ilScanAssessmentPoint($xi, $y - $i));
-					$c2 = $this->image_helper->getGray($im, new ilScanAssessmentPoint($xi + 1, $y - $i - 1));
+					$c = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($xi, $y - $i));
+					$c2 = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($xi + 1, $y - $i - 1));
 					if ($c < $threshold && $c2 < $threshold ) 
 					{
 						$found = true;
@@ -80,7 +80,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 			{
 				for($yi = $y2; $yi >= $foundY - ($h2 - $y2) * 5; $yi -= 1)
 				{
-					$c = $this->image_helper->getGray($im, new ilScanAssessmentPoint($xi, $yi));
+					$c = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($xi, $yi));
 					if($c < $threshold)
 					{
 						$found = true;
@@ -96,7 +96,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 			{
 				for($xi = $x2; $xi >= $foundX; $xi--)
 				{
-					$c = $this->image_helper->getGray($im, new ilScanAssessmentPoint($xi, $yi));
+					$c = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($xi, $yi));
 					if($c < $threshold)
 					{
 						$found = true;
@@ -136,12 +136,12 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 
 
 
-	public function isSquareFree($im, $sx, $sy, $sq) {
+	protected function isSquareFree(&$im, $sx, $sy, $sq) {
 		$threshold = 150;
 		$s         = 1;
 		for($x = $sx; $x > $sx - $sq; $x -= $s)
 		{
-			$c = $this->image_helper->getGray($im, new ilScanAssessmentPoint($x, $sy - $sq));
+			$c = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($x, $sy - $sq));
 			if($c < $threshold)
 			{
 				return false;
@@ -149,7 +149,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 		}
 		for($y = $sy; $y > $sy - $sq; $y -= $s)
 		{
-			$c = $this->image_helper->getGray($im, new ilScanAssessmentPoint($sx - $sq, $y));
+			$c = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($sx - $sq, $y));
 			if($c < $threshold)
 			{
 				return false;

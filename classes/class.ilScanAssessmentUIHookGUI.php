@@ -82,8 +82,8 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 		$this->appendStepTab('settings',		'scas_settings',		'ilScanAssessmentDefaultController.default');
 		$this->appendStepTab('layout',			'scas_layout',			'ilScanAssessmentLayoutController.default');
 		$this->appendStepTab('user_packages',	'scas_user_packages',	'ilScanAssessmentUserPackagesController.default');
-		$this->appendStepTab('scan',			'scas_scan',			'');
-		$this->appendStepTab('return',			'scas_return',			'');
+		$this->appendStepTab('scan',			'scas_scan',			'ilScanAssessmentScanController.default');
+		$this->appendStepTab('return',			'scas_return',			'ilScanAssessmentReturnDataController.default');
 	}
 
 	/**

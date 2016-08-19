@@ -2,12 +2,13 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfPreviewBuilder.php');
 
 /**
- * Class ilScanAssessmentUserPackagesController
+ * Class ilScanAssessmentScanController
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
+class ilScanAssessmentScanController extends ilScanAssessmentController
 {
 	/**
 	 * @var ilObjTest
@@ -25,33 +26,28 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
-
+		
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 
-	/**
-	 * 
-	 */
 	protected function isPreconditionFulfilled()
 	{
-		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
-		$activated = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
-		$layout = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
-
-		if(! $activated->isFulfilled() || !$layout->isFulfilled())
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
+		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
+		if(! $activated->isFulfilled())
 		{
 			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
 			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-				'ilScanAssessmentLayoutController.default',
+				'ilScanAssessmentDefaultController.default',
 				array(
 					'ref_id' => (int)$_GET['ref_id']
 				)
 			));
 		}
 	}
-
+	
 	/**
 	 * @return ilPropertyFormGUI
 	 */
@@ -63,59 +59,19 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('user_packages');
+		$ilTabs->setTabActive('layout');
 
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_user_packages'));
+		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_layout'));
 
-		$creation = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_creation'), 'creation');
-		$creation->setInfo($this->getCoreController()->getPluginObject()->txt('scas_creation_info'));
-		$personalised = array('inline' => $this->getCoreController()->getPluginObject()->txt('scas_creation_personalised'),
-					   'sheet' => $this->getCoreController()->getPluginObject()->txt('scas_creation_non_personalised')
-		);
-		$creation->setOptions($personalised);
-		$form->addItem($creation);
+		$active = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
+		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
+		$form->addItem($active);
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
-		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
-
 
 		return $form;
-	}
-
-	public function analyseCmd()
-	{
-		$file = '/tmp/pruefung_r.jpg';
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentAnswerScanner.php';
-
-		$runs = 0;
-		for($i = 0; $i <= 1; $i++)
-		{
-			echo '<br>Run '.$i .'<br>';
-			$demo = new ilScanAssessmentMarkerDetection($file);
-			$time_start = microtime(true);
-			$marker = $demo->getMarkerPosition();
-			print_r($marker);
-			imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
-			$time_end = microtime(true);
-			$time = $time_end - $time_start;
-			$runs += $time;
-			echo '<br>' . $time;
-			$qr = new ilScanAssessmentQrCode($file);
-			$qr_pos = $qr->getQRPosition();
-			echo print_r($qr_pos);
-
-			$qr = new ilScanAssessmentAnswerScanner($file);
-			echo print_r($qr->scanImage($marker, $qr_pos ));
-			imagejpeg($qr->getTempImage(), '/tmp/test2.jpg');
-		}
-		echo '<br><br>' . $runs;
-		$runs = $runs / $i;
-		echo '<br><br>' . $runs;
-		exit();
 	}
 	
 	/**
@@ -173,7 +129,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
-
+		
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 
@@ -193,4 +149,5 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		}
 		return $status_bar->getHtml();
 	}
+
 }
