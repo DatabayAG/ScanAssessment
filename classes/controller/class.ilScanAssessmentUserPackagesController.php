@@ -86,16 +86,27 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	{
 		$file = '/tmp/pruefung_r.jpg';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
-		$demo = new ilScanAssessmentMarkerDetection();
-		$time_start = microtime(true);
-		echo print_r($demo->getMarkerPosition($file));
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
 
-		$time_end = microtime(true);
-		$time = $time_end - $time_start;
-
-		echo '<br><br>' . $time;
-		//echo print_r($demo->getQRPosition($file, false));
-		imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
+		$runs = 0;
+		for($i = 0; $i <= 1; $i++)
+		{
+			echo '<br>Run '.$i .'<br>';
+			$demo = new ilScanAssessmentMarkerDetection($file);
+			$time_start = microtime(true);
+			echo print_r($demo->getMarkerPosition());
+			imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
+			$time_end = microtime(true);
+			$time = $time_end - $time_start;
+			$runs += $time;
+			echo '<br>' . $time;
+			$qr = new ilScanAssessmentQrCode($file);
+			echo print_r($qr->getQRPosition());
+			imagejpeg($qr->getTempImage(), '/tmp/test2.jpg');
+		}
+		echo '<br><br>' . $runs;
+		$runs = $runs / $i;
+		echo '<br><br>' . $runs;
 		exit();
 	}
 	
