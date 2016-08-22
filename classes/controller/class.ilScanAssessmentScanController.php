@@ -20,15 +20,19 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	 */
 	protected $configuration;
 
+	protected $path_to_scans;
+	
 	/**
 	 * 
 	 */
 	protected function init()
 	{
-		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
-		
-		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
-		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
+
+		$this->path_to_scans = $path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
+		$this->ensureSavePathExists();
+		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
+		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 
@@ -72,11 +76,46 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
 		$form->addItem($active);
 
+		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
 	}
-	
+
+	public function analyseCmd()
+	{
+		$file = $this->path_to_scans . '/pruefung_r.jpg';
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentAnswerScanner.php';
+
+		$runs = 0;
+		for($i = 0; $i <= 1; $i++)
+		{
+			echo '<br>Run '.$i .'<br>';
+			$demo = new ilScanAssessmentMarkerDetection($file);
+			$time_start = microtime(true);
+			$marker = $demo->getMarkerPosition();
+			print_r($marker);
+			imagejpeg($demo->getTempImage(), '/tmp/test.jpg');
+			$time_end = microtime(true);
+			$time = $time_end - $time_start;
+			$runs += $time;
+			echo '<br>' . $time;
+			$qr = new ilScanAssessmentQrCode($file);
+			$qr_pos = $qr->getQRPosition();
+			echo print_r($qr_pos);
+
+			$qr = new ilScanAssessmentAnswerScanner($file);
+			echo print_r($qr->scanImage($marker, $qr_pos ));
+			imagejpeg($qr->getTempImage(), '/tmp/test2.jpg');
+		}
+		echo '<br><br>' . $runs;
+		$runs = $runs / $i;
+		echo '<br><br>' . $runs;
+		exit();
+	}
+
 	/**
 	 * @return string
 	 */
@@ -151,6 +190,18 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			$status_bar->addItem($steps);
 		}
 		return $status_bar->getHtml();
+	}
+
+	/**
+	 *
+	 */
+	protected function ensureSavePathExists()
+	{
+		$path = ilUtil::getDataDir() . '/' . $this->parent_folder_name . '/tst_' . $this->obj_id;
+		if( ! is_dir($path))
+		{
+			ilUtil::makeDirParents($path);
+		}
 	}
 
 }

@@ -32,9 +32,6 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	 */
 	protected $active = 0;
 
-
-	protected $parent_folder_name = 'scanAssessment';
-
 	/**
 	 * @return int
 	 */
@@ -275,7 +272,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	 */
 	protected function ensureSavePathExists()
 	{
-		$path = ilUtil::getDataDir() . '/' . $this->parent_folder_name . '/tst_' . $this->obj_id; 
+		$path = ilUtil::getDataDir() . '/' . self::PARENT_FOLDER_NAME . '/tst_' . $this->obj_id; 
 		if( ! is_dir($path))
 		{
 			ilUtil::makeDirParents($path);

@@ -25,7 +25,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	 */
 	protected function init()
 	{
-		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
+		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 		
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentLayoutConfiguration.php');
 		$this->configuration = new ilScanAssessmentLayoutConfiguration($this->test->getId());
