@@ -32,6 +32,9 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	 */
 	protected $active = 0;
 
+
+	protected $parent_folder_name = 'scanAssessment';
+
 	/**
 	 * @return int
 	 */
@@ -245,6 +248,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	public function create()
 	{
 		$this->validate();
+		$this->ensureSavePathExists();
 		parent::create();
 	}
 
@@ -254,6 +258,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	public function update()
 	{
 		$this->validate();
+		$this->ensureSavePathExists();
 		parent::update();
 	}
 
@@ -263,5 +268,17 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	public function getTest()
 	{
 		return $this->test;
+	}
+
+	/**
+	 * 
+	 */
+	protected function ensureSavePathExists()
+	{
+		$path = ilUtil::getDataDir() . '/' . $this->parent_folder_name . '/tst_' . $this->obj_id; 
+		if( ! is_dir($path))
+		{
+			ilUtil::makeDirParents($path);
+		}
 	}
 }

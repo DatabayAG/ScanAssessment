@@ -2,7 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfPreviewBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfPreviewBuilder.php');
 
 /**
  * Class ilScanAssessmentReturnDataController
@@ -27,18 +27,20 @@ class ilScanAssessmentReturnDataController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
 		
-		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
-		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentReturnDataConfiguration.php');
+		$this->configuration = new ilScanAssessmentReturnDataConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
-		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
-		$layout = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
-		$scan = new ilScanAssessmentScanStep($this->getCoreController()->getPluginObject(), $this->test);
-		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$scan->isFulfilled())
+		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
+		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
+		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
+		$scan			= new ilScanAssessmentScanStep($this->getCoreController()->getPluginObject(), $this->test);
+
+		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$scan->isFulfilled())
 		{
 			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
 			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(

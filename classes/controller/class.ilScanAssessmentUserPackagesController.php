@@ -26,8 +26,8 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
 
-		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
-		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentUserPackagesConfiguration.php');
+		$this->configuration = new ilScanAssessmentUserPackagesConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 
@@ -37,10 +37,10 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
-		$activated = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
-		$layout = new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
+		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
+		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 
-		if(! $activated->isFulfilled() || !$layout->isFulfilled())
+		if(!$activated->isFulfilled() || !$layout->isFulfilled())
 		{
 			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
 			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(

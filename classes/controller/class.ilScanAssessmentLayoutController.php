@@ -2,7 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfPreviewBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfPreviewBuilder.php');
 
 /**
  * Class ilScanAssessmentLayoutController
@@ -27,8 +27,8 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId($_GET['ref_id']);
 		
-		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
-		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
+		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentLayoutConfiguration.php');
+		$this->configuration = new ilScanAssessmentLayoutConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 

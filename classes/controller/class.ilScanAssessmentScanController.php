@@ -2,7 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilPdfPreviewBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfPreviewBuilder.php');
 
 /**
  * Class ilScanAssessmentScanController
@@ -35,12 +35,15 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
-		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
-		if(! $activated->isFulfilled())
+		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
+		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
+		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
+		
+		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
 		{
 			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
 			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-				'ilScanAssessmentDefaultController.default',
+				'ilScanAssessmentUserPackagesController.default',
 				array(
 					'ref_id' => (int)$_GET['ref_id']
 				)
