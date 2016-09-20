@@ -70,7 +70,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		switch($cmd)
 		{
 			case 'cancel':
-				$this->listCategories();
+
 				break;
 
 			default:
@@ -84,7 +84,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 	 */
 	protected function configure()
 	{
-		$this->listCategories();
+
 	}
 	
 	/**
@@ -92,19 +92,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 	 */
 	protected function cancel()
 	{
-		$this->listCategories();
-	}
 
-	/**
-	 *
-	 */
-	protected function listCategories()
-	{
-		$button = ilLinkButton::getInstance();
-		$button->setCaption(ilScanAssessmentPlugin::getInstance()->txt('scas_cat_add_new'), false);
-		$button->setUrl($this->ctrl->getLinkTarget($this, 'add'));
-		$this->toolbar->addButtonInstance($button);
-		
 	}
 
 	/**

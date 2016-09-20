@@ -26,11 +26,11 @@ class ilPDFAppendMarker extends FPDI{
 
 		$this->pageNr++;
 		
-		$this->setY(0);
+		$this->SetY(0);
 
 		if($this->pageHeaderHTML!='') 
 		{
-			$this->setY(20);
+			$this->SetY(20);
 			$html = "";
 			$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_HEAD, '', TRUE);
 
@@ -42,7 +42,7 @@ class ilPDFAppendMarker extends FPDI{
 
 			$this->Ln(2);
 
-			$this->SetMargins(PDF_MARGIN_LEFT, $this->getY(), PDF_MARGIN_RIGHT);
+			$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
 		}
 
 
@@ -148,5 +148,3 @@ class ilPDFAppendMarker extends FPDI{
 		$this->QRState[] = $state;
 	}
 }
-
-?>

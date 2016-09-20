@@ -15,8 +15,8 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	{
 		parent::__construct($fn);
 	}
+
 	/**
-	 * @param String $fn
 	 * @return array|bool
 	 */
 	public function getMarkerPosition()

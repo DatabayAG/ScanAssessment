@@ -140,7 +140,7 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
-		$sidebar = $this->renderPreconditions($tpl);
+		$sidebar = $this->renderPreconditions();
 		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();

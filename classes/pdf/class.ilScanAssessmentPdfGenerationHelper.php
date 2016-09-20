@@ -35,7 +35,7 @@ class ilPdfGenerationHelper
 	 */
 	protected function initializePDFStructure($backgroundPDF)
 	{
-		$this->pdf = new ilPdfAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+		$this->pdf = new ilPDFAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
 
 		$this->pdf->setBackgroundPDF($backgroundPDF);
 

@@ -128,10 +128,10 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$w = max(0,$maxX - $minX);
 		$h = max(0,$maxY - $minY);
 		if($w>0 && $h>0) {
-			$im2 = imageCreateTrueColor($w, $h);
-			imageCopy($im2, $im, 0, 0, $minX, $minY, $w, $h);
+			$im2 = imagecreatetruecolor($w, $h);
+			imagecopy($im2, $im, 0, 0, $minX, $minY, $w, $h);
 			$fn = $filename . '.answer_' . $questionNumber . $prefix. ".jpg";
-			imageJpeg($im2, $fn, 90);
+			imagejpeg($im2, $fn, 90);
 			chmod($fn, 0664);
 		}
 
@@ -154,23 +154,23 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 		}
 		if($w>0 && $h>0) {
-			imageCopy($im2, $im, 0, 0, $minX, $minY, $w, $h);
+			imagecopy($im2, $im, 0, 0, $minX, $minY, $w, $h);
 			$fn = $filename . '.answerprocessed_' . $questionNumber . $prefix.".jpg";
-			imageJpeg($im2, $fn, 90);
+			imagejpeg($im2, $fn, 90);
 			chmod($fn, 0664);
 
-			$im2 = imageCreateTrueColor($minX-$mScanx,$h);
-			imageCopy($im2, $im, 0,0, $mScanx,$minY, $minX-$mScanx,$h);
+			$im2 = imagecreatetruecolor($minX-$mScanx,$h);
+			imagecopy($im2, $im, 0,0, $mScanx,$minY, $minX-$mScanx,$h);
 			$fn = $filename . '.answerprocessed_' . $questionNumber .$prefix. "_before.jpg";
-			imageJpeg($im2, $fn, 90);
+			imagejpeg($im2, $fn, 90);
 			chmod($fn, 0664);
 
 			#vd($mx-($minX+$w));
 			#vd(array($mx, $minX, $w));
-			$im2 = imageCreateTrueColor($mx-($minX+$w),$h);
-			imageCopy($im2, $im, 0,0, ($minX+$w),$minY, $mx-($minX+$w),$h);
+			$im2 = imagecreatetruecolor($mx-($minX+$w),$h);
+			imagecopy($im2, $im, 0,0, ($minX+$w),$minY, $mx-($minX+$w),$h);
 			$fn = $filename . '.answerprocessed_' . $questionNumber . $prefix."_after.jpg";
-			imageJpeg($im2, $fn, 90);
+			imagejpeg($im2, $fn, 90);
 			chmod($fn, 0664);
 
 		}
