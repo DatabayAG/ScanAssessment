@@ -2,7 +2,6 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfPreviewBuilder.php');
 
 /**
  * Class ilScanAssessmentLayoutController
@@ -69,16 +68,9 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
 		$form->addItem($active);
 
-		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $this->getCoreController()->getPluginObject()->txt('scas_create_demo_pdf'));
-		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
+			$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
-	}
-	
-	public function createDemoPdfCmd()
-	{
-		$demo = new ilPdfPreviewBuilder($this->test);
-		$demo->createDemoPdf();
 	}
 	
 	/**

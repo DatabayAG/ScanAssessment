@@ -17,7 +17,7 @@ class ilScanAssessmentScanner
 	/**
 	 * @var bool
 	 */
-	protected $debug = false;
+	protected $debug = true;
 
 	/**
 	 * @var

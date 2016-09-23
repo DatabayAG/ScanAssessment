@@ -30,6 +30,7 @@ class ilPdfPreviewBuilder
 	 * @var array
 	 */
 	protected $answer_positions = array();
+	protected $answer_export = array();
 
 	/**
 	 * ilPdfPreviewBuilder constructor.
@@ -84,6 +85,7 @@ class ilPdfPreviewBuilder
 	{
 		$pdf_h->addPage();
 		$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
+		$pdf_h->writeHTML(json_encode($this->answer_export));
 	}
 
 	/**
@@ -114,6 +116,11 @@ class ilPdfPreviewBuilder
 			$pdf_h->writeHTML($answer->getAnswerText());
 
 			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $pdf_h->pdf->GetX() .' '. $pdf_h->pdf->GetY();
+			$this->answer_export[] = array('qid' => $question->getId() , 
+										   'aid' =>  $answer->getId() , 
+										   'a_text' => $answer->getAnswerText(),
+										   'x' => $pdf_h->pdf->GetX() ,
+										   'y' => $pdf_h->pdf->GetY());
 		}
 		$pdf_h->pdf->setCellMargins(15);
 		$pdf_h->pdf->Ln(2);

@@ -27,8 +27,18 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 */
 	protected function findAnswers(&$im, $marker_positions, $qr_position) 
 	{
-
-		$positions = array (
+		$answers = [
+			["qid"=>"450","aid"=>-1,"a_text"=>"Der Würfel ist gefallen.","x"=>15,"y"=>54.04861],
+			["qid"=>"450","aid"=>-1,"a_text"=>"Die Entscheidung ist getroffen.","x"=>15,"y"=>60.458332],
+			["qid"=>"450","aid"=>-1,"a_text"=>"Das ist mein Urteil.","x"=>15,"y"=>66.868054],
+			["qid"=>"450","aid"=>-1,"a_text"=>"So soll es sein.","x"=>15,"y"=>73.277776],
+			["qid"=>"452","aid"=>-1,"a_text"=>"Picasso","x"=>15,"y"=>103.916664],
+			["qid"=>"452","aid"=>-1,"a_text"=>"van Gogh","x"=>15,"y"=>110.326386],
+		];
+		
+		$a = 0;
+		
+ 		$positions = array (
 			'TOPLEFT' =>
 				array (
 					'x' => 20,
@@ -59,11 +69,25 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$fy = ($marker_positions[1]->getPosition()->getY() - $mScany) / ($positions["BOTTOMLEFT"]["y"] - $mA4y);
 
 		$mx = (($positions["BOTTOMRIGHT"]["x"] - $positions["TOPLEFT"]["x"]) / 2) * $fx;
-		#$postion = array('x' => , 'y' => 'w' => 'h' => );
-		#$this->processAnswerLine($answers, , $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, '', 0, $im);
+		
 
+		$im2 = $im;
+		
+		foreach($answers as $key => $value)
+		{
+			$answer_x = ($value['x'] * $fx) + $mScanx;
+			$answer_y = ($value['y'] * $fy) - 20;	
+			#$answer_x = $value['x'];
+			#$answer_y = $value['y'];
+			$postion = array('x' => $answer_x, 'y' => $answer_y, 'w' => 5 * $fx, 'h' => 5 * $fy);
 
-		$a = 0;
+			#$this->processAnswerLine($answers, $postion , $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, '/tmp/', 0, $im);
+			$this->testIfChecked2($im2, $answer_x,$answer_y, $answer_x + (5 * $fx), $answer_y + (5 * $fy), true);
+		}
+
+		$this->image_helper->drawTempImage($im2, 'bla.jpg');
+		#$this->processAnswerLine($answers, $postion , $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, '', 0, $im);
+		
 		
 		/*
 		 * 	
@@ -102,6 +126,60 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 #vd($answers);exit;
 		return $answers;
 */
+	}
+
+	public function testIfChecked2(&$im, $x1,$y1, $x2, $y2, $mark=false) {
+		$allCount    = 0;
+		$markedCount = 0;
+
+		for($x = $x1; $x < $x2; $x++)
+		{
+			for($y = $y1; $y < $y2; $y++)
+			{
+				$allCount++;
+				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
+				if($gray < 180)
+				{
+					$markedCount++;
+					if($mark)
+					{
+						$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), '0xff00ff');
+					} 
+				}
+			}
+		}
+
+		if($allCount > 0)
+		{
+			$r = 1 / $allCount * $markedCount;
+			if($r >= 0.05)
+			{
+				if($r >= 0.2) // was 0.4
+				{
+					if($mark)
+					{
+						$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($x1,$y1), new ilScanAssessmentPoint($x2,$y2), '0xff0000');
+						$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($x1 -1 ,$y1 -1), new ilScanAssessmentPoint($x2 +1 ,$y2 +1), '0xff0000');
+					}
+
+					return 2;
+				}
+				if($mark)
+				{
+					$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($x1,$y1), new ilScanAssessmentPoint($x2,$y2), '0x00ff00');
+					$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($x1 -1 ,$y1 -1), new ilScanAssessmentPoint($x2 +1 ,$y2 +1), '0x00ff00');
+				}
+
+				return 1;
+			}
+		}
+
+		if($mark)
+		{
+			$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($x1,$y1), new ilScanAssessmentPoint($x2,$y2), '0xffff00');
+		}
+
+		return 0;
 	}
 
 	protected function processAnswerLine(&$answers, $positionline, $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, $filename, $questionNumber, &$im, $kquestion="") {
@@ -174,48 +252,6 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			chmod($fn, 0664);
 
 		}
-	}
-
-	public function testIfChecked2(&$im, $x1,$y1, $x2, $y2, $mark=false) {
-		$allCount = 0;
-		$markedCount = 0;
-
-		for($x=$x1;$x<$x2;$x++) {
-			for($y=$y1;$y<$y2;$y++) {
-				$allCount++;
-				$gray = $this->image_helper->getGray($im, new ilScanAssessmentPoint($x, $y));
-				if($gray<$this->schwelle) {
-					$markedCount++;
-					if($mark) imagesetpixel($im, $x,$y,$this->blue);
-				}
-			}
-		}
-
-		if($allCount>0) {
-			$r = 1 / $allCount * $markedCount;
-			if ($r >= 0.05) {
-				if ($r >= 0.4) {
-					if($mark) {
-						imagerectangle($im, $x1, $y1, $x2, $y2, $this->red);
-						imagerectangle($im, $x1 - 1, $y1 - 1, $x2 + 1, $y2 + 1, $this->red);
-					}
-
-					return 2;
-				}
-				if($mark) {
-					imagerectangle($im, $x1, $y1, $x2, $y2, $this->green);
-					imagerectangle($im, $x1 - 1, $y1 - 1, $x2 + 1, $y2 + 1, $this->green);
-				}
-
-				return 1;
-			}
-		}
-
-		if($mark) {
-			imagerectangle($im, $x1, $y1, $x2, $y2, $this->gray);
-		}
-
-		return 0;
 	}
 
 }

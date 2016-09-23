@@ -152,7 +152,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function drawSquareFromTwoPoints($temp_img, ilScanAssessmentPoint $first, ilScanAssessmentPoint $second, $color)
 	{
-		imagerectangle($temp_img, $first->getX(), $first->getY(), $second->getX(), $second->getY(), 0x0000dd);
+		imagerectangle($temp_img, $first->getX(), $first->getY(), $second->getX(), $second->getY(), $color);
 	}
 
 	/**

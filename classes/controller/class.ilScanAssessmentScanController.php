@@ -84,32 +84,43 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	public function analyseCmd()
 	{
-		$file = $this->path_to_scans . '/pruefung_r.jpg';
+		$file = $this->path_to_scans . '/pruefung_r-0.jpg';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentAnswerScanner.php';
 
 		$runs = 0;
-		for($i = 0; $i <= 1; $i++)
+		for($i = 0; $i <= 0; $i++)
 		{
 			echo '<br>Run '.$i .'<br>';
 			$demo = new ilScanAssessmentMarkerDetection($file);
 			$time_start = microtime(true);
+			$s_time_start = microtime(true);
 			$marker = $demo->getMarkerPosition();
 			print_r($marker);
-			$demo->drawTempImage($demo->getTempImage(), 'test_marker.jpg');
 			$time_end = microtime(true);
-			$time = $time_end - $time_start;
+			$time = $time_end - $s_time_start;
+			$s_time_start = microtime(true);
 			$runs += $time;
-			echo '<br>' . $time;
+			echo '<br>Marker Position: ' . $time;
+			$demo->drawTempImage($demo->getTempImage(), 'test_marker.jpg');
 			$qr = new ilScanAssessmentQrCode($file);
 			$qr_pos = $qr->getQRPosition();
 			echo print_r($qr_pos);
+			$time_end = microtime(true);
+			$time = $time_end - $s_time_start;
+			$s_time_start = microtime(true);
+			$runs += $time;
+			echo '<br>QR Position: ' . $time;
 			$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
 			$ans = new ilScanAssessmentAnswerScanner($file);
 			echo print_r($ans->scanImage($marker, $qr_pos ));
+			$time_end = microtime(true);
+			$time = $time_end - $s_time_start;
+			$runs += $time;
+			echo '<br>Answer Calculation: ' . $time;
+
 		}
-		echo '<br><br>' . $runs;
 		$runs = $runs / $i;
 		echo '<br><br>' . $runs;
 		exit();
