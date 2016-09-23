@@ -49,8 +49,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$locate_top_left = null;
 		$locate_bottom_left = null;
 
-		$white = imagecolorallocate($im, 255,255,255);
-
 		$scan_top_left = $this->probeMarkerPosition($im, 'top', $threshold);
 
 		if($scan_top_left === false)
@@ -59,8 +57,8 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			{
 				return false;
 			}
-
-			$im = imagerotate($im,180, $white);
+			
+			#$im = $this->image_helper->rotate($im,180);
 			$scan_top_left = $this->probeMarkerPosition($im, 'top', $threshold);
 		}
 
@@ -119,7 +117,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 		for($i = 0.1; $i < 2; $i += 0.1)
 		{
-			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($mx + $dx2 * $i, $my + $dy2 * $i));
+			$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($mx + $dx2 * $i, $my + $dy2 * $i));
 			if($gray > $threshold)
 			{
 				$i1 = $i;
@@ -129,7 +127,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 		for($i = 0.1; $i < 2; $i += 0.1) 
 		{
-			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($mx - $dx2 * $i, $my - $dy2 * $i));
+			$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($mx - $dx2 * $i, $my - $dy2 * $i));
 			if($gray > $threshold)
 			{
 				$i2 = $i;
@@ -160,7 +158,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function probeMarkerPosition(&$im, $top_bottom='top', $threshold = 150) 
 	{
-		$width			= imagesx($im);
+		$width			= $this->image_helper->getImageSizeX();
 		$step_size		= 3;
 		$found			= false;
 		$subDX			= 0;
@@ -196,7 +194,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				} 
 				else 
 				{
-					$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint(0 + $subDX / 2, imagesy($im)- ($d - $subDX / 2)), new ilScanAssessmentPoint($len, imagesy($im)- ($d - $len))), 0xffff00);
+					$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint(0 + $subDX / 2, $this->image_helper->getImageSizeY($im)- ($d - $subDX / 2)), new ilScanAssessmentPoint($len, $this->image_helper->getImageSizeY($im)- ($d - $len))), 0xffff00);
 				}
 			}
 			else
@@ -219,8 +217,8 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 							if($top_bottom=="bottom")
 							{
-								$found_line->getStart()->setY( imagesy($im) - $found_line->getStart()->getY() );
-								$found_line->getEnd()->setY( imagesy($im) - $found_line->getEnd()->getY() );
+								$found_line->getStart()->setY( $this->image_helper->getImageSizeY() - $found_line->getStart()->getY() );
+								$found_line->getEnd()->setY( $this->image_helper->getImageSizeY() - $found_line->getEnd()->getY() );
 							}
 							return $found_line;
 							break;
@@ -250,10 +248,10 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			}
 			else
 			{
-				$y = imagesy($im) - $d + $x;
+				$y = $this->image_helper->getImageSizeY() - $d + $x;
 			}
 
-			$gray = $this->image_helper->getGrey($im, new ilScanAssessmentPoint($x, $y));
+			$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
 
 			if($gray < $threshold) {
 
@@ -267,9 +265,9 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 					}
 					else
 					{
-						$y2 = imagesy($im) - $d + ($x + $i);
+						$y2 =  $this->image_helper->getImageSizeY() - $d + ($x + $i);
 					}
-					$mean += $this->image_helper->getGrey($im, new ilScanAssessmentPoint($x, $y2));
+					$mean += $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y2));
 				}
 				if($mean / $len < $threshold)
 				{
@@ -290,10 +288,10 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	protected function tryToDetectMarkerByRotatingTheImage(&$im, $rotation, $locate_bottom_left, $locate_top_left)
 	{
-		$white = imagecolorallocate($im, 255,255,255);
+		/*$white = imagecolorallocate($im, 255,255,255);
 
-		$imSIK = imagecreatetruecolor(imagesx($im), imagesy($im));
-		imagecopy($imSIK, $im, 0, 0, 0, 0, imagesx($im), imagesy($im));
+		$imSIK = imagecreatetruecolor($this->image_helper->getImageSizeX($im),  $this->image_helper->getImageSizeY($im));
+		imagecopy($imSIK, $im, 0, 0, 0, 0, $this->image_helper->getImageSizeX($im),  $this->image_helper->getImageSizeY($im));
 		$im = imagerotate($imSIK, -$rotation, $white);
 
 		$randX = min($locate_bottom_left->getPosition()->getX(), $locate_top_left->getPosition()->getX());
@@ -302,10 +300,10 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$im2   = imagecreatetruecolor(imagesx($im) - $randX / 2, imagesy($im) - $randY / 2);
 		$white = imagecolorallocate($im2, 255, 255, 255);
 
-		imagefilledrectangle($im2, 0, 0, imagesx($im2), imagesy($im2), $white);
-		imagecopy($im2, $im, 0, 0, $randX / 2, $randY / 2, imagesx($im2), imagesy($im2));
+		imagefilledrectangle($im2, 0, 0, $this->image_helper->getImageSizeX($im2),  $this->image_helper->getImageSizeY($im2), $white);
+		imagecopy($im2, $im, 0, 0, $randX / 2, $randY / 2, $this->image_helper->getImageSizeX($im2),  $this->image_helper->getImageSizeY($im2));
 		$im = $im2;
-		return $im;
+		return $im;*/
 	}
 	
 }

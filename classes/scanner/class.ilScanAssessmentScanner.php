@@ -1,5 +1,7 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGDImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentImagemagickImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGraphicsmagickImageHelper.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentPoint.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentLine.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentVector.php';
@@ -33,7 +35,7 @@ class ilScanAssessmentScanner
 	protected $threshold;
 
 	/**
-	 * @var ilScanAssessmentImageHelper
+	 * @var ilScanAssessmentGDImageHelper
 	 */
 	protected $image_helper;
 
@@ -45,9 +47,19 @@ class ilScanAssessmentScanner
 	{
 		if($this->getImage() === null)
 		{
-			$this->image_helper = new ilScanAssessmentImageHelper();
-			$im = imagecreatefromjpeg($fn);
-			$im = $this->image_helper->removeBlackBorder($im);
+			/**
+			 * @var ilScanAssessmentGDImageHelper
+			 */
+			$this->image_helper = new ilScanAssessmentGDImageHelper($fn);
+			/**
+			 * @var ilScanAssessmentImagemagickImageHelper
+			 */
+			#$this->image_helper = new ilScanAssessmentImagemagickImageHelper($fn);
+			/**
+			 * @var ilScanAssessmentGraphicsmagickImageHelper
+			 */
+			#$this->image_helper = new ilScanAssessmentGraphicsmagickImageHelper($fn);
+			$im = $this->image_helper->removeBlackBorder();
 			$this->setImage($im);
 			$this->setTempImage($im);
 			$this->setThreshold(self::LOWER_THRESHOLD);
@@ -62,11 +74,9 @@ class ilScanAssessmentScanner
 	{
 		if($this->isDebug())
 		{
-			imageline(
-				$this->getTempImage(), $line->getStart()->getX(), $line->getStart()->getY(),
+			$this->image_helper->drawLine($this->getTempImage(), $line->getStart()->getX(), $line->getStart()->getY(),
 				$line->getEnd()->getX(), $line->getEnd()->getY(),
-				$color
-			);
+				$color);
 		}
 	}
 
@@ -74,11 +84,11 @@ class ilScanAssessmentScanner
 	 * @param ilScanAssessmentPoint $point
 	 * @param $color
 	 */
-	protected function drawDebugPixel($point , $color)
+	protected function drawDebugPixel($point, $color)
 	{
 		if($this->isDebug())
 		{
-			imagesetpixel($this->getTempImage(), $point->getX(), $point->getY(), $color);
+			$this->image_helper->drawPixel($this->getTempImage(), $point, $color);
 		}
 	}
 
@@ -89,12 +99,7 @@ class ilScanAssessmentScanner
 	{
 		if($this->isDebug())
 		{
-			imagerectangle($this->getTempImage(),
-				$vector->getPosition()->getX() - $vector->getLength() / 2,
-				$vector->getPosition()->getY() - $vector->getLength() / 2,
-				$vector->getPosition()->getX() + $vector->getLength() / 2,
-				$vector->getPosition()->getY() + $vector->getLength() / 2,
-				0x0000dd);
+			$this->image_helper->drawSquareFromVector($this->getTempImage(), $vector, 0x0000dd);
 		}
 	}
 
@@ -106,10 +111,19 @@ class ilScanAssessmentScanner
 	{
 		if($this->isDebug())
 		{
-			imagerectangle($this->getTempImage(), $first->getX(), $first->getY(), $second->getX(), $second->getY(), 0x0000dd);
+			$this->image_helper->drawSquareFromTwoPoints($this->getTempImage(), $first, $second, 0x0000dd);
 		}
 	}
 
+	/**
+	 * @param $img
+	 * @param $fn
+	 */
+	public function drawTempImage($img, $fn)
+	{
+		$this->image_helper->drawTempImage($img, $fn);
+	}
+	
 	/**
 	 * @return mixed
 	 */
