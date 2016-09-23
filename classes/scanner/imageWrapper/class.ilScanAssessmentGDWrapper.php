@@ -1,13 +1,26 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageWrapper.php';
 
 /**
- * Class ilScanAssessmentImageHelper
+ * Class ilScanAssessmentGDWrapper
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentGDImageHelper implements ilScanAssessmentImageHelper
+class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 {
+	/**
+	 * @var 
+	 */
 	protected $image;
+
+	/**
+	 * ilScanAssessmentGDWrapper constructor.
+	 * @param string $fn
+	 */
+	public function __construct($fn)
+	{
+		$img = imagecreatefromjpeg($fn);
+		$this->setImage($img);
+	}
 
 	/**
 	 * @return mixed
@@ -79,12 +92,24 @@ class ilScanAssessmentGDImageHelper implements ilScanAssessmentImageHelper
 		return $img2;
 	}
 
+	/**
+	 * @param $rad
+	 * @return resource
+	 */
 	public function rotate($rad)
 	{
 		$white = imagecolorallocate($this->getImage(), 255,255,255);
 		return imagerotate($this->getImage(), $rad, $white);
 	}
 
+	/**
+	 * @param $temp_img
+	 * @param $start_x
+	 * @param $start_y
+	 * @param $end_x
+	 * @param $end_y
+	 * @param $color
+	 */
 	public function drawLine($temp_img, $start_x, $start_y, $end_x, $end_y, $color)
 	{
 		imageline(
@@ -93,13 +118,23 @@ class ilScanAssessmentGDImageHelper implements ilScanAssessmentImageHelper
 			$color
 		);
 	}
-	
-	public function drawPixel($temp_img, $point, $color)
+
+	/**
+	 * @param                       $temp_img
+	 * @param ilScanAssessmentPoint $point
+	 * @param                       $color
+	 */
+	public function drawPixel($temp_img, ilScanAssessmentPoint $point, $color)
 	{
 		imagesetpixel($temp_img, $point->getX(), $point->getY(), $color);
 	}
-	
-	public function drawSquareFromVector($temp_img, $vector, $color)
+
+	/**
+	 * @param                        $temp_img
+	 * @param ilScanAssessmentVector $vector
+	 * @param                        $color
+	 */
+	public function drawSquareFromVector($temp_img, ilScanAssessmentVector $vector, $color)
 	{
 		imagerectangle($temp_img,
 			$vector->getPosition()->getX() - $vector->getLength() / 2,
@@ -108,28 +143,38 @@ class ilScanAssessmentGDImageHelper implements ilScanAssessmentImageHelper
 			$vector->getPosition()->getY() + $vector->getLength() / 2,
 			$color);
 	}
-	
-	public function drawSquareFromTwoPoints($temp_img, $first, $second, $color)
+
+	/**
+	 * @param                       $temp_img
+	 * @param ilScanAssessmentPoint $first
+	 * @param ilScanAssessmentPoint $second
+	 * @param                       $color
+	 */
+	public function drawSquareFromTwoPoints($temp_img, ilScanAssessmentPoint $first, ilScanAssessmentPoint $second, $color)
 	{
 		imagerectangle($temp_img, $first->getX(), $first->getY(), $second->getX(), $second->getY(), 0x0000dd);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeY()
 	{
 		return imagesy($this->getImage());
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeX()
 	{
 		return imagesx($this->getImage());
 	}
 
-	public function __construct($fn)
-	{
-		$img = imagecreatefromjpeg($fn);
-		$this->setImage($img);
-	}
-
+	/**
+	 * @param $img
+	 * @param $fn
+	 */
 	public function drawTempImage($img, $fn)
 	{
 		imagejpeg($img, '/tmp/'  . $fn);

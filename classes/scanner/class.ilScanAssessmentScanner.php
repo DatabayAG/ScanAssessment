@@ -1,7 +1,7 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGDImageHelper.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentImagemagickImageHelper.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGraphicsmagickImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGDWrapper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentImagemagickWrapper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentGraphicsmagickWrapper.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentPoint.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentLine.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentVector.php';
@@ -17,7 +17,7 @@ class ilScanAssessmentScanner
 	/**
 	 * @var bool
 	 */
-	protected $debug = true;
+	protected $debug = false;
 
 	/**
 	 * @var
@@ -48,17 +48,17 @@ class ilScanAssessmentScanner
 		if($this->getImage() === null)
 		{
 			/**
-			 * @var ilScanAssessmentGDImageHelper
+			 * @var ilScanAssessmentGDWrapper
 			 */
-			$this->image_helper = new ilScanAssessmentGDImageHelper($fn);
+			$this->image_helper = new ilScanAssessmentGDWrapper($fn);
 			/**
-			 * @var ilScanAssessmentImagemagickImageHelper
+			 * @var ilScanAssessmentImagemagickWrapper
 			 */
-			#$this->image_helper = new ilScanAssessmentImagemagickImageHelper($fn);
+			#$this->image_helper = new ilScanAssessmentImagemagickWrapper($fn);
 			/**
-			 * @var ilScanAssessmentGraphicsmagickImageHelper
+			 * @var ilScanAssessmentGraphicsmagickWrapper
 			 */
-			#$this->image_helper = new ilScanAssessmentGraphicsmagickImageHelper($fn);
+			#$this->image_helper = new ilScanAssessmentGraphicsmagickWrapper($fn);
 			$im = $this->image_helper->removeBlackBorder();
 			$this->setImage($im);
 			$this->setTempImage($im);

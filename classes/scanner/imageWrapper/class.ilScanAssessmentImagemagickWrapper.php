@@ -1,13 +1,15 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageWrapper.php';
 /**
- * Class ilScanAssessmentImagemagickImageHelper
+ * Class ilScanAssessmentImagemagickWrapper
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentImagemagickImageHelper 
+class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 {
 
-
+	/**
+	 * @var Imagick
+	 */
 	protected $image;
 
 	public function __construct($fn)
@@ -17,7 +19,7 @@ class ilScanAssessmentImagemagickImageHelper
 	}
 
 	/**
-	 * @return mixed
+	 * @return Imagick
 	 */
 	public function getImage()
 	{
@@ -25,13 +27,17 @@ class ilScanAssessmentImagemagickImageHelper
 	}
 
 	/**
-	 * @param mixed $image
+	 * @param Imagick $image
 	 */
 	public function setImage($image)
 	{
 		$this->image = $image;
 	}
 
+	/**
+	 * @param ilScanAssessmentPoint $point
+	 * @return array
+	 */
 	public function getColor(ilScanAssessmentPoint $point) 
 	{
 		$pixel = $this->getImage()->getImagePixelColor($point->getX(), $point->getY());
@@ -78,7 +84,6 @@ class ilScanAssessmentImagemagickImageHelper
 	}
 
 	/**
-	 * @param Imagick $im
 	 * @param $rad
 	 * @return mixed
 	 */
@@ -118,7 +123,7 @@ class ilScanAssessmentImagemagickImageHelper
 	 * @param ilScanAssessmentPoint $point
 	 * @param $color
 	 */
-	public function drawPixel($temp_img, $point, $color)
+	public function drawPixel($temp_img, ilScanAssessmentPoint $point, $color)
 	{
 
 		$draw = new ImagickDraw();
@@ -132,7 +137,7 @@ class ilScanAssessmentImagemagickImageHelper
 	 * @param ilScanAssessmentVector $vector
 	 * @param $color
 	 */
-	public function drawSquareFromVector($temp_img, $vector, $color)
+	public function drawSquareFromVector($temp_img, ilScanAssessmentVector $vector, $color)
 	{
 		$draw = new ImagickDraw();
 		$draw->setStrokeColor(new ImagickPixel('#ff0000'));
@@ -152,7 +157,7 @@ class ilScanAssessmentImagemagickImageHelper
 	 * @param ilScanAssessmentPoint $second
 	 * @param $color
 	 */
-	public function drawSquareFromTwoPoints($temp_img, $first, $second, $color)
+	public function drawSquareFromTwoPoints($temp_img, ilScanAssessmentPoint $first, ilScanAssessmentPoint $second, $color)
 	{
 		$draw = new ImagickDraw();
 		$draw->setStrokeColor(new ImagickPixel('#0000ffff'));
@@ -162,12 +167,18 @@ class ilScanAssessmentImagemagickImageHelper
 
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeY()
 	{
 		$size = $this->getImage()->getImageGeometry();
 		return $size['height'];
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeX()
 	{
 		$size = $this->getImage()->getImageGeometry();

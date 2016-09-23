@@ -1,13 +1,15 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageHelper.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/interface.ilScanAssessmentImageWrapper.php';
 /**
- * Class ilScanAssessmentGraphicsmagickImageHelper
+ * Class ilScanAssessmentGraphicsmagickWrapper
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentGraphicsmagickImageHelper 
+class ilScanAssessmentGraphicsmagickWrapper implements ilScanAssessmentImageWrapper 
 {
 
-
+	/**
+	 * @var Gmagick
+	 */
 	protected $image;
 
 	public function __construct($fn)
@@ -121,7 +123,7 @@ class ilScanAssessmentGraphicsmagickImageHelper
 	 * @param ilScanAssessmentPoint $point
 	 * @param $color
 	 */
-	public function drawPixel($temp_img, $point, $color)
+	public function drawPixel($temp_img, ilScanAssessmentPoint $point, $color)
 	{
 
 		$draw = new GmagickDraw();
@@ -135,7 +137,7 @@ class ilScanAssessmentGraphicsmagickImageHelper
 	 * @param ilScanAssessmentVector $vector
 	 * @param $color
 	 */
-	public function drawSquareFromVector($temp_img, $vector, $color)
+	public function drawSquareFromVector($temp_img, ilScanAssessmentVector $vector, $color)
 	{
 		$draw = new GmagickDraw();
 		$draw->setstrokecolor(new GmagickPixel('#ff0000'));
@@ -155,7 +157,7 @@ class ilScanAssessmentGraphicsmagickImageHelper
 	 * @param ilScanAssessmentPoint $second
 	 * @param $color
 	 */
-	public function drawSquareFromTwoPoints($temp_img, $first, $second, $color)
+	public function drawSquareFromTwoPoints($temp_img, ilScanAssessmentPoint $first, ilScanAssessmentPoint $second, $color)
 	{
 		$draw = new GmagickDraw();
 		$draw->setstrokecolor(new GmagickPixel('#0000ffff'));
@@ -165,12 +167,18 @@ class ilScanAssessmentGraphicsmagickImageHelper
 
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeY()
 	{
 		$size = $this->getImage()->getImageGeometry();
 		return $size['height'];
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getImageSizeX()
 	{
 		$size = $this->getImage()->getImageGeometry();

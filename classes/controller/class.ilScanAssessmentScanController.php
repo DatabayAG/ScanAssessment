@@ -106,8 +106,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			$qr_pos = $qr->getQRPosition();
 			echo print_r($qr_pos);
 			$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
-			#$qr = new ilScanAssessmentAnswerScanner($file);
-			#echo print_r($qr->scanImage($marker, $qr_pos ));
+			$ans = new ilScanAssessmentAnswerScanner($file);
+			echo print_r($ans->scanImage($marker, $qr_pos ));
 		}
 		echo '<br><br>' . $runs;
 		$runs = $runs / $i;
