@@ -89,7 +89,7 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function rotate($rad)
 	{
-		return $this->getImage()->rotateImage(new ImagickPixel('#ffffff'), $rad);
+		return $this->getImage()->rotateImage(new ImagickPixel($this->getWhite()), $rad);
 	}
 
 	/**
@@ -112,7 +112,7 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	public function drawLine($temp_img, $start_x, $start_y, $end_x, $end_y, $color)
 	{
 		$draw = new ImagickDraw();
-		$draw->setStrokeColor(new ImagickPixel('#00ff00ff'));
+		$draw->setStrokeColor(new ImagickPixel($color));
 		$draw->setStrokeWidth(1);
 		$draw->line($start_x ,$start_y ,$end_x , $end_y );
 		$temp_img->drawImage($draw);
@@ -127,7 +127,7 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	{
 
 		$draw = new ImagickDraw();
-		$draw->setStrokeColor(new ImagickPixel('#ff0000ff'));
+		$draw->setStrokeColor(new ImagickPixel($color));
 		$draw->point($point->getX(), $point->getY());
 		$temp_img->drawImage($draw);
 	}
@@ -140,15 +140,15 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	public function drawSquareFromVector($temp_img, ilScanAssessmentVector $vector, $color)
 	{
 		$draw = new ImagickDraw();
-		$draw->setStrokeColor(new ImagickPixel('#ff0000'));
-		$draw->setFillColor('none');
+		$draw->setStrokeColor(new ImagickPixel($color));
+		$draw->setFillOpacity(0);
 		$draw->rectangle(	
 			$vector->getPosition()->getX() - $vector->getLength() / 2,
 			$vector->getPosition()->getY() - $vector->getLength() / 2,
 			$vector->getPosition()->getX() + $vector->getLength() / 2,
 			$vector->getPosition()->getY() + $vector->getLength() / 2
 		);
-		$temp_img->drawImage($draw);
+		//$temp_img->drawImage($draw);
 	}
 
 	/**
@@ -160,10 +160,11 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	public function drawSquareFromTwoPoints($temp_img, ilScanAssessmentPoint $first, ilScanAssessmentPoint $second, $color)
 	{
 		$draw = new ImagickDraw();
-		$draw->setStrokeColor(new ImagickPixel('#0000ffff'));
-		$draw->setFillColor('none');
+		$draw->setStrokeColor(new ImagickPixel($color));
+		$draw->setFillAlpha(0.0);
+		$draw->setFillOpacity(0.0);
 		$draw->rectangle($first->getX(), $first->getY(), $second->getX(), $second->getY());
-		$temp_img->drawImage($draw);
+		//$temp_img->drawImage($draw);
 
 	}
 
@@ -183,5 +184,40 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	{
 		$size = $this->getImage()->getImageGeometry();
 		return $size['width'];
+	}
+
+	public function getWhite()
+	{
+		return '#FFFFFF';
+	}
+
+	public function getBlack()
+	{
+		return '#000000';
+	}
+
+	public function getRed()
+	{
+		return '#FF0000';
+	}
+
+	public function getGreen()
+	{
+		return '#00FF00';
+	}
+
+	public function getPink()
+	{
+		return '#FF00FF';
+	}
+
+	public function getYellow()
+	{
+		return '#FFFF00';
+	}
+
+	public function getBlue()
+	{
+		return '#0000FF';
 	}
 }

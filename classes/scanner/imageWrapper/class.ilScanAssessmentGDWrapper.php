@@ -7,6 +7,7 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 {
+
 	/**
 	 * @var 
 	 */
@@ -178,5 +179,40 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	public function drawTempImage($img, $fn)
 	{
 		imagejpeg($img, '/tmp/'  . $fn);
+	}
+
+	public function getWhite()
+	{
+		return '0xffffff';
+	}
+
+	public function getBlack()
+	{
+		return '0x000000';
+	}
+
+	public function getRed()
+	{
+		return '0xff0000';
+	}
+
+	public function getGreen()
+	{
+		return '0x00ff00';
+	}
+
+	public function getPink()
+	{
+		return '0xff00ff';
+	}
+
+	public function getYellow()
+	{
+		return '0xffff00';
+	}
+
+	public function getBlue()
+	{
+		return '0x0000ff';
 	}
 }

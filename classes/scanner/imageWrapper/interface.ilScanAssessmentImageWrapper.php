@@ -6,7 +6,6 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 interface ilScanAssessmentImageWrapper
 {
-
 	/**
 	 * ilScanAssessmentImageHelper constructor.
 	 * @param string $fn
@@ -80,5 +79,40 @@ interface ilScanAssessmentImageWrapper
 	 * @param $fn
 	 */
 	public function drawTempImage($img, $fn);
+
+	/**
+	 * @return string
+	 */
+	public function getWhite();
+
+	/**
+	 * @return string
+	 */
+	public function getBlack();
+
+	/**
+	 * @return string
+	 */
+	public function getRed();
+
+	/**
+	 * @return string
+	 */
+	public function getGreen();
+
+	/**
+	 * @return string
+	 */
+	public function getPink();
+
+	/**
+	 * @return string
+	 */
+	public function getYellow();
+
+	/**
+	 * @return string
+	 */
+	public function getBlue();
 
 }

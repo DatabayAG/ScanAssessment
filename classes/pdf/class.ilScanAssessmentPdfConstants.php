@@ -6,7 +6,7 @@ define('PDF_DEFAULT_FONT_SIZE_HEAD', 8);
 
 define('PDF_TOPLEFT_SYMBOL_X', 20);
 define('PDF_TOPLEFT_SYMBOL_Y', 20);
-define('PDF_TOPLEFT_SYMBOL_W', 5);
+define('PDF_TOPLEFT_SYMBOL_W', 2.5);
 define('PDF_BOTTOMLEFT_SYMBOL_Y', -20);
 
 define('PDF_BOTTOMRIGHT_QR_W', 30);
