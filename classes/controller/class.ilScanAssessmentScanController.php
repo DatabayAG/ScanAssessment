@@ -104,7 +104,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			$runs += $time;
 			echo '<br>Marker Position: ' . $time;
 			$demo->drawTempImage($demo->getTempImage(), 'test_marker.jpg');
-			$qr = new ilScanAssessmentQrCode($file);
+			$demo->drawTempImage($demo->getImage(), 'new_file.jpg');
+			$qr = new ilScanAssessmentQrCode('/tmp/new_file.jpg');
 			$qr_pos = $qr->getQRPosition();
 			echo print_r($qr_pos);
 			$time_end = microtime(true);
@@ -113,7 +114,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			$runs += $time;
 			echo '<br>QR Position: ' . $time;
 			$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
-			$ans = new ilScanAssessmentAnswerScanner($file);
+			$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg');
 			echo print_r($ans->scanImage($marker, $qr_pos ));
 			$time_end = microtime(true);
 			$time = $time_end - $s_time_start;

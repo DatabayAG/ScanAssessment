@@ -68,7 +68,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 
 	public function removeBlackBorder() 
 	{
-		$img2 = $this->getImage();
+		$img = $this->getImage();
 
 		for($y = $this->getImageSizeY() - 1; $y > $this->getImageSizeY() - 100; $y--) 
 		{
@@ -100,7 +100,9 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	public function rotate($rad)
 	{
 		$white = imagecolorallocate($this->getImage(), 255,255,255);
-		return imagerotate($this->getImage(), $rad, $white);
+		$rotated = imagerotate($this->getImage(), $rad, $white);
+		$this->setImage($rotated);
+		return $rotated;
 	}
 
 	/**

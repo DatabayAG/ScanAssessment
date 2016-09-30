@@ -1,13 +1,16 @@
 <?php
 
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentCheckBoxElement.php';
 
 class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 {
-	const MIN_VALUE_BLACK	= 180;
+	const MIN_VALUE_BLACK		= 180;
 	const MIN_MARKED_AREA		= 0.05;
 	const MARKED_AREA_CHECKED	= 0.3;
-
+	const BOX_SIZE				= 5;
+	
+	protected $checkbox_container = array();
 	/**
 	 * ilScanAssessmentAnswerScanner constructor.
 	 * @param $fn
@@ -16,6 +19,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	{
 		parent::__construct($fn);
 	}
+
+
 
 	public function scanImage($marker_positions, $qr_position)
 	{
@@ -71,20 +76,42 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					'w' => 30,
 				),
 		);
-
+		
 		$original_position	= new ilScanAssessmentPoint($positions["TOPLEFT"]["x"], $positions["TOPLEFT"]["y"]);
 		$scan				= new ilScanAssessmentPoint($marker_positions[0]->getPosition()->getX(),  $marker_positions[0]->getPosition()->getY());
-		$correctedX	= ($qr_position["x"] - $scan->getX()) / ($positions["BOTTOMRIGHT"]["x"] - $original_position->getX());
-		$correctedY	= ($marker_positions[1]->getPosition()->getY() - $scan->getY()) / ($positions["BOTTOMLEFT"]["y"] - $original_position->getY());
+		$correctedX	= ($scan->getX() / $original_position->getX());
+		$correctedY	= ($scan->getY() / $original_position->getY());
+		
+		$v_org = sqrt(pow(($positions["BOTTOMLEFT"]["x"] * 1.33) - ($positions["TOPLEFT"]["x"] * 1.33), 2) + pow(($positions["BOTTOMLEFT"]["y"] * 1.33) - ($positions["TOPLEFT"]["y"] * 1.33), 2));
+		$v_scan = sqrt(pow($marker_positions[1]->getPosition()->getX() - $marker_positions[0]->getPosition()->getX(), 2) + pow($marker_positions[1]->getPosition()->getY() - $marker_positions[0]->getPosition()->getY(), 2));
+		$v = $v_scan / $v_org;
+		$h_org = sqrt(pow(($positions["BOTTOMRIGHT"]["x"] * 1.33) - ($positions["BOTTOMLEFT"]["x"] * 1.33), 2) + pow(($positions["BOTTOMRIGHT"]["y"] * 1.33) - ($positions["BOTTOMLEFT"]["y"] * 1.33), 2));
+		$h_scan = sqrt(pow($qr_position["x"] - $marker_positions[1]->getPosition()->getX(), 2) + pow($qr_position["x"] - $marker_positions[1]->getPosition()->getY(), 2));
+		$h = $h_scan / $h_org;
 		$corrected	= new ilScanAssessmentPoint($correctedX, $correctedY);
-
-		$mx = (($positions["BOTTOMRIGHT"]["x"] - $positions["TOPLEFT"]["x"]) / 2) * $corrected->getX();
 
 		$im2 = $im;
 		$answer_state = array();
+		$first = true;
+		$drift_y = 0;
 		foreach($answers as $key => $value)
 		{
-			$this->analyseAnswer($im2, $value, $corrected, $scan);
+			$answer_x     = ($value['x'] * $corrected->getX()) + $scan->getX() + 1;
+			$answer_y     = ($value['y'] * $corrected->getY());
+			if($first)
+			{
+
+				$first = false;
+			}
+			$point_found_at = $this->scanCheckbox($im2, $value, $corrected, $scan);
+			$drift_y = sqrt(pow($answer_y - $point_found_at->getY(), 2));
+			$answer_y = $answer_y - $drift_y;
+			$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
+			$second_point = new ilScanAssessmentPoint($answer_x + (5 * $corrected->getX()), $answer_y + (5 * $corrected->getY()));
+			
+			$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+			$this->checkbox_container[] = $checkbox;
+			$checkbox->isMarked($im, true);
 		}
 		$this->image_helper->drawTempImage($im2, 'bla.jpg');
 		
@@ -129,80 +156,64 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
+	 * @param $im2
 	 * @param $value
 	 * @param ilScanAssessmentPoint $corrected
 	 * @param ilScanAssessmentPoint $scan
-	 * @return int
+	 * @return ilScanAssessmentPoint
 	 */
-	protected function analyseAnswer($im2, $value, $corrected, $scan)
+	protected function scanCheckbox($im2, $value, $corrected, $scan)
 	{
-		$answer_x     = ($value['x'] * $corrected->getX()) + $scan->getX();
-		$answer_y     = ($value['y'] * $corrected->getY()) - 20;
-		$first_point  = new ilScanAssessmentPoint($answer_x + 1, $answer_y + 2);
-		$second_point = new ilScanAssessmentPoint($answer_x + (5 * $corrected->getX()) + 1, $answer_y + (5 * $corrected->getY()) + 2);
-		#$this->processAnswerLine($answers, $postion , $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, '/tmp/', 0, $im);
-		return $this->isCheckboxMarked($im2, $first_point, $second_point, true);
+		$answer_x = ($value['x'] * $corrected->getX()) + $scan->getX();
+		$answer_y = ($value['y'] * $corrected->getY()) - ((self::BOX_SIZE * $corrected->getY()));
+		
+		for($x = $answer_x; $x < $answer_x + 10; $x++)
+		{
+			for($y =  $answer_y; $y > $answer_y - 10; $y++)
+			{
+				$left_top = new ilScanAssessmentPoint($x,$y);
+				$lt = $this->image_helper->getGrey($left_top);
+				$this->image_helper->drawPixel($im2, $left_top, $this->image_helper->getRed());
+				if($lt < self::MIN_VALUE_BLACK)
+				{
+					if($this->detectSquare($im2, $corrected, $x, $y))
+					{
+						return $left_top;
+					}
+				}
+			}
+		}
 	}
 
 	/**
-	 * @param      $im
-	 * @param ilScanAssessmentPoint $first_point
-	 * @param ilScanAssessmentPoint $second_point
-	 * @param bool $mark
-	 * @return int
+	 * @param $im2
+	 * @param ilScanAssessmentPoint $corrected
+	 * @param $x
+	 * @param $y
+	 * @return bool
 	 */
-	public function isCheckboxMarked(&$im, $first_point, $second_point, $mark=false) {
+	protected function detectSquare($im2, $corrected, $x, $y)
+	{
+		$right_top    = new ilScanAssessmentPoint($x + (self::BOX_SIZE * $corrected->getX()), $y);
+		$left_bottom  = new ilScanAssessmentPoint($x, $y + (self::BOX_SIZE * $corrected->getY()));
+		$right_bottom = new ilScanAssessmentPoint($x + (self::BOX_SIZE * $corrected->getX()), $y + (self::BOX_SIZE * $corrected->getY()));
+		$rt           = $this->image_helper->getGrey($right_top) < self::MIN_VALUE_BLACK;
+		$lb           = $this->image_helper->getGrey($left_bottom) < self::MIN_VALUE_BLACK;
+		$rb           = $this->image_helper->getGrey($right_bottom) < self::MIN_VALUE_BLACK;
 
-		$total_count	= 0;
-		$marked_count	= 0;
-		for($x = $first_point->getX(); $x < $second_point->getX(); $x++)
+		if($rt === true && $lb === true && $rb === true)
 		{
-			for($y = $first_point->getY(); $y < $second_point->getY(); $y++)
-			{
-				$total_count++;
-				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
-				if($gray < self::MIN_VALUE_BLACK)
-				{
-					$marked_count++;
-					if($mark)
-					{
-						$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getPink());
-					}
-				}
-			}
+			$this->image_helper->drawSquareFromVector($im2, new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), 10), $this->image_helper->getPink());
+			$this->image_helper->drawSquareFromVector($im2, new ilScanAssessmentVector($right_top, 10), $this->image_helper->getPink());
+			$this->image_helper->drawSquareFromVector($im2, new ilScanAssessmentVector($left_bottom, 10), $this->image_helper->getPink());
+			$this->image_helper->drawSquareFromVector($im2, new ilScanAssessmentVector($right_bottom, 10), $this->image_helper->getPink());
+			return true;
 		}
-
-		if($total_count > 0)
+		else
 		{
-			$r = 1 / $total_count * $marked_count;
-			if($r >= self::MIN_MARKED_AREA)
-			{
-				if($r >= self::MARKED_AREA_CHECKED) // was 0.4
-				{
-					if($mark)
-					{
-						$this->image_helper->drawSquareFromTwoPoints($im, $first_point, $second_point, $this->image_helper->getGreen());
-						$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($first_point->getX() -1 ,$first_point->getY() -1), new ilScanAssessmentPoint($second_point->getX() +1 ,$second_point->getY() +1),  $this->image_helper->getGreen());
-					}
-
-					return 2;
-				}
-				if($mark)
-				{
-					$this->image_helper->drawSquareFromTwoPoints($im,  $first_point, $second_point,  $this->image_helper->getBlue());
-					$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($first_point->getX() -1 ,$first_point->getY() -1), new ilScanAssessmentPoint($second_point->getX() +1 ,$second_point->getY() +1), $this->image_helper->getBlue());
-				}
-
-				return 1;
-			}
+			$this->image_helper->drawSquareFromVector($im2, new ilScanAssessmentVector(new ilScanAssessmentPoint($x + 2, $y + 2), 10), $this->image_helper->getBlue());
 		}
-//WHAT IS THIS CASE FOR?
-		if($mark)
-		{
-			$this->image_helper->drawSquareFromTwoPoints($im,  $first_point, $second_point, $this->image_helper->getYellow());
-		}
-
-		return 0;
+		return false;
 	}
 
 	protected function processAnswerLine(&$answers, $positionline, $mx, $mA4x, $mA4y, $fx, $fy, $mScanx, $mScany, $filename, $questionNumber, &$im, $kquestion="") {

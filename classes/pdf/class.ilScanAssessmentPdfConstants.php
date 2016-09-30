@@ -19,3 +19,6 @@ define('PDF_ANSWERBOX_H', 5);
 
 define('DRAWRULE_MAXTRIES', 1000);
 define('DRAWRULE_MAXTIME', 10);
+
+define('DRAWRULE_MAXTRIES', 1000);
+define('DRAWRULE_MAXTIME', 10);
