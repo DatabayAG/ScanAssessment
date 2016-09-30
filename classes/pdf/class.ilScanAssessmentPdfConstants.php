@@ -4,11 +4,11 @@ define('PDF_DEFAULT_FONT', 'dejavusans');
 define('PDF_DEFAULT_FONT_SIZE', 10);
 define('PDF_DEFAULT_FONT_SIZE_HEAD', 8);
 
-define('PDF_TOPLEFT_SYMBOL_X', 20);
-define('PDF_TOPLEFT_SYMBOL_Y', 20);
-define('PDF_TOPLEFT_SYMBOL_W', 2.5);
-define('PDF_BOTTOMLEFT_SYMBOL_Y', -20);
+define('PDF_TOPLEFT_SYMBOL_X', 10);
+define('PDF_TOPLEFT_SYMBOL_Y', 10);
+define('PDF_TOPLEFT_SYMBOL_W', 5);
 
+define('PDF_BOTTOMLEFT_SYMBOL_Y', -10);
 define('PDF_BOTTOMRIGHT_QR_W', 30);
 define('PDF_BOTTOMRIGHT_QR_MARGIN_X', 5);
 define('PDF_BOTTOMRIGHT_QR_MARGIN_Y', 5);
@@ -16,6 +16,8 @@ define('PDF_BOTTOMRIGHT_QR_MARGIN_Y', 5);
 define('PDF_ANSWERCIRCLE_W', 5);
 define('PDF_ANSWERBOX_W', 5);
 define('PDF_ANSWERBOX_H', 5);
+
+define('PDF_CHECKBOX_MARGIN', 3);
 
 define('DRAWRULE_MAXTRIES', 1000);
 define('DRAWRULE_MAXTIME', 10);

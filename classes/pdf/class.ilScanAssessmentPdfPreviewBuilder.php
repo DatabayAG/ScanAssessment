@@ -105,22 +105,24 @@ class ilPdfPreviewBuilder
 	 */
 	protected function writeQuestionToPdf($pdf_h, $question, $circleStyle)
 	{
-		$pdf_h->writeHTML($question->getTitle());
+		//$pdf_h->writeHTML($question->getTitle());
 		$pdf_h->pdf->Ln(1);
 		$pdf_h->writeHTML($question->getQuestion());
 		$pdf_h->pdf->Ln(2);
 		foreach($question->getAnswers() as $key => $answer)
 		{
-			$pdf_h->pdf->setCellMargins(26, 2);
-			$pdf_h->pdf->Rect(35, $pdf_h->pdf->GetY() + 2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
+			$pdf_h->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
+			$pdf_h->pdf->Rect(35, $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
 			$pdf_h->writeHTML($answer->getAnswerText());
 
 			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $pdf_h->pdf->GetX() .' '. $pdf_h->pdf->GetY();
-			$this->answer_export[] = 'qid' .' '. $question->getId().' '. 
+			$x = $pdf_h->pdf->GetX() + 35;
+			$y = $pdf_h->pdf->GetY();
+			$this->answer_export[] =		'qid' .' '. $question->getId().' '. 
 										   'aid'.' '. $answer->getId() .' '. 
 										   'a_text' .' '. $answer->getAnswerText().' '.
-										   'x' .' '. $pdf_h->pdf->GetX().' '.
-										   'y' .' '. $pdf_h->pdf->GetY();
+										   'x' .' '. $x .' '.
+										   'y' .' '.  $y;
 		}
 		$pdf_h->pdf->setCellMargins(15);
 		$pdf_h->pdf->Ln(2);

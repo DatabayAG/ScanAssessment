@@ -36,22 +36,22 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	protected function findAnswers(&$im, $marker_positions, $qr_position) 
 	{
 		$answers = [
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Der Würfel ist gefallen.',					'x' =>  15, 'y' => '54.04861'	],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Die Entscheidung ist getroffen.',			'x' =>  15, 'y' => '60.458332'	],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Das ist mein Urteil.',						'x' =>  15, 'y' => '66.868054'	],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'So soll es sein.', 						'x' =>  15, 'y' => '73.277776'	],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso',									'x' =>  15, 'y' => '103.916664'	],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 								'x' =>  15, 'y' => '110.326386'	],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 									'x' =>  15, 'y' => '116.736108'	],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 						'x' =>  15, 'y' => '123.14583'	],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 		'x' =>  15, 'y' => '153.784718'	],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 		'x' =>  15, 'y' => '160.19444'	],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung',	'x' =>  15, 'y' => '166.604162'	],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 	'x' =>  15, 'y' => '173.013884'	],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder',							'x' =>  15, 'y' => '203.652772'	],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 						'x' =>  15, 'y' => '210.062494'	],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 								'x' =>  15, 'y' => '216.472216'	],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 								'x' =>  15, 'y' => '222.881938'	],
+			['qid' => 450, 'aid' => -1, 'a_text' => 'Der Würfel ist gefallen.',					'x' =>  50, 'y' => '84.166666'	],
+			#['qid' => 450, 'aid' => -1, 'a_text' => 'Die Entscheidung ist getroffen.',			'x' =>  50, 'y' => '106.576388'	],
+			#['qid' => 450, 'aid' => -1, 'a_text' => 'Das ist mein Urteil.',						'x' =>  50, 'y' => '63.98611'	],
+			#['qid' => 450, 'aid' => -1, 'a_text' => 'So soll es sein.', 						'x' =>  50, 'y' => '71.395832'	],
+			#['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso',									'x' =>  50, 'y' => '107.444442'	],
+			#['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 								'x' =>  50, 'y' => '114.854164'	],
+			#['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 									'x' =>  50, 'y' => '142.08333'	],
+			#['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 						'x' =>  50, 'y' => '149.493052'	],
+			#['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 		'x' =>  50, 'y' => '156.902774'	],
+			#['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 		'x' =>  50, 'y' => '164.312496'	],
+			#['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung',	'x' =>  50, 'y' => '191.541662'	],
+			#['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 	'x' =>  50, 'y' => '198.951384'	],
+			#['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder',							'x' =>  50, 'y' => '206.361106'	],
+			#['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 						'x' =>  50, 'y' => '210.062494'	],
+			#['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 								'x' =>  50, 'y' => '216.472216'	],
+			#['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 								'x' =>  50, 'y' => '222.881938'	],
 		];
 		
 		$a = 0;
@@ -96,13 +96,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$drift_y = 0;
 		foreach($answers as $key => $value)
 		{
-			$answer_x     = ($value['x'] * $corrected->getX()) + $scan->getX() + 1;
-			$answer_y     = ($value['y'] * $corrected->getY());
-			if($first)
-			{
+			$answer_x     = ($value['x'] * $corrected->getX()) + $scan->getX();
+			$answer_y     = ($value['y'] * $corrected->getY()) + $scan->getY();
 
-				$first = false;
-			}
 			$point_found_at = $this->scanCheckbox($im2, $value, $corrected, $scan);
 			$drift_y = sqrt(pow($answer_y - $point_found_at->getY(), 2));
 			$answer_y = $answer_y - $drift_y;
@@ -167,9 +163,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$answer_x = ($value['x'] * $corrected->getX()) + $scan->getX();
 		$answer_y = ($value['y'] * $corrected->getY()) - ((self::BOX_SIZE * $corrected->getY()));
 		
-		for($x = $answer_x; $x < $answer_x + 10; $x++)
+		for($x = $answer_x; $x < $answer_x + (12 * $corrected->getX()); $x++)
 		{
-			for($y =  $answer_y; $y > $answer_y - 10; $y++)
+			for($y =  $answer_y; $y < $answer_y + (12 * $corrected->getY()); $y++)
 			{
 				$left_top = new ilScanAssessmentPoint($x,$y);
 				$lt = $this->image_helper->getGrey($left_top);
@@ -183,6 +179,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				}
 			}
 		}
+		return new ilScanAssessmentPoint($answer_x,$answer_y);
 	}
 
 	/**

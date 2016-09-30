@@ -104,7 +104,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function detectExactMarkerPosition($find, $threshold) 
 	{
-		$i1 = 0;
+	/*	$i1 = 0;
 		$i2 = 0;
 
 		$dx = $find->getEnd()->getX() - $find->getStart()->getX();
@@ -145,8 +145,9 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$len2 = sqrt($dx2 * $dx2 + $dy2 * $dy2);
 
 		$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint($x2, $y2), new ilScanAssessmentPoint($x2+$dx2, $y2+$dy2)), 0x000055);
-
-		return new ilScanAssessmentVector(new ilScanAssessmentPoint($x2+$dx2/2, $y2+$dy2/2), $len2);
+		*/
+		
+		return new ilScanAssessmentVector($find->getStart(), $find->getEnd()->getY() - $find->getStart()->getY());
 	}
 
 	/**

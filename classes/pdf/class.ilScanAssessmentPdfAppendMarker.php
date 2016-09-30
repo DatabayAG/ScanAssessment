@@ -28,22 +28,20 @@ class ilPDFAppendMarker extends FPDI{
 		
 		$this->SetY(0);
 
-		if($this->pageHeaderHTML!='') 
-		{
-			$this->SetY(20);
-			$html = "";
-			$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_HEAD, '', TRUE);
+		$this->SetY(20);
+		$html = "";
+		$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_HEAD, '', TRUE);
 
-			$html .= $this->pageHeaderHTML;
+		$html .= $this->pageHeaderHTML;
 
-			$html .= '<hr style="border: solid 1px silver;"/>';
+		$html .= '<hr style="border: solid 1px silver;"/>';
 
-			$this->writeHTML($html, TRUE, FALSE, TRUE, FALSE, 'L');
+		$this->writeHTML($html, TRUE, FALSE, TRUE, FALSE, 'L');
 
-			$this->Ln(2);
+		$this->Ln(2);
 
-			$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
-		}
+		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
+
 
 
 		if(count($this->QRState)>0) { 
@@ -68,13 +66,28 @@ class ilPDFAppendMarker extends FPDI{
 				);
 
 				$innerColor = array( 0, 0, 0 );
-				$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
-				$this->Circle(PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+				#$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+				#$this->Circle(PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+				$this->addMarker();
 			}
 		}
 		return;
 	}
 
+	protected function addMarker()
+	{
+		$this->line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W, PDF_TOPLEFT_SYMBOL_Y);
+		$this->line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y + PDF_TOPLEFT_SYMBOL_W);
+		
+		$bottom_y = $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y;
+		$this->line(PDF_TOPLEFT_SYMBOL_X, $bottom_y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W, $bottom_y);
+		$this->line(PDF_TOPLEFT_SYMBOL_X, $bottom_y, PDF_TOPLEFT_SYMBOL_X, $bottom_y - PDF_TOPLEFT_SYMBOL_W);
+
+		$top_x = $this->getPageWidth() + PDF_BOTTOMLEFT_SYMBOL_Y;
+		$top_y = PDF_TOPLEFT_SYMBOL_Y;
+		$this->line($top_x, $top_y, $top_x - PDF_TOPLEFT_SYMBOL_W, $top_y);
+		$this->line($top_x, $top_y, $top_x, $top_y + PDF_TOPLEFT_SYMBOL_W);
+	}
 	/**
 	 * Overwrites TCPDFS Footer function
 	 */
