@@ -112,12 +112,12 @@ class ilPdfPreviewBuilder
 		foreach($question->getAnswers() as $key => $answer)
 		{
 			$pdf_h->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
-			$pdf_h->pdf->Rect(35, $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
+			$pdf_h->pdf->Rect(34, $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
 			$pdf_h->writeHTML($answer->getAnswerText());
 
 			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $pdf_h->pdf->GetX() .' '. $pdf_h->pdf->GetY();
-			$x = $pdf_h->pdf->GetX() + 35;
-			$y = $pdf_h->pdf->GetY();
+			$x = $pdf_h->pdf->GetX() + 34;
+			$y = $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN;
 			$this->answer_export[] =		'qid' .' '. $question->getId().' '. 
 										   'aid'.' '. $answer->getId() .' '. 
 										   'a_text' .' '. $answer->getAnswerText().' '.
@@ -143,7 +143,12 @@ class ilPdfPreviewBuilder
 				"x" => $pdf_h->pdf->getPageWidth() - PDF_BOTTOMRIGHT_QR_MARGIN_X,
 				"y" => $pdf_h->pdf->getPageHeight() - PDF_BOTTOMRIGHT_QR_MARGIN_Y,
 				"w" => PDF_BOTTOMRIGHT_QR_W
-			));
+			),
+			'PAGESIZE'     => array(
+			"width" => $pdf_h->pdf->getPageWidth(),
+			"height" => $pdf_h->pdf->getPageHeight(),
+			)
+		);
 		$a = 0;
 	}
 	protected function instantiateQuestions()

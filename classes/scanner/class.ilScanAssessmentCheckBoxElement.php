@@ -1,18 +1,21 @@
 <?php
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentArea.php';
 
 /**
- * Created by PhpStorm.
- * User: gvollbach
- * Date: 30.09.16
- * Time: 09:06
+ * Class ilScanAssessmentCheckBoxElement
  */
 class ilScanAssessmentCheckBoxElement
 {
 	const MIN_VALUE_BLACK		= 180;
-	const MIN_MARKED_AREA		= 0.05;
-	const MARKED_AREA_CHECKED	= 0.3;
+	const MIN_MARKED_AREA		= 0.30;
+	const MARKED_AREA_CHECKED	= 0.4;
+	const MARKED_AREA_UNCHECKED	= 0.95;
 	const BOX_SIZE				= 5;
+	const CHECKED				= 2;
+	const UNCHECKED				= 1;
+	const UNTOUCHED				= 0;
+
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
@@ -92,59 +95,67 @@ class ilScanAssessmentCheckBoxElement
 	/**
 	 * @param      $im
 	 * @param bool $mark
-	 * @return int
+	 * @return ilScanAssessmentArea
 	 */
-	public function isMarked($im, $mark = false)
+	protected function analyseCheckBox($im, $mark = false)
 	{
-		$total_count	= 0;
-		$marked_count	= 0;
+		$black = 0;
+		$white = 0;
+		$total = 0;
 		for($x = $this->getLeftTop()->getX(); $x < $this->getRightBottom()->getX(); $x++)
 		{
 			for($y = $this->getLeftTop()->getY(); $y < $this->getRightBottom()->getY(); $y++)
 			{
-				$total_count++;
+				$total++;
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
 				if($gray < self::MIN_VALUE_BLACK)
 				{
-					$marked_count++;
+					$black++;
 					if($mark)
 					{
 						$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getBlack());
 					}
 				}
+				else
+				{
+					$white++;
+				}
 			}
 		}
-		if($total_count > 0)
-		{
-			$r = 1 / $total_count * $marked_count;
-			if($r >= self::MIN_MARKED_AREA)
-			{
-				if($r >= self::MARKED_AREA_CHECKED)
-				{
-					if($mark)
-					{
-						$this->image_helper->drawSquareFromTwoPoints($im, $this->getLeftTop(), $this->getRightBottom(), $this->image_helper->getGreen());
-						//$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($first_point->getX() -1 ,$first_point->getY() -1), new ilScanAssessmentPoint($second_point->getX() +1 ,$second_point->getY() +1),  $this->image_helper->getGreen());
-					}
+		return new ilScanAssessmentArea($total, $white, $black);
+	}
 
-					return 2;
-				}
+	/**
+	 * @param      $im
+	 * @param bool $mark
+	 * @return int
+	 */
+	public function isMarked($im, $mark = false)
+	{
+		$area = $this->analyseCheckBox($im, $mark);
+
+		if($area->percentBlack() >= self::MIN_MARKED_AREA)
+		{
+			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
+			{
 				if($mark)
 				{
-					$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(),  $this->image_helper->getBlue());
-					//$this->image_helper->drawSquareFromTwoPoints($im, new ilScanAssessmentPoint($first_point->getX() -1 ,$first_point->getY() -1), new ilScanAssessmentPoint($second_point->getX() +1 ,$second_point->getY() +1), $this->image_helper->getBlue());
+					$this->image_helper->drawSquareFromTwoPoints($im, $this->getLeftTop(), $this->getRightBottom(), $this->image_helper->getGreen());
 				}
-
-				return 1;
+				return self::CHECKED;
 			}
+			if($mark)
+			{
+				$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(),  $this->image_helper->getBlue());
+			}
+			return self::UNCHECKED;
 		}
 
 		if($mark)
 		{
 			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->image_helper->getYellow());
 		}
-
-		return 0;
+		return self::UNTOUCHED;
 	}
 
 }

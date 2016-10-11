@@ -32,10 +32,17 @@ class ilPDFAppendMarker extends FPDI{
 		$html = "";
 		$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_HEAD, '', TRUE);
 
-		$html .= $this->pageHeaderHTML;
+		//$html .= $this->pageHeaderHTML;
+		global $lng;
+		$header = new ilTemplate("tpl.header.html", true, true, "Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment");
+		$header->setVariable('TOP_LEFT_COLUMN', 'TITLE' );		
+		$header->setVariable('TOP_CENTER_COLUMN', 'University of BLAAAA' );
+		$header->setVariable('TOP_RIGHT_COLUMN', 'WE' );		
+		$header->setVariable('LOWER_LEFT_COLUMN', 'TITLE' );		
+		$header->setVariable('LOWER_CENTER_COLUMN', 'University of BLAAAA' );
+		$header->setVariable('LOWER_RIGHT_COLUMN', 'WE' );
 
-		$html .= '<hr style="border: solid 1px silver;"/>';
-
+		$html = $header->get();
 		$this->writeHTML($html, TRUE, FALSE, TRUE, FALSE, 'L');
 
 		$this->Ln(2);
@@ -76,7 +83,7 @@ class ilPDFAppendMarker extends FPDI{
 
 	protected function addMarker()
 	{
-		$this->line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W, PDF_TOPLEFT_SYMBOL_Y);
+		$this->line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W , PDF_TOPLEFT_SYMBOL_Y , array('width' => 0.6));
 		$this->line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y + PDF_TOPLEFT_SYMBOL_W);
 		
 		$bottom_y = $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y;

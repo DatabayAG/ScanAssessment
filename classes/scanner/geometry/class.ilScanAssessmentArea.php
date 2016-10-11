@@ -41,7 +41,7 @@ class ilScanAssessmentArea
 	{
 		if($this->pixels > 0)
 		{
-			return (100 * $this->black_pixels) / $this->pixels;
+			return 1 / $this->pixels * $this->black_pixels;
 		}
 		return 0;
 	}
@@ -53,7 +53,7 @@ class ilScanAssessmentArea
 	{
 		if($this->pixels > 0)
 		{
-			return (100 * $this->white_pixels) / $this->pixels;
+			return 1 / $this->pixels * $this->white_pixels;
 		}
 		return 0;
 	}

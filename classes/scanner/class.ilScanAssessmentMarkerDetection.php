@@ -50,7 +50,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$locate_bottom_left = null;
 
 		$scan_top_left = $this->probeMarkerPosition('top', $threshold);
-
 		if($scan_top_left === false)
 		{
 			if($rotated) 
@@ -60,6 +59,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			
 			#$im = $this->image_helper->rotate($im,180);
 			$scan_top_left = $this->probeMarkerPosition('top', $threshold);
+
 		}
 
 		if($scan_top_left !== false) {
@@ -95,6 +95,42 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			return false;
 		}
 		return false;
+		
+		#$a = $this->findTopLeftMarker(new ilScanAssessmentPoint(10,10));
+		#echo $a->getX() . ' ' . $a->getY(); exit();
+		#$b = 0;
+	}
+	
+	protected function findTopLeftMarker(ilScanAssessmentPoint $near)
+	{
+		$first = new ilScanAssessmentPoint($near->getX() - 200, $near->getY() - 100);
+		$last  = new ilScanAssessmentPoint($near->getX() + 100, $near->getY() + 200);
+		$point = new ilScanAssessmentPoint($first->getX(), $first->getY());
+		for($y = $first->getY(); $y != $last->getY(); $y++)
+		{
+			for($x = $first->getX(); $x != $last->getX(); $x++)
+			{
+				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
+				if($gray < 150)
+				{
+					if ($this->image_helper->getGrey(new ilScanAssessmentPoint($x2, $y )) > 150)
+					{
+						$point->setX($x);
+					}
+
+
+					if ($this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y + 15)) < 150)
+					{
+						$point->setY($y);
+					}
+
+				}
+			}
+		}
+		$this->image_helper->drawSquareFromTwoPoints($this->temp_image,$first,  $last, $this->image_helper->getBlue());
+		$this->image_helper->drawSquareFromVector($this->temp_image,new ilScanAssessmentVector($point, 5), $this->image_helper->getGreen());
+		$this->image_helper->drawTempImage($this->temp_image, 'detection.jpg');
+		return $point;
 	}
 
 	/**
