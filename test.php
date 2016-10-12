@@ -10,11 +10,11 @@ class dummy
 		/**
 		 * @var ilScanAssessmentGDWrapper
 		 */
-		$image_helper = new ilScanAssessmentGDWrapper('/home/gvollbach/Desktop/test2.jpg');
+		#$image_helper = new ilScanAssessmentGDWrapper('/home/gvollbach/Desktop/test2.jpg');
 		/**
 		 * @var ilScanAssessmentImagemagickWrapper
 		 */
-		#$image_helper = new ilScanAssessmentImagemagickWrapper('/home/gvollbach/Desktop/test2.jpg');
+		$image_helper = new ilScanAssessmentImagemagickWrapper('/home/gvollbach/Desktop/test2.jpg');
 		
 		$x = $image_helper->getImageSizeX();
 		$y = $image_helper->getImageSizeY();

@@ -16,6 +16,7 @@ class ilScanAssessmentCheckBoxElement
 	const UNCHECKED				= 1;
 	const UNTOUCHED				= 0;
 
+	protected $color_mapping;
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
@@ -35,13 +36,18 @@ class ilScanAssessmentCheckBoxElement
 	 * ilScanAssessmentCheckBoxElement constructor.
 	 * @param ilScanAssessmentPoint $left_top
 	 * @param ilScanAssessmentPoint $right_bottom
-	 * @param $image_helper
+	 * @param ilScanAssessmentImageWrapper $image_helper
 	 */
 	public function __construct($left_top, $right_bottom, $image_helper)
 	{
 		$this->left_top		= $left_top;
 		$this->right_bottom	= $right_bottom;
 		$this->image_helper	= $image_helper;
+		$this->color_mapping = array(
+			self::UNTOUCHED	=> $this->image_helper->getYellow(),
+			self::UNCHECKED	=> $this->image_helper->getBlue(),
+			self::CHECKED	=> $this->image_helper->getGreen()
+		);
 	}
 
 	/**
@@ -132,30 +138,26 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	public function isMarked($im, $mark = false)
 	{
-		$area = $this->analyseCheckBox($im, $mark);
+		$area	= $this->analyseCheckBox($im, $mark);
+		$value	= self::UNTOUCHED;
 
 		if($area->percentBlack() >= self::MIN_MARKED_AREA)
 		{
 			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
 			{
-				if($mark)
-				{
-					$this->image_helper->drawSquareFromTwoPoints($im, $this->getLeftTop(), $this->getRightBottom(), $this->image_helper->getGreen());
-				}
-				return self::CHECKED;
+				$value	= self::CHECKED;
 			}
-			if($mark)
+			else
 			{
-				$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(),  $this->image_helper->getBlue());
+				$value	= self::UNCHECKED;
 			}
-			return self::UNCHECKED;
 		}
 
 		if($mark)
 		{
-			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->image_helper->getYellow());
+			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
 		}
-		return self::UNTOUCHED;
+		return $value;
 	}
 
 }

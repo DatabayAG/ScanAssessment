@@ -113,7 +113,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
 				if($gray < 150)
 				{
-					if ($this->image_helper->getGrey(new ilScanAssessmentPoint($x2, $y )) > 150)
+					if ($this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y )) > 150)
 					{
 						$point->setX($x);
 					}
