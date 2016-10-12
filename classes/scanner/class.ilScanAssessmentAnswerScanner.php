@@ -73,6 +73,31 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			['qid' => 460, 'aid' => -1, 'a_text' => 'Konstantinopel', 'x' => 49, 'y' => '219.40000866667'],
 		];
 
+		$answers = [
+			['qid' => 450, 'aid' => -1, 'a_text' => 'Der Würfel ist gefallen.', 'x' => 49, 'y' => '61.51111266667'],
+			['qid' => 450, 'aid' => -1, 'a_text' => 'Die Entscheidung ist getroffen.', 'x' => 49, 'y' => '65.511112666667'],
+			['qid' => 450, 'aid' => -1, 'a_text' => 'Das ist mein Urteil.', 'x' => 49, 'y' => '69.538890666667'],
+			['qid' => 450, 'aid' => -1, 'a_text' => 'So soll es sein.', 'x' => 49, 'y' => '73.566668666667'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso', 'x' => 49, 'y' => '150.62222866667'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 'x' => 49, 'y' => '154.65000666667'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 'x' => 49, 'y' => '158.67778466667'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 'x' => 49, 'y' => '162.70556266667'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 'x' => 49, 'y' => '179.78889666667'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 'x' => 49, 'y' => '183.81667466667'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung', 'x' => 49, 'y' => '187.84445266667'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 'x' => 49, 'y' => '191.87223066667'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder', 'x' => 49, 'y' => '208.95556466667'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 'x' => 49, 'y' => '212.98334266667'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 'x' => 49, 'y' => '217.01112066667'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 'x' => 49, 'y' => '221.03889866667'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Neu-Delhi', 'x' => 49, 'y' => '238.12223266667'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Mumbai', 'x' => 49, 'y' => '242.15001066667'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Bangkok', 'x' => 49, 'y' => '246.17778866667'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Peking', 'x' => 49, 'y' => '250.20556666667'],
+			['qid' => 460, 'aid' => -1, 'a_text' => 'Metropolis', 'x' => 49, 'y' => '267.28890066667'],
+			['qid' => 460, 'aid' => -1, 'a_text' => 'Delphi', 'x' => 49, 'y' => '271.31667866667']
+		];
+
 		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
 
 		$im2 = $im;

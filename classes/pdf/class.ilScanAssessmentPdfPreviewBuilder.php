@@ -25,7 +25,7 @@ class ilPdfPreviewBuilder
 	 * @var array
 	 */
 	protected $circleStyle;
-
+	
 	/**
 	 * @var array
 	 */
@@ -86,6 +86,9 @@ class ilPdfPreviewBuilder
 		$pdf_h->addPage();
 		$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
 		$pdf_h->writeHTML(implode($this->answer_export, '<pre>'));
+		$matriculation = $pdf_h->pdf->getMatriculationInformation();
+		#$pdf_h->writeHTML(print_r($matriculation['head_row'], '<pre>'));
+		#$pdf_h->writeHTML(print_r($matriculation['value_rows'], '<pre>'));
 	}
 
 	/**
@@ -124,6 +127,7 @@ class ilPdfPreviewBuilder
 										   'x' .' '. $x .' '.
 										   'y' .' '.  $y;
 		}
+		
 		$pdf_h->pdf->setCellMargins(15);
 		$pdf_h->pdf->Ln(2);
 		$pdf_h->writeHTML('<hr/>');

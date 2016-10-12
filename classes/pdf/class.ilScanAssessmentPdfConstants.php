@@ -2,11 +2,11 @@
 
 define('PDF_DEFAULT_FONT', 'dejavusans');
 define('PDF_DEFAULT_FONT_SIZE', 8);
-define('PDF_DEFAULT_FONT_SIZE_HEAD', 8);
+define('PDF_DEFAULT_FONT_SIZE_HEAD', 9);
 
 define('PDF_TOPLEFT_SYMBOL_X', 10);
 define('PDF_TOPLEFT_SYMBOL_Y', 10);
-define('PDF_TOPLEFT_SYMBOL_W', 5);
+define('PDF_TOPLEFT_SYMBOL_W', 2.5);
 
 define('PDF_BOTTOMLEFT_SYMBOL_Y', -10);
 define('PDF_BOTTOMRIGHT_QR_W', 30);

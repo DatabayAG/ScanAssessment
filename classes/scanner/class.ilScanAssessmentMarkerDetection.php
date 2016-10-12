@@ -59,7 +59,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			
 			#$im = $this->image_helper->rotate($im,180);
 			$scan_top_left = $this->probeMarkerPosition('top', $threshold);
-
 		}
 
 		if($scan_top_left !== false) {
@@ -77,6 +76,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 				if($rotated==false && abs($rad) > 0.05) 
 				{
+					$this->image_helper->drawLine($im, 0, 0, 500, 500, $this->image_helper->getPink());
 					$im = $this->image_helper->rotate($rad * -1);
 					$this->setTempImage($im);
 					$this->setImage($im);
@@ -140,7 +140,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function detectExactMarkerPosition($find, $threshold) 
 	{
-	/*	$i1 = 0;
+		$i1 = 0;
 		$i2 = 0;
 
 		$dx = $find->getEnd()->getX() - $find->getStart()->getX();
@@ -180,10 +180,10 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 		$len2 = sqrt($dx2 * $dx2 + $dy2 * $dy2);
 
-		$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint($x2, $y2), new ilScanAssessmentPoint($x2+$dx2, $y2+$dy2)), 0x000055);
-		*/
-		
-		return new ilScanAssessmentVector($find->getStart(), $find->getEnd()->getY() - $find->getStart()->getY());
+		$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint($x2, $y2), new ilScanAssessmentPoint($x2+$dx2, $y2+$dy2)), $this->image_helper->getPink());
+
+		return new ilScanAssessmentVector(new ilScanAssessmentPoint($x2+$dx2/2, $y2+$dy2/2), $len2);
+
 	}
 
 	/**
