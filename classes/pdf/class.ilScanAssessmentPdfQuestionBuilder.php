@@ -1,13 +1,21 @@
 <?php
 
 require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
-
 /**
  * Class ilScanAssessmentPdfQuestionBuilder
  */
 class ilScanAssessmentPdfQuestionBuilder
 {
 
+	const TITLE_AND_POINTS		= 0;
+	const ONLY_TITLE			= 1;
+	const QUESTION_NUMBER_ONLY	= 2;
+
+	protected $supported_question_types = array(
+		'assSingleChoice',
+		'assMultipleChoice'
+	);
+	
 	/**
 	 * @var ilLanguage
 	 */
@@ -44,8 +52,13 @@ class ilScanAssessmentPdfQuestionBuilder
 	protected $circleStyle;
 
 	/**
+	 * @var ilScanAssessmentLog
+	 */
+	protected $log;
+
+	/**
 	 * ilScanAssessmentPdfQuestionBuilder constructor.
-	 * @param ilObjTest $test
+	 * @param ilObjTest                 $test
 	 * @param ilScanAssessmentPdfHelper $pdf
 	 */
 	public function __construct(ilObjTest $test, ilScanAssessmentPdfHelper $pdf)
@@ -55,22 +68,24 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->lng			= $lng;
 		$this->test			= $test;
 		$this->pdf_helper	= $pdf;
+		$this->log			= ilScanAssessmentLog::getInstance();
 		$this->questions	= array();
 		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
 	}
 
 	/**
-	 * @param assQuestion $question
+	 * @param assQuestion $question[]
 	 */
 	public function writeQuestionToPdf($question)
 	{
 		$this->pdf_helper->pdf->Ln(1);
 		$this->pdf_helper->writeHTML($question->getQuestion());
 		$this->pdf_helper->pdf->Ln(2);
+
 		foreach($question->getAnswers() as $key => $answer)
 		{
 			$this->pdf_helper->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
+			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$this->pdf_helper->writeHTML($answer->getAnswerText());
 
 			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $this->pdf_helper->pdf->GetX() .' '. $this->pdf_helper->pdf->GetY();
@@ -86,38 +101,33 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
 		$this->pdf_helper->pdf->Ln(2);
 		$this->pdf_helper->pdf->Line($this->pdf_helper->pdf->GetX() + 10, $this->pdf_helper->pdf->GetY(), $this->pdf_helper->pdf->GetX() + 160, $this->pdf_helper->pdf->GetY());
-
-		$pageData = array(
-			'TOPLEFT'         => array(
-				"x" => PDF_TOPLEFT_SYMBOL_X,
-				"y" => PDF_TOPLEFT_SYMBOL_Y,
-				"w" => PDF_TOPLEFT_SYMBOL_W
-			),
-			'BOTTOMLEFT'      => array(
-				"x" => PDF_TOPLEFT_SYMBOL_X,
-				"y" => $this->pdf_helper->pdf->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y,
-				"w" => PDF_TOPLEFT_SYMBOL_W
-			),
-			'BOTTOMRIGHT'     => array(
-				"x" => $this->pdf_helper->pdf->getPageWidth() - PDF_BOTTOMRIGHT_QR_MARGIN_X,
-				"y" => $this->pdf_helper->pdf->getPageHeight() - PDF_BOTTOMRIGHT_QR_MARGIN_Y,
-				"w" => PDF_BOTTOMRIGHT_QR_W
-			),
-			'PAGESIZE'     => array(
-				"width" => $this->pdf_helper->pdf->getPageWidth(),
-				"height" => $this->pdf_helper->pdf->getPageHeight(),
-			)
-		);
 	}
+
+	/**
+	 * @return array|assQuestion[]
+	 */
 	public function instantiateQuestions()
 	{
 		foreach($this->test->getQuestions() as $key => $value)
 		{
-			$this->questions[] = assQuestion::_instantiateQuestion($value);
+			$question			= assQuestion::_instantiateQuestion($value);
+			if(in_array($question->getQuestionType(), $this->supported_question_types))
+			{
+				$this->questions[]	= $question;
+				$this->log->info('Question type '. $question->getQuestionType() .' instantiated.');
+			}
+			else
+			{
+				$this->log->warn('Question type '. $question->getQuestionType() .' is not supported.');
+			}
 		}
 		return $this->questions;
 	}
 
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 */
 	public function writeQuestionTitleToPdf($question, $counter)
 	{
 		$this->pdf_helper->pdf->Ln(2);
@@ -137,14 +147,14 @@ class ilScanAssessmentPdfQuestionBuilder
 	 */
 	protected function getQuestionTitle($question, $counter)
 	{
-		$title			= $this->lng->txt('question') . ' ' . $counter;
+		$title			= $this->lng->txt('question') . ' ' . $counter . ': ';
 		$title_setting	= $this->test->getTitleOutput();
-		if($title_setting < 2)
+		if($title_setting < self::QUESTION_NUMBER_ONLY)
 		{
-			$title .= ': ' .$question->getTitle();
-			if($title_setting < 1 )
+			$title .= $question->getTitle();
+			if($title_setting < self::ONLY_TITLE)
 			{
-				$title .= $this->buildPointsText($question, $title);
+				$title .= $this->buildPointsText($question->getMaximumPoints());
 			}
 		}
 
@@ -152,13 +162,11 @@ class ilScanAssessmentPdfQuestionBuilder
 	}
 
 	/**
-	 * @param assQuestion $question
-	 * @param $title
+	 * @param $points
 	 * @return string
 	 */
-	protected function buildPointsText($question, $title)
+	protected function buildPointsText($points)
 	{
-		$points     = $question->getMaximumPoints();
 		$points_txt = $this->lng->txt('point');
 		if($points > 1)
 		{

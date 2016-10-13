@@ -36,7 +36,6 @@ class ilPDFAppendMarker extends TCPDF{
 
 				$this->counterPerParticipant++;
 
-				// Schnittmarken
 				$circleStyle = array(
 					'width' => 0.25,
 					'cap'   => 'butt',

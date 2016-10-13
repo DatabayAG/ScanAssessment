@@ -3,6 +3,7 @@
 define('PDF_DEFAULT_FONT', 'dejavusans');
 define('PDF_DEFAULT_FONT_SIZE', 8);
 define('PDF_DEFAULT_FONT_SIZE_HEAD', 9);
+define('PDF_DEFAULT_FONT_MATRICULATION', 7);
 
 define('PDF_TOPLEFT_SYMBOL_X', 10);
 define('PDF_TOPLEFT_SYMBOL_Y', 10);

@@ -4,6 +4,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfQuestionBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 
 
 /**
@@ -19,12 +20,18 @@ class ilPdfPreviewBuilder
 	protected $test;
 
 	/**
+	 * @var
+	 */
+	protected $log;
+
+	/**
 	 * ilPdfPreviewBuilder constructor.
 	 * @param ilObjTest $test
 	 */
 	public function __construct(ilObjTest $test)
 	{
-		$this->test = $test;
+		$this->test	= $test;
+		$this->log	= ilScanAssessmentLog::getInstance();
 	}
 
 	/**
@@ -32,6 +39,7 @@ class ilPdfPreviewBuilder
 	 */
 	public function createDemoPdf()
 	{
+		$this->log->info('Starting to create demo pdf...');
 		$pdf_h	= new ilScanAssessmentPdfHelper();
 		/** @var tcpdf $pdf */
 		$pdf	= $pdf_h->pdf; 
@@ -68,6 +76,7 @@ class ilPdfPreviewBuilder
 		}
 		$question_builder->printDebug($pdf_h);
 		$pdf_h->output();
+		$this->log->info('Creating demo pdf finished.');
 	}
 
 	/**

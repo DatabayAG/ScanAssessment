@@ -62,19 +62,20 @@ class ilScanAssessmentPdfHeaderForm
 	/**
 	 * @param string $format
 	 */
-	public function addMatriculationForm($format = 'XX-XX-XXXX')
+	public function addMatriculationForm($format = 'XX-XX-XXX-X')
 	{
 
 		$columns	= strlen($format);
 		$positions	= array('head_row' => array(), 'value_rows' => array());
 		$this->appendFirstAndSurnameBoxes($columns);
+		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_MATRICULATION);
 		if($columns > 0)
 		{
 			for($i=0; $i<=9; $i++)
 			{
 				$y = 44 + ($i * 4);
 				$x = 188 - ($columns * 4);
-				$this->pdf->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x, $y , true);
+				$this->pdf->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x + 1.5, $y + 0.3 , true);
 
 				for($j=0; $j <= $columns; $j++)
 				{
@@ -86,10 +87,11 @@ class ilScanAssessmentPdfHeaderForm
 					{
 						$spacer = 0;
 					}
+					$x2 = ($x + 2) + (4 * ($j + 1)) + $spacer;
+					$y2 = $y + PDF_CHECKBOX_MARGIN;
+
 					if($format[$j] === 'X')
 					{
-						$x2 = ($x + 2) + (4 * ($j + 1)) + $spacer;
-						$y2 = $y + PDF_CHECKBOX_MARGIN;
 						if($i === 0)
 						{
 							$this->pdf->Rect($x2 - 0.5, $y2 - 5, PDF_ANSWERBOX_W + 1, PDF_ANSWERBOX_H + 1, 'D');
@@ -100,12 +102,13 @@ class ilScanAssessmentPdfHeaderForm
 					}
 					if($format[$j] === '-' && $i === 0)
 					{
-						$this->pdf->Rect(($x + 2) + (4 * ($j + 1)), $y - 3, 2, 0, 'D');
+						$this->pdf->Line($x2 - 2, $y2 - 3.2, $x2, $y2 - 3.2);
 					}
 				}
 			}
 		}
 		$this->matriculation_positions = $positions;
+		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_SIZE);
 	}
 
 }
