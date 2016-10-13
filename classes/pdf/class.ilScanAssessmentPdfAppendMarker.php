@@ -1,5 +1,5 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/fpdi/fpdi.php';
+#require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/fpdi/fpdi.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfConstants.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfHeaderForm.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentVector.php';
@@ -7,7 +7,7 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 /**
  * Class ilPDFAppendMarker
  */
-class ilPDFAppendMarker extends FPDI{
+class ilPDFAppendMarker extends TCPDF{
 
 	protected $pageNr = 0;
 	protected $qrImg = NULL;
@@ -19,7 +19,6 @@ class ilPDFAppendMarker extends FPDI{
 	protected $docArea = '';
 	protected $docType = '';
 	protected $lastDocType = NULL;
-	
 
 	public function addMarkerAndQrCode()
 	{
@@ -55,7 +54,7 @@ class ilPDFAppendMarker extends FPDI{
 	}
 
 	/**
-	 * Overwrites TCPDFS Header function
+	 * Overwrites TCPDF Header function
 	 */
 	public function Header() 
 	{
@@ -65,15 +64,16 @@ class ilPDFAppendMarker extends FPDI{
 		$this->SetTextColor(0);
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetFillColor(255, 255, 255);
-		$this->SetLineWidth(0.3);
+		$this->SetLineWidth(0.6);
 		$this->Ln();
 		$this->Cell(30, 5, 'TITLE', 1, 0, 'C', 1);
 		$this->Cell(120, 5, 'University of BLAAAA', 1, 0, 'C', 1);
 		$this->Cell(30, 5, '30.09.2016', 1, 0, 'C', 1);
-		$this->Ln();
-
+		$this->SetLineWidth(0.3);
 		if($this->pageNr === 1)
 		{
+			$this->Ln();
+			$this->Ln(1);
 			$this->Cell(40, 8, 'Prof. Dr. Kautschuk', 'LTB', 0, 'C', 1);
 			$this->Cell(120, 8, 'Einführung in die Naturheilkunde 2016', 'TB', 0, 'C', 1);
 			$this->Cell(20, 8, 'FB47 1/3', 'RTB', 0, 'C', 1);
@@ -88,7 +88,7 @@ class ilPDFAppendMarker extends FPDI{
 	}
 
 	/**
-	 * Overwrites TCPDFS Footer function
+	 * Overwrites TCPDF Footer function
 	 */
 	public function Footer()
 	{
@@ -97,7 +97,7 @@ class ilPDFAppendMarker extends FPDI{
 		$this->MultiCell(0, 00, 'University of Bla' . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
-	protected function addMarker()
+	protected function disabled_addMarker()
 	{
 		$this->Line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W , PDF_TOPLEFT_SYMBOL_Y , array('width' => 0.6));
 		$this->Line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y + PDF_TOPLEFT_SYMBOL_W);

@@ -52,15 +52,15 @@ class ilScanAssessmentPdfQuestionBuilder
 	{
 		global $lng;
 
-		$this->lng        = $lng;
-		$this->test       = $test;
-		$this->pdf_helper = $pdf;
-		$this->questions  = array();
+		$this->lng			= $lng;
+		$this->test			= $test;
+		$this->pdf_helper	= $pdf;
+		$this->questions	= array();
 		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
 	}
 
 	/**
-	 * @param $question
+	 * @param assQuestion $question
 	 */
 	public function writeQuestionToPdf($question)
 	{
@@ -83,7 +83,7 @@ class ilScanAssessmentPdfQuestionBuilder
 				'y' .' '.  $y;
 		}
 
-		$this->pdf_helper->pdf->setCellMargins(15);
+		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
 		$this->pdf_helper->pdf->Ln(2);
 		$this->pdf_helper->writeHTML('<hr/>');
 

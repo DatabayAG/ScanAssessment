@@ -40,7 +40,7 @@ class ilPdfPreviewBuilder
 
 		$this->addQrCodeToPage($pdf_h);
 
-		$pdf->setCellMargins(15);
+		$pdf->setCellMargins(PDF_CELL_MARGIN);
 		$pdf_h->addPage();
 		$counter = 1;
 		foreach($questions as $question)
@@ -53,10 +53,11 @@ class ilPdfPreviewBuilder
 			$question_builder->writeQuestionToPdf($question);
 
 			$end_page = $pdf->getPage();
-			if  ($end_page != $start_page)
+			if($end_page != $start_page)
 			{
 				$pdf->rollbackTransaction(true);
 				$pdf_h->addPage();
+				$question_builder->writeQuestionTitleToPdf($question, $counter);
 				$question_builder->writeQuestionToPdf($question);
 			}
 			else
@@ -74,7 +75,7 @@ class ilPdfPreviewBuilder
 	 */
 	protected function addQrCodeToPage($pdf_h)
 	{
-		$page = $pdf_h->pdf->getPage();
+		$pdf_h->pdf->getPage();
 		$pdf_h->pdf->setQRCodeOnThisPage(true);
 		$pdf_h->createQRCode('DemoCode');
 	}

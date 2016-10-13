@@ -19,6 +19,8 @@ define('PDF_ANSWERBOX_H', 2.5);
 
 define('PDF_CHECKBOX_MARGIN', 0.5);
 
+define('PDF_CELL_MARGIN', 5);
+
 define('DRAWRULE_MAXTRIES', 1000);
 define('DRAWRULE_MAXTIME', 10);
 

@@ -32,21 +32,44 @@ class ilScanAssessmentPdfHeaderForm
 		$this->pdf	= $pdf;
 	}
 
+	protected function insertFirstAndSurnameBoxes($columns, $width)
+	{
+		$this->pdf->Ln(1);
+		$this->pdf->MultiCell($width, 25, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
+		if($columns > 0)
+		{
+			$this->pdf->Ln();
+		}
+		$this->pdf->MultiCell($width, 25, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
+	}
+
+	/**
+	 * @param $columns
+	 */
+	protected function appendFirstAndSurnameBoxes($columns)
+	{
+		if($columns > 0)
+		{
+			$this->insertFirstAndSurnameBoxes($columns, 55);
+			$this->pdf->MultiCell(125, 50, ' ' . $this->lng->txt('exam_student_id') . ': ', 1, 'C', 0, 1, 70, 35, true);
+		}
+		else
+		{
+			$this->insertFirstAndSurnameBoxes($columns, 90);
+		}
+	}
+
 	/**
 	 * @param string $format
 	 */
-	public function addMatriculationForm($format = 'XXX-XXX-XXX-XX')
+	public function addMatriculationForm($format = 'XX-XX-XXXX')
 	{
+
 		$columns	= strlen($format);
 		$positions	= array('head_row' => array(), 'value_rows' => array());
+		$this->appendFirstAndSurnameBoxes($columns);
 		if($columns > 0)
 		{
-			$this->pdf->Ln(1);
-			$this->pdf->MultiCell(55, 25, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
-			$this->pdf->Ln();
-			$this->pdf->MultiCell(55, 25, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
-			$this->pdf->MultiCell(125, 50,' ' . $this->lng->txt('exam_student_id') . ': ', 1, 'C', 0, 1, 70, 34, true);
-
 			for($i=0; $i<=9; $i++)
 			{
 				$y = 44 + ($i * 4);
