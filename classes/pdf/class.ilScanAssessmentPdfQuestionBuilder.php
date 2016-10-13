@@ -48,7 +48,7 @@ class ilScanAssessmentPdfQuestionBuilder
 	 * @param ilObjTest $test
 	 * @param ilScanAssessmentPdfHelper $pdf
 	 */
-	public function __construct(ilObjTest $test, $pdf)
+	public function __construct(ilObjTest $test, ilScanAssessmentPdfHelper $pdf)
 	{
 		global $lng;
 
@@ -85,7 +85,7 @@ class ilScanAssessmentPdfQuestionBuilder
 
 		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
 		$this->pdf_helper->pdf->Ln(2);
-		$this->pdf_helper->writeHTML('<hr/>');
+		$this->pdf_helper->pdf->Line($this->pdf_helper->pdf->GetX() + 10, $this->pdf_helper->pdf->GetY(), $this->pdf_helper->pdf->GetX() + 160, $this->pdf_helper->pdf->GetY());
 
 		$pageData = array(
 			'TOPLEFT'         => array(
@@ -120,6 +120,7 @@ class ilScanAssessmentPdfQuestionBuilder
 
 	public function writeQuestionTitleToPdf($question, $counter)
 	{
+		$this->pdf_helper->pdf->Ln(2);
 		$title = $this->getQuestionTitle($question, $counter);
 		$this->pdf_helper->pdf->SetTextColor(0);
 		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
@@ -129,15 +130,41 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->pdf_helper->pdf->Ln();
 	}
 
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 * @return string
+	 */
 	protected function getQuestionTitle($question, $counter)
 	{
-		$title = $this->lng->txt('question') . ' ' . $counter;
-		if(true)
+		$title			= $this->lng->txt('question') . ' ' . $counter;
+		$title_setting	= $this->test->getTitleOutput();
+		if($title_setting < 2)
 		{
 			$title .= ': ' .$question->getTitle();
+			if($title_setting < 1 )
+			{
+				$title .= $this->buildPointsText($question, $title);
+			}
 		}
 
 		return $title;
+	}
+
+	/**
+	 * @param assQuestion $question
+	 * @param $title
+	 * @return string
+	 */
+	protected function buildPointsText($question, $title)
+	{
+		$points     = $question->getMaximumPoints();
+		$points_txt = $this->lng->txt('point');
+		if($points > 1)
+		{
+			$points_txt = $this->lng->txt('points');
+		}
+		return ' (' . $points . ' ' . $points_txt . ')';
 	}
 
 	public function printDebug($pdf_h)
