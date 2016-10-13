@@ -39,6 +39,11 @@ class ilScanAssessmentScanner
 	protected $image_helper;
 
 	/**
+	 * @var ilScanAssessmentLog
+	 */
+	protected $log;
+
+	/**
 	 * ilScanAssessmentScanner constructor.
 	 * @param $fn
 	 */
@@ -58,6 +63,7 @@ class ilScanAssessmentScanner
 			$this->setImage($im);
 			$this->setTempImage($im);
 			$this->setThreshold(self::LOWER_THRESHOLD);
+			$this->log = ilScanAssessmentLog::getInstance();
 		}
 	}
 

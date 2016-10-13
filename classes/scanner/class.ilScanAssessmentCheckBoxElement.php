@@ -7,10 +7,10 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 class ilScanAssessmentCheckBoxElement
 {
-	const MIN_VALUE_BLACK		= 180;
-	const MIN_MARKED_AREA		= 0.30;
-	const MARKED_AREA_CHECKED	= 0.4;
-	const MARKED_AREA_UNCHECKED	= 0.95;
+	const MIN_VALUE_BLACK		= 150;
+	const MIN_MARKED_AREA		= 0.25;
+	const MARKED_AREA_CHECKED	= 0.35;
+	const MARKED_AREA_UNCHECKED	= 0.90;
 	const BOX_SIZE				= 5;
 	const CHECKED				= 2;
 	const UNCHECKED				= 1;
@@ -33,6 +33,11 @@ class ilScanAssessmentCheckBoxElement
 	protected $image_helper;
 
 	/**
+	 * @var ilScanAssessmentLog
+	 */
+	protected $log;
+
+	/**
 	 * ilScanAssessmentCheckBoxElement constructor.
 	 * @param ilScanAssessmentPoint $left_top
 	 * @param ilScanAssessmentPoint $right_bottom
@@ -43,6 +48,7 @@ class ilScanAssessmentCheckBoxElement
 		$this->left_top		= $left_top;
 		$this->right_bottom	= $right_bottom;
 		$this->image_helper	= $image_helper;
+		$this->log = ilScanAssessmentLog::getInstance();
 		$this->color_mapping = array(
 			self::UNTOUCHED	=> $this->image_helper->getYellow(),
 			self::UNCHECKED	=> $this->image_helper->getBlue(),
@@ -128,6 +134,7 @@ class ilScanAssessmentCheckBoxElement
 				}
 			}
 		}
+		$this->log->debug(sprintf('Checkbox pixels total %s, black %s, white %s.', $total, $black, $white));
 		return new ilScanAssessmentArea($total, $white, $black);
 	}
 
@@ -146,10 +153,12 @@ class ilScanAssessmentCheckBoxElement
 			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
 			{
 				$value	= self::CHECKED;
+				$this->log->debug(sprintf('Checkbox is checked.'));
 			}
 			else
 			{
 				$value	= self::UNCHECKED;
+				$this->log->debug(sprintf('Checkbox is unchecked.'));
 			}
 		}
 

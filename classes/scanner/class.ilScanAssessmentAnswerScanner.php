@@ -12,6 +12,11 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	const I_STILL_DO_NOT_KNOW_WHY_1 = 15; 
 	const I_STILL_DO_NOT_KNOW_WHY_2 = 3.5;
 
+	protected $translate_mark	= array(
+				0 => 'untouched',
+				1 => 'unchecked', 
+				2 => 'checked'
+	);
 	/**
 	 * @var array
 	 */
@@ -98,7 +103,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
 
 		$im2 = $im;
-
+		$this->log->debug(sprintf('Starting to scan checkboxes...'));
 		foreach($answers as $key => $value)
 		{
 			$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
@@ -109,8 +114,11 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 			$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 			$marked = $checkbox->isMarked($im, true);
+			$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+
 			$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked);
 		}
+		$this->log->debug(sprintf('Done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, 'bla.jpg');
 		return $this->checkbox_container;
 	}

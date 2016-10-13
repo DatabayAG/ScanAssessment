@@ -25,7 +25,7 @@ class ilScanAssessmentLoggingSettings implements ilLoggingSettings
 	{
 		$now				= new ilDateTime(time(), IL_CAL_UNIX);
 		$this->now			= $now->get(IL_CAL_FKT_DATE, 'Y_m_d-H_i_');
-		$this->level		= ilLogLevel::INFO;
+		$this->level		= ilLogLevel::DEBUG;
 		$this->cache_level	= ilLogLevel::DEBUG;
 	}
 

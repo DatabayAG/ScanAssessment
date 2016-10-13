@@ -96,6 +96,9 @@ class ilScanAssessmentPdfQuestionBuilder
 				'a_text' .' '. $answer->getAnswerText().' '.
 				'x' .' '. $x .' '.
 				'y' .' '.  $y;
+			$this->answer_positions[] = array('qid' => $question->getId() , 'aid' => $answer->getId() , 'a_text' => $answer->getAnswerText(), 'x' => $x , 'y' => $y);
+			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to X:%s Y:%s', $question->getId(), $answer->getAnswerText(), $x , $y));
+
 		}
 
 		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
@@ -114,11 +117,11 @@ class ilScanAssessmentPdfQuestionBuilder
 			if(in_array($question->getQuestionType(), $this->supported_question_types))
 			{
 				$this->questions[]	= $question;
-				$this->log->info('Question type '. $question->getQuestionType() .' instantiated.');
+				$this->log->debug(sprintf('Question with id %s type %s instantiated.', $question->getId(), $question->getQuestionType()));
 			}
 			else
 			{
-				$this->log->warn('Question type '. $question->getQuestionType() .' is not supported.');
+				$this->log->warn(sprintf('Question with id %s type %s is not supported.', $question->getId(), $question->getQuestionType()));
 			}
 		}
 		return $this->questions;
@@ -178,8 +181,10 @@ class ilScanAssessmentPdfQuestionBuilder
 	public function printDebug($pdf_h)
 	{
 		$pdf_h->addPage();
-		$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
 		$pdf_h->writeHTML(implode($this->answer_export, '<pre>'));
+
+		$this->log->debug(sprintf('Question positions: %s', json_encode($this->answer_positions)));
+		#$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
 		#$matriculation = $pdf_h->pdf->getMatriculationInformation();
 		#$pdf_h->writeHTML(print_r($matriculation['head_row'], '<pre>'));
 		#$pdf_h->writeHTML(print_r($matriculation['value_rows'], '<pre>'));

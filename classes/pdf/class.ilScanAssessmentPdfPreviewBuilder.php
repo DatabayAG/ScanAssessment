@@ -20,7 +20,7 @@ class ilPdfPreviewBuilder
 	protected $test;
 
 	/**
-	 * @var
+	 * @var ilScanAssessmentLog
 	 */
 	protected $log;
 
@@ -39,7 +39,7 @@ class ilPdfPreviewBuilder
 	 */
 	public function createDemoPdf()
 	{
-		$this->log->info('Starting to create demo pdf...');
+		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
 		$pdf_h	= new ilScanAssessmentPdfHelper();
 		/** @var tcpdf $pdf */
 		$pdf	= $pdf_h->pdf; 
@@ -53,6 +53,7 @@ class ilPdfPreviewBuilder
 		$counter = 1;
 		foreach($questions as $question)
 		{
+			$this->log->debug(sprintf('Starting transaction for page %s ...', $pdf->getPage()));
 			$pdf->startTransaction();
 			$start_page = $pdf->getPage();
 
@@ -63,6 +64,7 @@ class ilPdfPreviewBuilder
 			$end_page = $pdf->getPage();
 			if($end_page != $start_page)
 			{
+				$this->log->debug(sprintf('Transaction failed for page %s rollback.', $pdf->getPage()));
 				$pdf->rollbackTransaction(true);
 				$pdf_h->addPage();
 				$question_builder->writeQuestionTitleToPdf($question, $counter);
@@ -70,13 +72,14 @@ class ilPdfPreviewBuilder
 			}
 			else
 			{
+				$this->log->debug(sprintf('Transaction worked for page %s commit.', $pdf->getPage()));
 				$pdf->commitTransaction();
 			}
 			$counter++;
 		}
 		$question_builder->printDebug($pdf_h);
 		$pdf_h->output();
-		$this->log->info('Creating demo pdf finished.');
+		$this->log->info(sprintf('Creating demo pdf finished for test %s.', $this->test->getId()));
 	}
 
 	/**
