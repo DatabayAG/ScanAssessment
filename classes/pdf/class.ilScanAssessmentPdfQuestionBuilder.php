@@ -73,10 +73,32 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
 	}
 
+	public function addQuestionToPdf($question, $counter)
+	{
+		$this->writeQuestionTitleToPdf($question, $counter);
+		$this->writeQuestionToPdf($question);
+	}
+	
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 */
+	protected function writeQuestionTitleToPdf($question, $counter)
+	{
+		$this->pdf_helper->pdf->Ln(2);
+		$title = $this->getQuestionTitle($question, $counter);
+		$this->pdf_helper->pdf->SetTextColor(0);
+		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
+		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'B',PDF_DEFAULT_FONT_SIZE_HEAD);
+		$this->pdf_helper->pdf->Cell(80, 5, $title , 0, 0, 'L', 1);
+		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE_HEAD);
+		$this->pdf_helper->pdf->Ln();
+	}
+
 	/**
 	 * @param assQuestion $question[]
 	 */
-	public function writeQuestionToPdf($question)
+	protected function writeQuestionToPdf($question)
 	{
 		$this->pdf_helper->pdf->Ln(1);
 		$this->pdf_helper->writeHTML($question->getQuestion());
@@ -125,22 +147,6 @@ class ilScanAssessmentPdfQuestionBuilder
 			}
 		}
 		return $this->questions;
-	}
-
-	/**
-	 * @param assQuestion $question
-	 * @param $counter
-	 */
-	public function writeQuestionTitleToPdf($question, $counter)
-	{
-		$this->pdf_helper->pdf->Ln(2);
-		$title = $this->getQuestionTitle($question, $counter);
-		$this->pdf_helper->pdf->SetTextColor(0);
-		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
-		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'B',PDF_DEFAULT_FONT_SIZE_HEAD);
-		$this->pdf_helper->pdf->Cell(80, 5, $title , 0, 0, 'L', 1);
-		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE_HEAD);
-		$this->pdf_helper->pdf->Ln();
 	}
 
 	/**
