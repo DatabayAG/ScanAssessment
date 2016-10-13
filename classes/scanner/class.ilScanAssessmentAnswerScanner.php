@@ -8,8 +8,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	const MIN_VALUE_BLACK		= 180;
 	const MIN_MARKED_AREA		= 0.05;
 	const MARKED_AREA_CHECKED	= 0.3;
-	const BOX_SIZE				= 5;
-	
+
 	const I_STILL_DO_NOT_KNOW_WHY_1 = 15; 
 	const I_STILL_DO_NOT_KNOW_WHY_2 = 3.5;
 
@@ -94,8 +93,6 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			['qid' => 458, 'aid' => -1, 'a_text' => 'Mumbai', 'x' => 49, 'y' => '242.15001066667'],
 			['qid' => 458, 'aid' => -1, 'a_text' => 'Bangkok', 'x' => 49, 'y' => '246.17778866667'],
 			['qid' => 458, 'aid' => -1, 'a_text' => 'Peking', 'x' => 49, 'y' => '250.20556666667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Metropolis', 'x' => 49, 'y' => '267.28890066667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Delphi', 'x' => 49, 'y' => '271.31667866667']
 		];
 
 		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
@@ -108,7 +105,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
 
 			$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
-			$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
+			$second_point = new ilScanAssessmentPoint($answer_x + (PDF_ANSWERBOX_W * $corrected->getX()), $answer_y + (PDF_ANSWERBOX_H * $corrected->getY()));
 
 			$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 			$marked = $checkbox->isMarked($im, true);

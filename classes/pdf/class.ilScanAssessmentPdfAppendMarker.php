@@ -1,6 +1,7 @@
 <?php
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/fpdi/fpdi.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfConstants.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfHeaderForm.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentVector.php';
 
 /**
@@ -18,27 +19,9 @@ class ilPDFAppendMarker extends FPDI{
 	protected $docArea = '';
 	protected $docType = '';
 	protected $lastDocType = NULL;
+	
 
-
-	protected $matriculation_information = array();
-
-	/**
-	 * @return array
-	 */
-	public function getMatriculationInformation()
-	{
-		return $this->matriculation_information;
-	}
-
-	/**
-	 * @param array $matriculation_information
-	 */
-	public function setMatriculationInformation($matriculation_information)
-	{
-		$this->matriculation_information = $matriculation_information;
-	}
-
-	protected function addMarkerAndQrCode()
+	public function addMarkerAndQrCode()
 	{
 		if(count($this->QRState) > 0)
 		{
@@ -72,58 +55,6 @@ class ilPDFAppendMarker extends FPDI{
 	}
 
 	/**
-	 * @param string $format
-	 */
-	protected function addMatriculationForm($format = 'X-XXX-X-XX')
-	{
-		$columns	= strlen($format);
-		$positions	= array('head_row' => array(), 'value_rows' => array());
-		if($columns > 0)
-		{
-			$this->Ln(1);
-			$this->MultiCell(55, 25, ' Vorname: ', 1, 'L', 1, 0, '', '', true);
-			$this->Ln();
-			$this->MultiCell(55, 25, ' Nachname: ', 1, 'L', 0, 1, '', '', true);
-			$this->MultiCell(125, 50, 'Prüfungsteilnehmer-ID für den Prüfungsbogen: ', 1, 'C', 0, 1, 70, 34, true);
-
-			for($i=0; $i<=9; $i++)
-			{
-				$y = 44 + ($i * 4);
-				$x = 188 - ($columns * 4);
-				$this->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x, $y , true);
-
-				for($j=0; $j <= $columns; $j++)
-				{
-					if($format[$j] === '-')
-					{
-						$spacer = 2;
-					}
-					else
-					{
-						$spacer = 0;
-					}
-					if($format[$j] === 'X')
-					{
-						$x2 = ($x + 2) + (4 * ($j + 1)) + $spacer;
-						$y2 = $y + PDF_CHECKBOX_MARGIN;
-						if($i === 0)
-						{
-							$this->Rect($x2 - 0.5, $y2 - 5, PDF_ANSWERBOX_W + 1, PDF_ANSWERBOX_H +1, 'D');
-							$positions['head_row'][] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2 - 0.5, $y2 - 5), PDF_ANSWERBOX_W +1);
-						}
-						$this->Rect($x2, $y2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D');
-						$positions['value_rows'][$j][$i] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2, $y2), PDF_ANSWERBOX_W);
-					}
-					if($format[$j] === '-' && $i === 0)
-					{
-						$this->Rect(($x + 2) + (4 * ($j + 1)), $y - 3, 2, 0, 'D');
-					}
-				}
-			}
-		}
-		$this->setMatriculationInformation($positions);
-	}
-	/**
 	 * Overwrites TCPDFS Header function
 	 */
 	public function Header() 
@@ -138,7 +69,7 @@ class ilPDFAppendMarker extends FPDI{
 		$this->Ln();
 		$this->Cell(30, 5, 'TITLE', 1, 0, 'C', 1);
 		$this->Cell(120, 5, 'University of BLAAAA', 1, 0, 'C', 1);
-		$this->Cell(30, 5, 'TITLE', 1, 0, 'C', 1);
+		$this->Cell(30, 5, '30.09.2016', 1, 0, 'C', 1);
 		$this->Ln();
 
 		if($this->pageNr === 1)
@@ -147,11 +78,11 @@ class ilPDFAppendMarker extends FPDI{
 			$this->Cell(120, 8, 'Einführung in die Naturheilkunde 2016', 'TB', 0, 'C', 1);
 			$this->Cell(20, 8, 'FB47 1/3', 'RTB', 0, 'C', 1);
 			$this->Ln();
-			$this->addMatriculationForm();
-			$this->Ln(10);
-			$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
+			$header_form = new ilScanAssessmentPdfHeaderForm($this);
+			$header_form->addMatriculationForm();
 		}
-
+		$this->Ln(5);
+		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
 		$this->addMarkerAndQrCode();
 		return;
 	}
@@ -161,7 +92,9 @@ class ilPDFAppendMarker extends FPDI{
 	 */
 	public function Footer()
 	{
-		$this->MultiCell(0, 00, 'University of Bla', 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
+		global $lng;
+		$page = $lng->txt('page') . ' ' . $this->getAliasNumPage().'/'.$this->getAliasNbPages();
+		$this->MultiCell(0, 00, 'University of Bla' . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
 	protected function addMarker()

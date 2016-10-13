@@ -2,7 +2,8 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfGenerationHelper.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfQuestionBuilder.php');
 
 
 /**
@@ -11,26 +12,11 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
  */
 class ilPdfPreviewBuilder
 {
+
 	/**
 	 * @var ilObjTest
 	 */
 	protected $test;
-
-	/**
-	 * @var assQuestion[]
-	 */
-	protected $questions;
-
-	/**
-	 * @var array
-	 */
-	protected $circleStyle;
-	
-	/**
-	 * @var array
-	 */
-	protected $answer_positions = array();
-	protected $answer_export = array();
 
 	/**
 	 * ilPdfPreviewBuilder constructor.
@@ -38,9 +24,7 @@ class ilPdfPreviewBuilder
 	 */
 	public function __construct(ilObjTest $test)
 	{
-		$this->test			= $test;
-		$this->questions	= array();
-		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
+		$this->test = $test;
 	}
 
 	/**
@@ -48,47 +32,41 @@ class ilPdfPreviewBuilder
 	 */
 	public function createDemoPdf()
 	{
-		$this->instantiateQuestions();
-		$pdf_h = new ilPdfGenerationHelper();
+		$pdf_h	= new ilScanAssessmentPdfHelper();
+		/** @var tcpdf $pdf */
+		$pdf	= $pdf_h->pdf; 
+		$question_builder = new ilScanAssessmentPdfQuestionBuilder($this->test, $pdf_h);
+		$questions = $question_builder->instantiateQuestions();
 
 		$this->addQrCodeToPage($pdf_h);
 
-		$pdf_h->pdf->setCellMargins(15);
+		$pdf->setCellMargins(15);
 		$pdf_h->addPage();
-		
-		foreach($this->questions as $question)
+		$counter = 1;
+		foreach($questions as $question)
 		{
-			$pdf_h->pdf->startTransaction();
-			$start_page = $pdf_h->pdf->getPage();
+			$pdf->startTransaction();
+			$start_page = $pdf->getPage();
 
-			$this->writeQuestionToPdf($pdf_h, $question, $this->circleStyle);
+			$this->addQrCodeToPage($pdf_h);
+			$question_builder->writeQuestionTitleToPdf($question, $counter);
+			$question_builder->writeQuestionToPdf($question);
 
-			$end_page = $pdf_h->pdf->getPage();
-			if  ($end_page != $start_page) 
+			$end_page = $pdf->getPage();
+			if  ($end_page != $start_page)
 			{
-				$pdf_h->pdf->rollbackTransaction(true);
-				$this->addQrCodeToPage($pdf_h);
+				$pdf->rollbackTransaction(true);
 				$pdf_h->addPage();
-				$this->writeQuestionToPdf($pdf_h, $question, $this->circleStyle);
-			} 
-			else 
-			{
-				$pdf_h->pdf->commitTransaction();
+				$question_builder->writeQuestionToPdf($question);
 			}
+			else
+			{
+				$pdf->commitTransaction();
+			}
+			$counter++;
 		}
-
-		$this->printDebug($pdf_h);
+		$question_builder->printDebug($pdf_h);
 		$pdf_h->output();
-	}
-
-	protected function printDebug($pdf_h)
-	{
-		$pdf_h->addPage();
-		$pdf_h->writeHTML(implode($this->answer_positions, '<pre>'));
-		$pdf_h->writeHTML(implode($this->answer_export, '<pre>'));
-		$matriculation = $pdf_h->pdf->getMatriculationInformation();
-		#$pdf_h->writeHTML(print_r($matriculation['head_row'], '<pre>'));
-		#$pdf_h->writeHTML(print_r($matriculation['value_rows'], '<pre>'));
 	}
 
 	/**
@@ -101,66 +79,5 @@ class ilPdfPreviewBuilder
 		$pdf_h->createQRCode('DemoCode');
 	}
 
-	/**
-	 * @param $pdf_h
-	 * @param assQuestion $question
-	 * @param $circleStyle
-	 */
-	protected function writeQuestionToPdf($pdf_h, $question, $circleStyle)
-	{
-		//$pdf_h->writeHTML($question->getTitle());
-		$pdf_h->pdf->Ln(1);
-		$pdf_h->writeHTML($question->getQuestion());
-		$pdf_h->pdf->Ln(2);
-		foreach($question->getAnswers() as $key => $answer)
-		{
-			$pdf_h->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
-			$pdf_h->pdf->Rect(34, $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $circleStyle));
-			$pdf_h->writeHTML($answer->getAnswerText());
-
-			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $pdf_h->pdf->GetX() .' '. $pdf_h->pdf->GetY();
-			$x = $pdf_h->pdf->GetX() + 34;
-			$y = $pdf_h->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->answer_export[] =		'qid' .' '. $question->getId().' '. 
-										   'aid'.' '. $answer->getId() .' '. 
-										   'a_text' .' '. $answer->getAnswerText().' '.
-										   'x' .' '. $x .' '.
-										   'y' .' '.  $y;
-		}
-		
-		$pdf_h->pdf->setCellMargins(15);
-		$pdf_h->pdf->Ln(2);
-		$pdf_h->writeHTML('<hr/>');
-
-		$pageData = array(
-			'TOPLEFT'         => array(
-				"x" => PDF_TOPLEFT_SYMBOL_X,
-				"y" => PDF_TOPLEFT_SYMBOL_Y,
-				"w" => PDF_TOPLEFT_SYMBOL_W
-			),
-			'BOTTOMLEFT'      => array(
-				"x" => PDF_TOPLEFT_SYMBOL_X,
-				"y" => $pdf_h->pdf->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y,
-				"w" => PDF_TOPLEFT_SYMBOL_W
-			),
-			'BOTTOMRIGHT'     => array(
-				"x" => $pdf_h->pdf->getPageWidth() - PDF_BOTTOMRIGHT_QR_MARGIN_X,
-				"y" => $pdf_h->pdf->getPageHeight() - PDF_BOTTOMRIGHT_QR_MARGIN_Y,
-				"w" => PDF_BOTTOMRIGHT_QR_W
-			),
-			'PAGESIZE'     => array(
-			"width" => $pdf_h->pdf->getPageWidth(),
-			"height" => $pdf_h->pdf->getPageHeight(),
-			)
-		);
-		$a = 0;
-	}
-	protected function instantiateQuestions()
-	{
-		require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
-		foreach($this->test->getQuestions() as $key => $value)
-		{
-			$this->questions[] = assQuestion::_instantiateQuestion($value);
-		}
-	}
+	
 }

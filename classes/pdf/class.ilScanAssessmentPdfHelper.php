@@ -6,9 +6,9 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfConstants.php';
 
 /**
- * Class ilPdfGenerationHelper
+ * Class ilScanAssessmentPdfHelper
  */
-class ilPdfGenerationHelper
+class ilScanAssessmentPdfHelper
 {
 	/**
 	 * @var ilPdfAppendMarker
@@ -21,7 +21,7 @@ class ilPdfGenerationHelper
 	protected $qr_images_path = '';
 
 	/**
-	 * ilPdfGenerationHelper constructor.
+	 * ilScannAssessmentPdfHelper constructor.
 	 * @param null $backgroundPDF
 	 */
 	public function __construct($backgroundPDF = NULL) 

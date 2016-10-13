@@ -34,7 +34,7 @@ class ilScanAssessmentScanner
 	protected $threshold;
 
 	/**
-	 * @var ilScanAssessmentImageHelper
+	 * @var ilScanAssessmentImageWrapper
 	 */
 	protected $image_helper;
 
