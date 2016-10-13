@@ -87,7 +87,7 @@ class ilPdfPreviewBuilder
 			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
-		$question_builder->printDebug($pdf_h);
+		#$question_builder->printDebug($pdf_h);
 		$pdf_h->output();
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating demo pdf finished for test %s added %s questions which took %s seconds.', $this->test->getId(), $counter - 1, $end_time - $start_time));

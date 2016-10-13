@@ -50,11 +50,11 @@ class ilScanAssessmentLogFileWriter extends ilScanAssessmentBaseLogWriter
 	{
 		$now = new ilDateTime(time(), IL_CAL_UNIX);
 		#$file = $now->get(IL_CAL_FKT_DATE, 'YmdHi_') . 'ilScanAssessment.log';
-		$file = 'ilScanAssessment.log';
-		$tmpdir = ilUtil::ilTempnam();
-		ilUtil::makeDir($tmpdir);
+		$file = $now->get(IL_CAL_FKT_DATE, 'Ymd_') . 'ilScanAssessment.log';
+		$tmp_dir = ilUtil::ilTempnam();
+		ilUtil::makeDir($tmp_dir);
 
-		$this->setFilename($tmpdir . DIRECTORY_SEPARATOR . $file);
+		$this->setFilename($tmp_dir . DIRECTORY_SEPARATOR . $file);
 
 		$this->settings = ilScanAssessmentLoggingSettings::getInstance();
 		$this->settings->setLogFile($file);

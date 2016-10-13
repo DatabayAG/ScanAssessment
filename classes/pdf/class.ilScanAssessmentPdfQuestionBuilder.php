@@ -113,11 +113,11 @@ class ilScanAssessmentPdfQuestionBuilder
 			$this->answer_positions[] = $question->getId() .' '. $answer->getId() .' '. $answer->getAnswerText() .' '. $this->pdf_helper->pdf->GetX() .' '. $this->pdf_helper->pdf->GetY();
 			$x = $this->pdf_helper->pdf->GetX() + 34;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->answer_export[] =		'qid' .' '. $question->getId().' '.
-				'aid'.' '. $answer->getId() .' '.
-				'a_text' .' '. $answer->getAnswerText().' '.
-				'x' .' '. $x .' '.
-				'y' .' '.  $y;
+			$this->answer_export[] =		'qid' 		.' '. $question->getId()		.' '.
+											'aid'		.' '. $answer->getId()			.' '.
+											'a_text'	.' '. $answer->getAnswerText()	.' '.
+											'x'			.' '. $x						.' '.
+											'y'			.' '. $y;
 			$this->answer_positions[] = array('qid' => $question->getId() , 'aid' => $answer->getId() , 'a_text' => $answer->getAnswerText(), 'x' => $x , 'y' => $y);
 			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to X:%s Y:%s', $question->getId(), $answer->getAnswerText(), $x , $y));
 

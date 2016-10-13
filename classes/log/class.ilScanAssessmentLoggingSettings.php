@@ -15,7 +15,7 @@ class ilScanAssessmentLoggingSettings implements ilLoggingSettings
 	private $cache			= FALSE;
 	private $cache_level	= null;
 	private $now			= null;
-	
+
 	protected $logfile;
 
 	/**
@@ -62,7 +62,7 @@ class ilScanAssessmentLoggingSettings implements ilLoggingSettings
 	 */
 	public function getLogDir()
 	{
-		return ilUtil::getDataDir().'/'.ilScanAssessmentLoggingSettings::getInstance()->getLogDirectory();
+		return ilUtil::getDataDir().'/'.self::getInstance()->getLogDirectory();
 	}
 
 	/**
