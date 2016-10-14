@@ -1,6 +1,8 @@
 <?php
 
 require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('questions/class.ilScanAssessment_assMultipleChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('questions/class.ilScanAssessment_assKprimChoice.php');
 /**
  * Class ilScanAssessmentPdfQuestionBuilder
  */
@@ -74,18 +76,16 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->circleStyle	= array('width' => 0.25, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(10,10,10));
 	}
 
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 */
 	public function addQuestionToPdf($question, $counter)
 	{
 		$this->writeQuestionTitleToPdf($question, $counter);
-		if($question->getQuestionType() === 'assSingleChoice' ||  $question->getQuestionType() ===  'assMultipleChoice')
-		{
-			$this->writeMultipleAndSingleChoiceQuestionToPdf($question);
-		}
-		else if($question->getQuestionType() === 'assKprimChoice')
-		{
-			$this->writeKprimChoiceQuestionToPdf($question);
-		}
-
+		$class = 'ilScanAssessment_' . $question->getQuestionType();
+		$instance = new $class($this->pdf_helper, $this->circleStyle);
+		$instance->writeQuestionToPdf($question);
 	}
 	
 	/**
@@ -104,87 +104,6 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->pdf_helper->pdf->Ln();
 	}
 
-	/**
-	 * @param assQuestion $question[]
-	 */
-	protected function writeMultipleAndSingleChoiceQuestionToPdf($question)
-	{
-		$this->pdf_helper->pdf->Ln(1);
-		$this->pdf_helper->writeHTML($question->getQuestion());
-		$this->pdf_helper->pdf->Ln(2);
-
-		foreach($question->getAnswers() as $key => $answer)
-		{
-			$this->pdf_helper->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$this->pdf_helper->writeHTML($answer->getAnswerText());
-
-			$x = $this->pdf_helper->pdf->GetX() + 34;
-			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->answer_export[] =		'qid' 		.' '. $question->getId()		.' '.
-											'aid'		.' '. $answer->getId()			.' '.
-											'a_text'	.' '. $answer->getAnswerText()	.' '.
-											'x'			.' '. $x						.' '.
-											'y'			.' '. $y;
-			$this->answer_positions[] = array('qid' => $question->getId() , 'aid' => $answer->getId() , 'a_text' => $answer->getAnswerText(), 'x' => $x , 'y' => $y);
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to [%s, %s]', $question->getId(), $answer->getAnswerText(), $x , $y));
-
-		}
-
-		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
-		$this->pdf_helper->pdf->Ln(2);
-		$this->pdf_helper->pdf->Line($this->pdf_helper->pdf->GetX() + 10, $this->pdf_helper->pdf->GetY(), $this->pdf_helper->pdf->GetX() + 160, $this->pdf_helper->pdf->GetY());
-	}
-
-	/**
-	 * @param assKprimChoice $question
-	 */
-	protected function writeKprimChoiceQuestionToPdf($question)
-	{
-		$this->pdf_helper->pdf->Ln(1);
-		$this->pdf_helper->writeHTML($question->getQuestion());
-		$this->pdf_helper->pdf->Ln(2);
-
-		$false_label = '-';
-		$true_label = '+';
-
-		$this->pdf_helper->pdf->setCellMargins(20.8, PDF_CHECKBOX_MARGIN);
-		$this->pdf_helper->pdf->Cell(2, 0,$true_label , 0, 0, 'R');
-		$this->pdf_helper->pdf->setCellMargins(1, PDF_CHECKBOX_MARGIN);
-		$this->pdf_helper->pdf->Cell(2, 0,$false_label , 0, 0, 'L');
-		$this->pdf_helper->pdf->Ln();
-
-		foreach($question->getAnswers() as $key => $answer)
-		{
-			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$this->pdf_helper->pdf->Rect(39, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$this->pdf_helper->pdf->setCellMargins(28, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->writeHTML($answer->getAnswerText());
-
-			$x1 = $this->pdf_helper->pdf->GetX() + 34;
-			$x2 = $this->pdf_helper->pdf->GetX() + 39;
-			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->answer_export[] =	'correct' .' ' .'qid' 		.' '. $question->getId()		.' '.
-										'position'		.' '. $answer->getPosition() .' '.
-										'a_text'	.' '. $answer->getAnswerText()	.' '.
-										'x'			.' '. $x1						.' '.
-										'y'			.' '. $y .' '.
-										'wrong' .' ' .'qid' 		.' '. $question->getId()		.' '.
-										'position'		.' '. $answer->getPosition() .' '.
-										'a_text'	.' '. $answer->getAnswerText()	.' '.
-										'x'			.' '. $x2						.' '.
-										'y'			.' '. $y;
-			$this->answer_positions[] = array( 'correct' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x1 , 'y' => $y),
-												'wrong' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x2 , 'y' => $y));
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getAnswerText(), $x1 , $y, $x2 , $y));
-
-		}
-
-		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
-		$this->pdf_helper->pdf->Ln(2);
-		$this->pdf_helper->pdf->Line($this->pdf_helper->pdf->GetX() + 10, $this->pdf_helper->pdf->GetY(), $this->pdf_helper->pdf->GetX() + 160, $this->pdf_helper->pdf->GetY());
-	}
-	
 	/**
 	 * @return array|assQuestion[]
 	 */
