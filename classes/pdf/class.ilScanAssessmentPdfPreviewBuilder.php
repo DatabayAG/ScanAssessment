@@ -55,8 +55,8 @@ class ilPdfPreviewBuilder
 
 		if($pdf->getPage() != $start_page)
 		{
-			$pdf->rollbackTransaction(true);
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
+			$pdf->rollbackTransaction(true);
 
 			$this->addPageWithQrCode($pdf_h);
 			$question_builder->addQuestionToPdf($question, $counter);
