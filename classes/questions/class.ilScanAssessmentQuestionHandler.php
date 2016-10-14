@@ -7,6 +7,14 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion 
 {
+	const TITLE_AND_POINTS		= 0;
+	const ONLY_TITLE			= 1;
+	const QUESTION_NUMBER_ONLY	= 2;
+
+	/**
+	 * @var ilLanguage
+	 */
+	protected $lng;
 
 	/**
 	 * @var ilScanAssessmentPdfHelper
@@ -30,6 +38,9 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 
 	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
 	{
+		global $lng;
+
+		$this->lng			= $lng;
 		$this->pdf_helper	= $pdf_helper;
 		$this->log			= ilScanAssessmentLog::getInstance();
 		$this->circleStyle	= $circleStyle;
@@ -66,5 +77,58 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 		$this->pdf_helper->pdf->Ln(1);
 		$this->pdf_helper->writeHTML($question->getQuestion());
 		$this->pdf_helper->pdf->Ln(2);
+	}
+
+	/**
+	 * @param assQuestion $question
+	 * @param ilObjTest $test
+	 * @param $counter
+	 */
+	public function writeQuestionTitleToPdf($question, $test, $counter)
+	{
+		$this->pdf_helper->pdf->Ln(2);
+		$title = $this->getQuestionTitle($question, $test, $counter);
+		$this->pdf_helper->pdf->SetTextColor(0);
+		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
+		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'B',PDF_DEFAULT_FONT_SIZE_HEAD);
+		$this->pdf_helper->pdf->Cell(80, 5, $title , 0, 0, 'L', 1);
+		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE);
+		$this->pdf_helper->pdf->Ln();
+	}
+
+	/**
+	 * @param assQuestion $question
+	 * @param ilObjTest $test
+	 * @param $counter
+	 * @return string
+	 */
+	protected function getQuestionTitle($question, $test, $counter)
+	{
+		$title			= $this->lng->txt('question') . ' ' . $counter . ': ';
+		$title_setting	= $test->getTitleOutput();
+		if($title_setting < self::QUESTION_NUMBER_ONLY)
+		{
+			$title .= $question->getTitle();
+			if($title_setting < self::ONLY_TITLE)
+			{
+				$title .= $this->buildPointsText($question->getMaximumPoints());
+			}
+		}
+
+		return $title;
+	}
+
+	/**
+	 * @param $points
+	 * @return string
+	 */
+	protected function buildPointsText($points)
+	{
+		$points_txt = $this->lng->txt('point');
+		if($points > 1)
+		{
+			$points_txt = $this->lng->txt('points');
+		}
+		return ' (' . $points . ' ' . $points_txt . ')';
 	}
 }

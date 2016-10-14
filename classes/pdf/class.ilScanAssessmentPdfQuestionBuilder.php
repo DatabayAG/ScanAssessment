@@ -9,20 +9,11 @@ ilScanAssessmentPlugin::getInstance()->includeClass('questions/class.ilScanAsses
 class ilScanAssessmentPdfQuestionBuilder
 {
 
-	const TITLE_AND_POINTS		= 0;
-	const ONLY_TITLE			= 1;
-	const QUESTION_NUMBER_ONLY	= 2;
-
 	protected $supported_question_types = array(
 		'assSingleChoice',
 		'assMultipleChoice',
 		'assKprimChoice'
 	);
-	
-	/**
-	 * @var ilLanguage
-	 */
-	protected $lng;
 
 	/**
 	 * @var ilObjTest
@@ -66,9 +57,7 @@ class ilScanAssessmentPdfQuestionBuilder
 	 */
 	public function __construct(ilObjTest $test, ilScanAssessmentPdfHelper $pdf)
 	{
-		global $lng;
 
-		$this->lng			= $lng;
 		$this->test			= $test;
 		$this->pdf_helper	= $pdf;
 		$this->log			= ilScanAssessmentLog::getInstance();
@@ -82,27 +71,11 @@ class ilScanAssessmentPdfQuestionBuilder
 	 */
 	public function addQuestionToPdf($question, $counter)
 	{
-		$this->writeQuestionTitleToPdf($question, $counter);
 		$class = 'ilScanAssessment_' . $question->getQuestionType();
 		/** @var ilScanAssessmentQuestion $instance */
 		$instance = new $class($this->pdf_helper, $this->circleStyle);
+		$instance->writeQuestionTitleToPdf($question, $this->test , $counter);
 		$instance->writeQuestionToPdf($question);
-	}
-	
-	/**
-	 * @param assQuestion $question
-	 * @param $counter
-	 */
-	protected function writeQuestionTitleToPdf($question, $counter)
-	{
-		$this->pdf_helper->pdf->Ln(2);
-		$title = $this->getQuestionTitle($question, $counter);
-		$this->pdf_helper->pdf->SetTextColor(0);
-		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
-		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'B',PDF_DEFAULT_FONT_SIZE_HEAD);
-		$this->pdf_helper->pdf->Cell(80, 5, $title , 0, 0, 'L', 1);
-		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE);
-		$this->pdf_helper->pdf->Ln();
 	}
 
 	/**
@@ -116,49 +89,14 @@ class ilScanAssessmentPdfQuestionBuilder
 			if(in_array($question->getQuestionType(), $this->supported_question_types))
 			{
 				$this->questions[]	= $question;
-				$this->log->debug(sprintf('Question with id %s type %s instantiated.', $question->getId(), $question->getQuestionType()));
+				$this->log->debug(sprintf('Question with id %s of type %s instantiated.', $question->getId(), $question->getQuestionType()));
 			}
 			else
 			{
-				$this->log->warn(sprintf('Question with id %s type %s is not supported.', $question->getId(), $question->getQuestionType()));
+				$this->log->warn(sprintf('Question with id %s of type %s is not supported.', $question->getId(), $question->getQuestionType()));
 			}
 		}
 		return $this->questions;
-	}
-
-	/**
-	 * @param assQuestion $question
-	 * @param $counter
-	 * @return string
-	 */
-	protected function getQuestionTitle($question, $counter)
-	{
-		$title			= $this->lng->txt('question') . ' ' . $counter . ': ';
-		$title_setting	= $this->test->getTitleOutput();
-		if($title_setting < self::QUESTION_NUMBER_ONLY)
-		{
-			$title .= $question->getTitle();
-			if($title_setting < self::ONLY_TITLE)
-			{
-				$title .= $this->buildPointsText($question->getMaximumPoints());
-			}
-		}
-
-		return $title;
-	}
-
-	/**
-	 * @param $points
-	 * @return string
-	 */
-	protected function buildPointsText($points)
-	{
-		$points_txt = $this->lng->txt('point');
-		if($points > 1)
-		{
-			$points_txt = $this->lng->txt('points');
-		}
-		return ' (' . $points . ' ' . $points_txt . ')';
 	}
 
 	/**
