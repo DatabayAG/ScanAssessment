@@ -19,7 +19,7 @@ scas_pc_is_active_info#:#Bitte schalten Sie den Test 'online'.
 scas_pc_is_rnd_or_fixed_test#:#Modus 'Zufällige Fragenauswahl' oder 'Fest definierte Fragenauswahl'? 
 scas_pc_is_rnd_or_fixed_test_info#:#Bitte beachten Sie, dass ausschließlich Tests mit dem Modus 'Zufällige Fragenauswahl' oder 'Fest definierte Fragenauswahl' unterstützt werden.
 scas_pc_has_valid_questions#:#Korrekte Fragenkonfiguration?
-scas_pc_has_valid_questions_info#:#Bitte beachten Sie, dass ausschließlich Fragen vom Typ 'Single Choice' und 'Multiple Choice' unterstützt werden.
+scas_pc_has_valid_questions_info#:#Bitte beachten Sie, dass ausschließlich Fragen vom Typ 'Single Choice', 'Multiple Choice' und 'Kprim' unterstützt werden.
 scas_cant_save_pc#:#Bitte erfüllen Sie vor dem Aktivieren alle Voraussetzungen.
 scas_cant_delete_cat_in_use#:#Die Kategorie '%s' wird aktuell im Test '%s' verwendet und kann daher nicht gelöscht werden. 
 scas_return#:#Rückführung

@@ -19,7 +19,7 @@ scas_pc_is_active_info#:#Please set this test to 'online'.
 scas_pc_is_rnd_or_fixed_test#:#Mode 'Random Set of Questions' or 'Fixed Set of Questions'? 
 scas_pc_is_rnd_or_fixed_test_info#:#Please choose the test mode 'Random Set of Questions' or 'Fixed Set of Questions'.
 scas_pc_has_valid_questions#:#Valid Questions?
-scas_pc_has_valid_questions_info#:#Only questions of type 'Multiple Choice Question (Single Answer)' and 'Multiple Choice Question (Multiple Answers)' are supported.
+scas_pc_has_valid_questions_info#:#Only questions of type 'Multiple Choice Question (Single Answer)', 'Multiple Choice Question (Multiple Answers)' and 'Kprim' are supported.
 scas_cant_save_pc#:#Please ensure all preconditions are fulfilled.
 scas_cant_delete_cat_in_use#:#Category '%s' can't be deleted because is currently used by test '%s'.
 scas_return#:#Retrun Results
