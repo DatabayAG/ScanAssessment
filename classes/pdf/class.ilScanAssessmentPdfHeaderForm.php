@@ -5,6 +5,9 @@
  */
 class ilScanAssessmentPdfHeaderForm
 {
+	const NUMBER = 'X';
+	const SPACER = '-';
+
 	/**
 	 * @var array
 	 */
@@ -86,6 +89,7 @@ class ilScanAssessmentPdfHeaderForm
 		$columns	= strlen($format);
 		$positions	= array('head_row' => array(), 'value_rows' => array());
 		$this->appendFirstAndSurnameBoxes($columns);
+
 		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_SIZE_MATRICULATION);
 		if($columns > 0)
 		{
@@ -97,18 +101,18 @@ class ilScanAssessmentPdfHeaderForm
 
 				for($j=0; $j <= $columns; $j++)
 				{
-					if($format[$j] === '-')
+					if($format[$j] === self::SPACER)
 					{
-						$spacer = 2;
+						$spacing = 2;
 					}
 					else
 					{
-						$spacer = 0;
+						$spacing = 0;
 					}
-					$x2 = ($x + 2) + (4 * ($j + 1)) + $spacer;
+					$x2 = ($x + 2) + (4 * ($j + 1)) + $spacing;
 					$y2 = $y + PDF_CHECKBOX_MARGIN;
 
-					if($format[$j] === 'X')
+					if($format[$j] === self::NUMBER)
 					{
 						if($i === 0)
 						{
@@ -118,7 +122,7 @@ class ilScanAssessmentPdfHeaderForm
 						$this->pdf->Rect($x2, $y2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D');
 						$positions['value_rows'][$j][$i] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2, $y2), PDF_ANSWERBOX_W);
 					}
-					if($format[$j] === '-' && $i === 0)
+					if($format[$j] === self::SPACER && $i === 0)
 					{
 						$this->pdf->Line($x2 - 2, $y2 - 3.2, $x2, $y2 - 3.2);
 					}
