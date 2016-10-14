@@ -39,7 +39,7 @@ class ilScanAssessment_assKprimChoice implements ilScanAssessmentQuestion
 		$false_label = '-';
 		$true_label = '+';
 
-		$this->pdf_helper->pdf->setCellMargins(20.8, PDF_CHECKBOX_MARGIN);
+		$this->pdf_helper->pdf->setCellMargins(20.5, PDF_CHECKBOX_MARGIN);
 		$this->pdf_helper->pdf->Cell(2, 0,$true_label , 0, 0, 'R');
 		$this->pdf_helper->pdf->setCellMargins(1, PDF_CHECKBOX_MARGIN);
 		$this->pdf_helper->pdf->Cell(2, 0,$false_label , 0, 0, 'L');

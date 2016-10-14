@@ -84,6 +84,7 @@ class ilScanAssessmentPdfQuestionBuilder
 	{
 		$this->writeQuestionTitleToPdf($question, $counter);
 		$class = 'ilScanAssessment_' . $question->getQuestionType();
+		/** @var ilScanAssessmentQuestion $instance */
 		$instance = new $class($this->pdf_helper, $this->circleStyle);
 		$instance->writeQuestionToPdf($question);
 	}
@@ -111,7 +112,7 @@ class ilScanAssessmentPdfQuestionBuilder
 	{
 		foreach($this->test->getQuestions() as $key => $value)
 		{
-			$question			= assQuestion::_instantiateQuestion($value);
+			$question = assQuestion::_instantiateQuestion($value);
 			if(in_array($question->getQuestionType(), $this->supported_question_types))
 			{
 				$this->questions[]	= $question;
@@ -160,6 +161,9 @@ class ilScanAssessmentPdfQuestionBuilder
 		return ' (' . $points . ' ' . $points_txt . ')';
 	}
 
+	/**
+	 * @param ilScanAssessmentPdfHelper $pdf_h
+	 */
 	public function printDebug($pdf_h)
 	{
 		$pdf_h->addPage();

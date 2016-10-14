@@ -9,17 +9,34 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 class ilPDFAppendMarker extends TCPDF{
 
+	/**
+	 * @var int
+	 */
 	protected $pageNr = 0;
-	protected $qrImg = NULL;
-	protected $backgroundPDF = '';
-	protected $processPDFPage = 0;
-	protected $pageHeaderHTML = '';
-	protected $counterPerParticipant = 0;
-	protected $QRState = array();
-	protected $docArea = '';
-	protected $docType = '';
-	protected $lastDocType = NULL;
 
+	/**
+	 * @var null
+	 */
+	protected $qrImg = NULL;
+
+	/**
+	 * @var string
+	 */
+	protected $backgroundPDF = '';
+
+	/**
+	 * @var int
+	 */
+	protected $counterPerParticipant = 0;
+
+	/**
+	 * @var array
+	 */
+	protected $QRState = array();
+
+	/**
+	 * 
+	 */
 	public function addMarkerAndQrCode()
 	{
 		if(count($this->QRState) > 0)
@@ -45,13 +62,31 @@ class ilPDFAppendMarker extends TCPDF{
 				);
 
 				$innerColor = array(0, 0, 0);
-				$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
-				$this->Circle(PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+				$this->addTopLeftMarker($circleStyle, $innerColor);
+				$this->addBottomLeftMarker($circleStyle, $innerColor);
 				$log = ilScanAssessmentLog::getInstance();
 				$log->debug(sprintf('Marker where added to 1:X:%s Y:%s, 2:X:%s Y:%s', PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y));
 				#$this->addMarker();
 			}
 		}
+	}
+
+	/**
+	 * @param $circleStyle
+	 * @param $innerColor
+	 */
+	protected function addTopLeftMarker($circleStyle, $innerColor)
+	{
+		$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+	}
+
+	/**
+	 * @param $circleStyle
+	 * @param $innerColor
+	 */
+	protected function addBottomLeftMarker($circleStyle, $innerColor)
+	{
+		$this->Circle(PDF_BOTTOMLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_BOTTOMLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
 	}
 
 	/**
@@ -85,7 +120,6 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->Ln(5);
 		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
 		$this->addMarkerAndQrCode();
-		return;
 	}
 
 	/**
@@ -98,6 +132,9 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->MultiCell(0, 00, 'University of Bla' . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
+	/**
+	 * @deprecated  
+	 */
 	protected function disabled_addMarker()
 	{
 		$this->Line(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X + PDF_TOPLEFT_SYMBOL_W , PDF_TOPLEFT_SYMBOL_Y , array('width' => 0.6));
@@ -135,22 +172,6 @@ class ilPDFAppendMarker extends TCPDF{
 	public function setQrImg($qrImg)
 	{
 		$this->qrImg = $qrImg;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getPageHeaderHTML()
-	{
-		return $this->pageHeaderHTML;
-	}
-
-	/**
-	 * @param string $pageHeaderHTML
-	 */
-	public function setPageHeaderHTML($pageHeaderHTML)
-	{
-		$this->pageHeaderHTML = $pageHeaderHTML;
 	}
 
 	/**

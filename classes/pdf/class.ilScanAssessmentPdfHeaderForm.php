@@ -62,13 +62,13 @@ class ilScanAssessmentPdfHeaderForm
 	/**
 	 * @param string $format
 	 */
-	public function addMatriculationForm($format = 'XX-XX-XXX-X')
+	public function addMatriculationForm($format = 'XXX-XXX')
 	{
 
 		$columns	= strlen($format);
 		$positions	= array('head_row' => array(), 'value_rows' => array());
 		$this->appendFirstAndSurnameBoxes($columns);
-		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_MATRICULATION);
+		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_SIZE_MATRICULATION);
 		if($columns > 0)
 		{
 			for($i=0; $i<=9; $i++)

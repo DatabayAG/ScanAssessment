@@ -21,8 +21,9 @@ class ilScanAssessment_assSingleChoice implements ilScanAssessmentQuestion
 	protected $circleStyle;
 
 	/**
-	 * ilScanAssessmentMultipleChoice constructor.
+	 * ilScanAssessment_assSingleChoice constructor.
 	 * @param ilScanAssessmentPdfHelper $pdf_helper
+	 * @param                           $circleStyle
 	 */
 	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
 	{
@@ -42,7 +43,7 @@ class ilScanAssessment_assSingleChoice implements ilScanAssessmentQuestion
 
 		foreach($question->getAnswers() as $key => $answer)
 		{
-			$this->pdf_helper->pdf->setCellMargins(26, PDF_CHECKBOX_MARGIN);
+			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$this->pdf_helper->writeHTML($answer->getAnswerText());
 
