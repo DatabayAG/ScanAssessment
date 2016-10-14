@@ -17,8 +17,9 @@ class ilScanAssessment_assKprimChoice implements ilScanAssessmentQuestion
 	protected $log;
 
 	/**
-	 * ilScanAssessmentMultipleChoice constructor.
+	 * ilScanAssessment_assKprimChoice constructor.
 	 * @param ilScanAssessmentPdfHelper $pdf_helper
+	 * @param                           $circleStyle
 	 */
 	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
 	{

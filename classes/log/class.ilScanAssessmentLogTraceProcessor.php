@@ -19,6 +19,7 @@ class ilScanAssessmentLogTraceProcessor extends ilTraceProcessor
 	 */
 	public function __construct($a_level)
 	{
+		parent::__construct($a_level);
 		$this->level = $a_level;
 	}
 

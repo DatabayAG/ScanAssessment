@@ -160,7 +160,17 @@ class ilScanAssessmentPdfHelper
 	}
 
 	/**
-	 * @param $html
+	 * @param        $w
+	 * @param        $h
+	 * @param        $x
+	 * @param        $y
+	 * @param string $html
+	 * @param int    $border
+	 * @param int    $ln
+	 * @param bool   $fill
+	 * @param bool   $reseth
+	 * @param string $align
+	 * @param bool   $autopadding
 	 */
 	public function writeHTMLCell($w, $h, $x, $y, $html='', $border=0, $ln=0, $fill=false, $reseth=true, $align='', $autopadding=true)
 	{

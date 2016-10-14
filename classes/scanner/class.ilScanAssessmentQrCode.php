@@ -7,6 +7,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 
 	/**
 	 * ilScanAssessmentQrCode constructor.
+	 * @param $fn
 	 */
 	public function __construct($fn)
 	{
