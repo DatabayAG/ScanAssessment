@@ -101,7 +101,7 @@ class ilScanAssessmentPdfQuestionBuilder
 		$this->pdf_helper->pdf->SetFillColor(255, 255, 255);
 		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'B',PDF_DEFAULT_FONT_SIZE_HEAD);
 		$this->pdf_helper->pdf->Cell(80, 5, $title , 0, 0, 'L', 1);
-		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE_HEAD);
+		$this->pdf_helper->pdf->SetFont(PDF_DEFAULT_FONT,'',PDF_DEFAULT_FONT_SIZE);
 		$this->pdf_helper->pdf->Ln();
 	}
 

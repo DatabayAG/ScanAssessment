@@ -32,6 +32,22 @@ class ilScanAssessmentPdfHeaderForm
 		$this->pdf	= $pdf;
 	}
 
+	/**
+	 * @param $columns
+	 * @return array
+	 */
+	protected function calculateCellWidth($columns)
+	{
+		$width = 180;
+		if($columns < 7)
+		{
+			$columns = 7;
+		}
+		$second_column = $columns * PDF_CELL_MARGIN;
+		$first_column  = $width - $second_column;
+		return array($first_column, $second_column, $width);
+	}
+
 	protected function insertFirstAndSurnameBoxes($columns, $width)
 	{
 		$this->pdf->Ln(1);
@@ -48,21 +64,23 @@ class ilScanAssessmentPdfHeaderForm
 	 */
 	protected function appendFirstAndSurnameBoxes($columns)
 	{
+		list($first_column, $second_column, $width) = $this->calculateCellWidth($columns);
+
 		if($columns > 0)
 		{
-			$this->insertFirstAndSurnameBoxes($columns, 55);
-			$this->pdf->MultiCell(125, 50, ' ' . $this->lng->txt('exam_student_id') . ': ', 1, 'C', 0, 1, 70, 35, true);
+			$this->insertFirstAndSurnameBoxes($columns, $first_column);
+			$this->pdf->MultiCell($second_column, 50, ' ' . $this->lng->txt('matriculation') . ': ', 1, 'C', 0, 1, $first_column + 15, 35, true);
 		}
 		else
 		{
-			$this->insertFirstAndSurnameBoxes($columns, 90);
+			$this->insertFirstAndSurnameBoxes($columns, $width / 2);
 		}
 	}
 
 	/**
 	 * @param string $format
 	 */
-	public function addMatriculationForm($format = 'XXX-XXX')
+	public function addMatriculationForm($format = 'XX-X-XXXX')
 	{
 
 		$columns	= strlen($format);
@@ -73,8 +91,8 @@ class ilScanAssessmentPdfHeaderForm
 		{
 			for($i=0; $i<=9; $i++)
 			{
-				$y = 44 + ($i * 4);
-				$x = 188 - ($columns * 4);
+				$y = 45 + ($i * 4);
+				$x = 186 - ($columns * 4);
 				$this->pdf->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x + 1.5, $y + 0.3 , true);
 
 				for($j=0; $j <= $columns; $j++)
@@ -110,5 +128,4 @@ class ilScanAssessmentPdfHeaderForm
 		$this->matriculation_positions = $positions;
 		$this->pdf->SetFont(PDF_DEFAULT_FONT,'', PDF_DEFAULT_FONT_SIZE);
 	}
-
 }

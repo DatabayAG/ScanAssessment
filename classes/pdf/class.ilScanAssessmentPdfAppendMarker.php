@@ -102,23 +102,24 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->SetFillColor(255, 255, 255);
 		$this->SetLineWidth(0.6);
 		$this->Ln();
-		$this->Cell(30, 5, 'TITLE', 1, 0, 'C', 1);
+		$this->Cell(40, 5, 'TITLE', 1, 0, 'C', 1);
 		$this->Cell(120, 5, 'University of BLAAAA', 1, 0, 'C', 1);
-		$this->Cell(30, 5, '30.09.2016', 1, 0, 'C', 1);
+		$this->Cell(20, 5, '30.12.2016', 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
 		if($this->pageNr === 1)
 		{
 			$this->Ln();
 			$this->Ln(1);
-			$this->Cell(40, 8, 'Prof. Dr. Kautschuk', 'LTB', 0, 'C', 1);
-			$this->Cell(120, 8, 'Einführung in die Naturheilkunde 2016', 'TB', 0, 'C', 1);
-			$this->Cell(20, 8, 'FB47 1/3', 'RTB', 0, 'C', 1);
+			$this->Cell(40, 8, ' Prof. Dr. Kautschuk', 'LTB', 0, 'L', 1);
+			$this->Cell(120, 8, 'Einführung in die Naturheilkunde SoSe 2016', 'TB', 0, 'C', 1);
+			$this->Cell(20, 8, 'FB0', 'RTB', 0, 'C', 1);
 			$this->Ln();
 			$header_form = new ilScanAssessmentPdfHeaderForm($this);
 			$header_form->addMatriculationForm();
 		}
 		$this->Ln(5);
 		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
+		$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE, '', TRUE);
 		$this->addMarkerAndQrCode();
 	}
 
