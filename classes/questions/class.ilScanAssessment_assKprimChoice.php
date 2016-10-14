@@ -1,41 +1,16 @@
 <?php
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/interfaces/interface.ilScanAssessmentQuestion.php';
-
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/questions/class.ilScanAssessmentQuestionHandler.php';
 /**
- * Class ilScanAssessmentKprim
+ * Class ilScanAssessmentMultipleChoice
  */
-class ilScanAssessment_assKprimChoice implements ilScanAssessmentQuestion 
+class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 {
-	/**
-	 * @var ilScanAssessmentPdfHelper
-	 */
-	protected $pdf_helper;
-
-	/**
-	 * @var ilScanAssessmentLog
-	 */
-	protected $log;
-
-	/**
-	 * ilScanAssessment_assKprimChoice constructor.
-	 * @param ilScanAssessmentPdfHelper $pdf_helper
-	 * @param                           $circleStyle
-	 */
-	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
-	{
-		$this->pdf_helper	= $pdf_helper;
-		$this->log			= ilScanAssessmentLog::getInstance();
-		$this->circleStyle	= $circleStyle;
-	}
-
 	/**
 	 * @param assKprimChoice $question
 	 */
-	public function writeQuestionToPdf($question)
+	public function writeAnswersToPdf($question)
 	{
-		$this->pdf_helper->pdf->Ln(1);
-		$this->pdf_helper->writeHTML($question->getQuestion());
-		$this->pdf_helper->pdf->Ln(2);
 
 		$false_label = '-';
 		$true_label = '+';
@@ -48,33 +23,30 @@ class ilScanAssessment_assKprimChoice implements ilScanAssessmentQuestion
 
 		foreach($question->getAnswers() as $key => $answer)
 		{
+			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$this->pdf_helper->pdf->Rect(39, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$this->pdf_helper->pdf->setCellMargins(28, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->writeHTML($answer->getAnswerText());
+			$this->pdf_helper->writeHTML($answer->getAnswertext());
 
 			$x1 = $this->pdf_helper->pdf->GetX() + 34;
 			$x2 = $this->pdf_helper->pdf->GetX() + 39;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			/*$this->answer_export[] =	'correct' .' ' .'qid' 		.' '. $question->getId()		.' '.
-				'position'		.' '. $answer->getPosition() .' '.
-				'a_text'	.' '. $answer->getAnswerText()	.' '.
-				'x'			.' '. $x1						.' '.
-				'y'			.' '. $y .' '.
-				'wrong' .' ' .'qid' 		.' '. $question->getId()		.' '.
-				'position'		.' '. $answer->getPosition() .' '.
-				'a_text'	.' '. $answer->getAnswerText()	.' '.
-				'x'			.' '. $x2						.' '.
-				'y'			.' '. $y;
-			$this->answer_positions[] = array( 'correct' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x1 , 'y' => $y),
-											   'wrong' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x2 , 'y' => $y));
-			*/
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getAnswerText(), $x1 , $y, $x2 , $y));
-
+			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
 		}
-
-		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
-		$this->pdf_helper->pdf->Ln(2);
-		$this->pdf_helper->pdf->Line($this->pdf_helper->pdf->GetX() + 10, $this->pdf_helper->pdf->GetY(), $this->pdf_helper->pdf->GetX() + 160, $this->pdf_helper->pdf->GetY());
 	}
 }
+
+/*$this->answer_export[] =	'correct' .' ' .'qid' 		.' '. $question->getId()		.' '.
+	'position'		.' '. $answer->getPosition() .' '.
+	'a_text'	.' '. $answer->getAnswerText()	.' '.
+	'x'			.' '. $x1						.' '.
+	'y'			.' '. $y .' '.
+	'wrong' .' ' .'qid' 		.' '. $question->getId()		.' '.
+	'position'		.' '. $answer->getPosition() .' '.
+	'a_text'	.' '. $answer->getAnswerText()	.' '.
+	'x'			.' '. $x2						.' '.
+	'y'			.' '. $y;
+$this->answer_positions[] = array( 'correct' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x1 , 'y' => $y),
+								   'wrong' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x2 , 'y' => $y));
+*/
