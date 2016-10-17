@@ -38,6 +38,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 
 	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
 	{
+		/** @var $lng ilLanguage */
 		global $lng;
 
 		$this->lng			= $lng;
@@ -62,7 +63,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	/**
 	 * 
 	 */
-	public function writeQuestionEndToPdf()
+	protected function writeQuestionEndToPdf()
 	{
 		$this->pdf_helper->pdf->setCellMargins(PDF_CELL_MARGIN);
 		$this->pdf_helper->pdf->Ln(2);
@@ -72,7 +73,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	/**
 	 * @param assQuestion $question
 	 */
-	public function writeQuestionTextToPdf($question)
+	protected function writeQuestionTextToPdf($question)
 	{
 		$this->pdf_helper->pdf->Ln(1);
 		$this->pdf_helper->writeHTML($question->getQuestion());

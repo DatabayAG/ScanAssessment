@@ -83,7 +83,7 @@ class ilScanAssessmentPdfHeaderForm
 	/**
 	 * @param string $format
 	 */
-	public function addMatriculationForm($format = 'XX-X-XXXXX')
+	public function addMatriculationForm($format = 'XXX-XX-XX')
 	{
 
 		$columns	= strlen($format);

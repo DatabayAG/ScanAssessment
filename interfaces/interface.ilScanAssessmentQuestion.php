@@ -16,4 +16,9 @@ interface ilScanAssessmentQuestion
 	 * @param $counter
 	 */
 	public function writeQuestionTitleToPdf($question, $test , $counter);
+
+	/**
+	 * @param assQuestion $question
+	 */
+	public function writeAnswersToPdf($question);
 }
