@@ -5,39 +5,59 @@
  */
 class ilScanAssessmentPdfMetaData
 {
+	/**
+	 * @var string
+	 */
 	protected $test_title;
-	
+
+	/**
+	 * @var string
+	 */
 	protected $test_date;
-	
+
+	/**
+	 * @var string
+	 */
 	protected $author;
-	
+
+	/**
+	 * @var string
+	 */
 	protected $institution;
-	
+
+	/**
+	 * @var string
+	 */
 	protected $student_name;
-	
+
+	/**
+	 * @var string
+	 */
 	protected $student_matriculation;
 
+	/**
+	 * @var bool
+	 */
 	protected $personalised;
 
 	/**
 	 * ilScanAssessmentPdfMetaData constructor.
-	 * @param $test_title
+	 * @param ilObjTest $test
 	 * @param $test_date
-	 * @param $test_author
 	 * @param $institution
 	 * @param $personalised
 	 */
-	public function __construct($test_title, $test_date, $test_author, $institution, $personalised)
+	public function __construct($test, $test_date, $institution, $personalised)
 	{
-		$this->test_title	= $test_title;
+		$this->test_title	= $test->getTitle();
+		$this->author		= $test->getAuthor();
 		$this->test_date	= $test_date;
-		$this->author		= $test_author;
 		$this->institution	= $institution;
 		$this->personalised	= $personalised;
 	}
 
 	/**
-	 * @return mixed
+	 * @return bool
 	 */
 	public function getPersonalised()
 	{
@@ -45,7 +65,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getTestTitle()
 	{
@@ -53,7 +73,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getTestDate()
 	{
@@ -61,7 +81,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getAuthor()
 	{
@@ -69,7 +89,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getInstitution()
 	{
@@ -77,7 +97,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getStudentName()
 	{
@@ -85,7 +105,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @param mixed $student_name
+	 * @param string $student_name
 	 */
 	public function setStudentName($student_name)
 	{
@@ -93,7 +113,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getStudentMatriculation()
 	{
@@ -101,7 +121,7 @@ class ilScanAssessmentPdfMetaData
 	}
 
 	/**
-	 * @param mixed $student_matriculation
+	 * @param string $student_matriculation
 	 */
 	public function setStudentMatriculation($student_matriculation)
 	{

@@ -82,9 +82,13 @@ class ilPdfPreviewBuilder
 	 */
 	public function createDemoPdf()
 	{
-		$data = new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', false);
+		$start_time = microtime(TRUE);
+		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
+		$data = new ilScanAssessmentPdfMetaData($this->test, date('d.m.Y'), 'DEMO', false);
 		$pdf_h	= $this->createPdf($data);
 		$pdf_h->inline();
+		$end_time = microtime(TRUE);
+		$this->log->info(sprintf('Creating demo pdf finished for test %s which took %s seconds.', $this->test->getId(), $end_time - $start_time));
 	}
 
 	/**
@@ -93,22 +97,17 @@ class ilPdfPreviewBuilder
 	 */
 	public function createPdf($data)
 	{
-		$start_time = microtime(TRUE);
-		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
 		$question_builder = new ilScanAssessmentPdfQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
 
 		$this->addPageWithQrCode($pdf_h);
-
 		$counter = 1;
 		foreach($questions as $question)
 		{
 			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
-		$end_time = microtime(TRUE);
-		$this->log->info(sprintf('Creating demo pdf finished for test %s added %s questions which took %s seconds.', $this->test->getId(), $counter - 1, $end_time - $start_time));
 		return $pdf_h;
 	}
 
@@ -119,9 +118,11 @@ class ilPdfPreviewBuilder
 	{
 		$participants	= $this->test->getInvitedUsers();
 		$file_names		= array();
+		$start_time = microtime(TRUE);
+		$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 		foreach($participants as $usr_id => $user)
 		{
-			$data		= new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', true);
+			$data		= new ilScanAssessmentPdfMetaData($this->test, date('d.m.Y'), 'DEMO', true);
 			$usr_obj	= new ilObjUser($usr_id);
 
 			$data->setStudentMatriculation($usr_obj->getMatriculation());
@@ -132,16 +133,31 @@ class ilPdfPreviewBuilder
 			$file_names[] = $filename;
 			$pdf_h->writeFile($filename);
 		}
+		$end_time = microtime(TRUE);
+		$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, count($participants)));
 	}
 	
 	/**
-	 *
+	 * @param int $number
 	 */
-	public function createNonPersonalisedPdf()
+	public function createNonPersonalisedPdf($number)
 	{
-		$data = new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', false);
-		$pdf_h	= $this->createPdf($data);
-		$pdf_h->inline();
+		if($number > 0)
+		{
+			$file_names		= array();
+			$start_time = microtime(TRUE);
+			$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
+			for($i = 0; $i <= $number; $i++)
+			{
+				$data = new ilScanAssessmentPdfMetaData($this->test, date('d.m.Y'), 'DEMO', false);
+				$pdf_h	= $this->createPdf($data);
+				$filename = $this->path_for_pdfs . $i . '.pdf';
+				$file_names[] = $filename;
+				$pdf_h->writeFile($filename);
+			}
+			$end_time = microtime(TRUE);
+			$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, $number));
+		}
 	}
 
 

@@ -101,7 +101,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $this->getCoreController()->getPluginObject()->txt('scas_create_demo_pdf'));
 		if($this->doPdfFilesExistsInDirectory())
 		{
-			$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $this->getCoreController()->getPluginObject()->txt('scas_recreate'));
+			$form->addCommandButton(__CLASS__ . '.createPdfDocumentsAfterRemovingTheExisting', $this->getCoreController()->getPluginObject()->txt('scas_recreate'));
 		}
 		else
 		{
@@ -172,7 +172,8 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		}
 		else
 		{
-			$demo->createNonPersonalisedPdf();
+			$todo_get_value_from_number_input = 2;
+			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
 		}
 		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
 		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
@@ -181,6 +182,14 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 				'ref_id' => (int)$_GET['ref_id']
 			)
 		));
+	}
+	
+	public function createPdfDocumentsAfterRemovingTheExistingCmd()
+	{
+		$preview = new ilPdfPreviewBuilder($this->test);
+		$path = $preview->getPathForPdfs();
+		ilUtil::delDir($path, true);
+		$this->createPdfDocumentsCmd();
 	}
 
 	/**
