@@ -4,6 +4,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfQuestionBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMetaData.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 
 
@@ -13,6 +14,12 @@ ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentL
  */
 class ilPdfPreviewBuilder
 {
+
+	const PERSONALISED = false;
+	/**
+	 * @var 
+	 */
+	protected $path_for_pdfs;
 
 	/**
 	 * @var ilObjTest
@@ -32,6 +39,8 @@ class ilPdfPreviewBuilder
 	{
 		$this->test	= $test;
 		$this->log	= ilScanAssessmentLog::getInstance();
+		$this->path_for_pdfs = $path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
+		$this->ensureSavePathExists($this->path_for_pdfs);
 	}
 
 	/**
@@ -73,9 +82,20 @@ class ilPdfPreviewBuilder
 	 */
 	public function createDemoPdf()
 	{
+		$data = new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', false);
+		$pdf_h	= $this->createPdf($data);
+		$pdf_h->inline();
+	}
+
+	/**
+	 * @param ilScanAssessmentPdfMetaData $data
+	 * @return ilScanAssessmentPdfHelper
+	 */
+	public function createPdf($data)
+	{
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
-		$pdf_h	= new ilScanAssessmentPdfHelper();
+		$pdf_h	= new ilScanAssessmentPdfHelper($data);
 		$question_builder = new ilScanAssessmentPdfQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
 
@@ -87,11 +107,43 @@ class ilPdfPreviewBuilder
 			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
-		#$question_builder->printDebug($pdf_h);
-		$pdf_h->output();
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating demo pdf finished for test %s added %s questions which took %s seconds.', $this->test->getId(), $counter - 1, $end_time - $start_time));
+		return $pdf_h;
 	}
+
+	/**
+	 *
+	 */
+	public function createFixedParticipantsPdf()
+	{
+		$participants	= $this->test->getInvitedUsers();
+		$file_names		= array();
+		foreach($participants as $usr_id => $user)
+		{
+			$data		= new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', true);
+			$usr_obj	= new ilObjUser($usr_id);
+
+			$data->setStudentMatriculation($usr_obj->getMatriculation());
+			$data->setStudentName($usr_obj->getFullname());
+
+			$pdf_h	= $this->createPdf($data);
+			$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $user['lastname'] . '_' . $user['firstname'] . '.pdf';
+			$file_names[] = $filename;
+			$pdf_h->writeFile($filename);
+		}
+	}
+	
+	/**
+	 *
+	 */
+	public function createNonPersonalisedPdf()
+	{
+		$data = new ilScanAssessmentPdfMetaData($this->test->getTitle(), date('d.m.Y'), $this->test->getAuthor(), 'DEMO', false);
+		$pdf_h	= $this->createPdf($data);
+		$pdf_h->inline();
+	}
+
 
 	/**
 	 * @param ilScanAssessmentPdfHelper $pdf_h
@@ -112,5 +164,23 @@ class ilPdfPreviewBuilder
 		$pdf_h->addPage();
 	}
 
-	
+	/**
+	 * @param $path
+	 */
+	protected function ensureSavePathExists($path)
+	{
+		if( ! is_dir($path))
+		{
+			ilUtil::makeDirParents($path);
+		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPathForPdfs()
+	{
+		return $this->path_for_pdfs;
+	}
+
 }

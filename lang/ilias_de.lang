@@ -45,6 +45,13 @@ scas_creation#:#Erzeugung von Teilnehmerpaketen
 scas_creation_info#:#Erzeugung von Teilnehmerpaketen
 scas_creation_personalised#:#Personalisiert
 scas_creation_non_personalised#:#Nicht personalisiert
+scas_count_pdfs#:#Anzahl
+scas_count_pdfs_info#:#Anzahl der zu erzeugenden PDF Dokumente
+scas_complete_download#:#Sammeldownload
+scas_complete_download_info#:#Sammeldownload
+scas_download_as_flag#:#Fahne
+scas_download_as_zip#:#Zip-Archiv
+scas_pdfs_created#:#PDF Erzeugung abgeschlossen.
 scas_create_demo_pdf#:#Demo PDF erzeugen
 scas_steps#:#Schritt
 scas_is_activated#:#Ist aktiviert
@@ -58,3 +65,5 @@ scas_scan_completed_info#:#Scannen abgeschlossen
 scas_results_returned#:#Ergebnisse an Test übergeben
 scas_results_returned_info#:#Ergebnisse an Test übergeben
 scas_previous_step_unfulfilled#:#Vorheriger Schritt noch nicht abgeschlossen
+scas_create#:#PDFs generieren
+scas_recreate#:#PDFs neu generieren

@@ -9,6 +9,7 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
  */
 class ilPDFAppendMarker extends TCPDF{
 
+	
 	/**
 	 * @var int
 	 */
@@ -33,6 +34,27 @@ class ilPDFAppendMarker extends TCPDF{
 	 * @var array
 	 */
 	protected $QRState = array();
+
+	/**
+	 * @var ilScanAssessmentPdfMetaData
+	 */
+	protected $metadata = null;
+
+	/**
+	 * @return ilScanAssessmentPdfMetaData
+	 */
+	public function getMetadata()
+	{
+		return $this->metadata;
+	}
+
+	/**
+	 * @param ilScanAssessmentPdfMetaData $metadata
+	 */
+	public function setMetadata($metadata)
+	{
+		$this->metadata = $metadata;
+	}
 
 	/**
 	 * 
@@ -102,20 +124,20 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->SetFillColor(255, 255, 255);
 		$this->SetLineWidth(0.6);
 		$this->Ln();
-		$this->Cell(40, 5, 'TITLE', 1, 0, 'C', 1);
-		$this->Cell(120, 5, 'University of BLAAAA', 1, 0, 'C', 1);
-		$this->Cell(20, 5, '30.12.2016', 1, 0, 'C', 1);
+		$this->Cell(40, 5, '', 1, 0, 'C', 1);
+		$this->Cell(120, 5, $this->metadata->getInstitution(), 1, 0, 'C', 1);
+		$this->Cell(20, 5, $this->metadata->getTestDate(), 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
 		if($this->pageNr === 1)
 		{
 			$this->Ln();
 			$this->Ln(1);
-			$this->Cell(40, 8, ' Prof. Dr. Kautschuk', 'LTB', 0, 'L', 1);
-			$this->Cell(120, 8, 'Einführung in die Naturheilkunde SoSe 2016', 'TB', 0, 'C', 1);
+			$this->Cell(40, 8, ' ' . $this->metadata->getAuthor(), 'LTB', 0, 'L', 1);
+			$this->Cell(120, 8, $this->metadata->getTestTitle(), 'TB', 0, 'C', 1);
 			$this->Cell(20, 8, 'FB0', 'RTB', 0, 'C', 1);
 			$this->Ln();
-			$header_form = new ilScanAssessmentPdfHeaderForm($this);
-			$header_form->addMatriculationForm();
+			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata);
+			$header_form->insertIdentification();
 		}
 		$this->Ln(5);
 		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);
@@ -130,7 +152,7 @@ class ilPDFAppendMarker extends TCPDF{
 	{
 		global $lng;
 		$page = $lng->txt('page') . ' ' . $this->getAliasNumPage().'/'.$this->getAliasNbPages();
-		$this->MultiCell(0, 00, 'University of Bla' . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
+		$this->MultiCell(0, 0, $this->metadata->getInstitution() . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
 	/**

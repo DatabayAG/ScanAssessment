@@ -22,25 +22,23 @@ class ilScanAssessmentPdfHelper
 
 	/**
 	 * ilScannAssessmentPdfHelper constructor.
-	 * @param null $backgroundPDF
+	 * @param ilScanAssessmentPdfMetaData $data
 	 */
-	public function __construct($backgroundPDF = NULL) 
+	public function __construct(ilScanAssessmentPdfMetaData $data) 
 	{
 		$this->qr_images_path = ilUtil::getDataDir() .'/temp_qr_images';
-		$this->initializePDFStructure($backgroundPDF);
+		$this->initializePDFStructure($data);
 	}
 
 	/**
-	 * @param $backgroundPDF
+	 * @param ilScanAssessmentPdfMetaData $data
 	 */
-	protected function initializePDFStructure($backgroundPDF)
+	protected function initializePDFStructure($data)
 	{
 		$this->pdf = new ilPDFAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-
-		$this->pdf->setBackgroundPDF($backgroundPDF);
-
-		$this->pdf->SetCreator(PDF_CREATOR);
-		$this->pdf->SetAuthor('');
+		$this->pdf->setMetadata($data);
+		$this->pdf->SetCreator($data->getAuthor());
+		$this->pdf->SetAuthor($data->getAuthor());
 
 		$this->pdf->setFooterData(array(0, 64, 0), array(0, 64, 128));
 
@@ -180,12 +178,24 @@ class ilScanAssessmentPdfHelper
 	/**
 	 * @param string $filename
 	 */
-	public function output($filename='pruefung.pdf') 
+	public function inline($filename='pruefung.pdf') 
 	{
 		$qr_image = $this->pdf->getQrImg();
 
 		$this->pdf->Output($filename, 'I');
 
+		if (file_exists($qr_image)) {
+			unlink($qr_image);
+		}
+	}
+
+	/**
+	 * @param string $filename
+	 */
+	public function writeFile($filename)
+	{
+		$qr_image = $this->pdf->getQrImg();
+		$this->pdf->Output($filename, 'F');
 		if (file_exists($qr_image)) {
 			unlink($qr_image);
 		}

@@ -29,8 +29,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 
-		$this->path_to_scans = $path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
-		$this->ensureSavePathExists();
+		$this->path_to_scans = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
+		$this->ensureSavePathExists($this->path_to_scans);
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -204,11 +204,10 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	}
 
 	/**
-	 *
+	 * @param $path
 	 */
-	protected function ensureSavePathExists()
+	protected function ensureSavePathExists($path)
 	{
-		$path = ilUtil::getDataDir() . '/' . $this->parent_folder_name . '/tst_' . $this->obj_id;
 		if( ! is_dir($path))
 		{
 			ilUtil::makeDirParents($path);

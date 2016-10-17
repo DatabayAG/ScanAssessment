@@ -12,6 +12,17 @@ require_once 'Services/Link/classes/class.ilLink.php';
 class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 {
 	/**
+	 * @var array
+	 */
+	protected $tabs_mapping = array(
+		'ilScanAssessmentDefaultController.default'			=> 'settings',
+		'ilScanAssessmentLayoutController.default'			=> 'layout',
+		'ilScanAssessmentUserPackagesController.default'	=> 'user_packages',
+		'ilScanAssessmentScanController.default'			=> 'scan',
+		'ilScanAssessmentReturnDataController.default'		=> 'return',
+	);
+
+	/**
 	 * @param       $a_comp
 	 * @param       $a_part
 	 * @param array $a_par
@@ -69,21 +80,23 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 					);
 
 					$this->addStepsTabs();
+					$ilTabs->activateTab($this->tabs_mapping[$ilCtrl->getCmd()]);
+					
 				}
 			}
 		}
 	}
 
+	
 	/**
 	 * 
 	 */
 	protected function addStepsTabs()
 	{
-		$this->appendStepTab('settings',		'scas_settings',		'ilScanAssessmentDefaultController.default');
-		$this->appendStepTab('layout',			'scas_layout',			'ilScanAssessmentLayoutController.default');
-		$this->appendStepTab('user_packages',	'scas_user_packages',	'ilScanAssessmentUserPackagesController.default');
-		$this->appendStepTab('scan',			'scas_scan',			'ilScanAssessmentScanController.default');
-		$this->appendStepTab('return',			'scas_return',			'ilScanAssessmentReturnDataController.default');
+		foreach($this->tabs_mapping as $key => $value)
+		{
+			$this->appendStepTab($value, 'scas_' . $value, $key);
+		}
 	}
 
 	/**
