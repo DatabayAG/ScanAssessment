@@ -64,17 +64,9 @@ class ilScanAssessmentPdfHeaderForm
 		return array($first_column, $second_column, $width);
 	}
 
-	protected function insertFirstAndSurnameBoxes($columns, $width)
-	{
-		$this->pdf->Ln(1);
-		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
-		if($columns > 0)
-		{
-			$this->pdf->Ln();
-		}
-		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
-	}
-
+	/**
+	 * 
+	 */
 	protected function insertIdentificationHead()
 	{
 		$this->pdf->Ln(1);
@@ -111,6 +103,21 @@ class ilScanAssessmentPdfHeaderForm
 	}
 
 	/**
+	 * @param $columns
+	 * @param $width
+	 */
+	protected function insertFirstAndSurnameBoxes($columns, $width)
+	{
+		$this->pdf->Ln(1);
+		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
+		if($columns > 0)
+		{
+			$this->pdf->Ln();
+		}
+		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
+	}
+
+	/**
 	 * 
 	 */
 	public function insertIdentification()
@@ -123,7 +130,6 @@ class ilScanAssessmentPdfHeaderForm
 		{
 			$this->insertIdentificationHead();
 		}
-		
 	}
 
 	/**
