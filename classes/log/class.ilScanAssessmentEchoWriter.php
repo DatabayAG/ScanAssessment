@@ -1,8 +1,7 @@
 <?php
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentBaseLogWriter.php';
-
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentBaseLogWriter.php');
 /**
  * Class ilScanAssessmentEchoWriter
  */

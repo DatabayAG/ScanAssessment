@@ -1,5 +1,5 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentGlobalSettings.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 /**
  * Class ilScanAssessmentPdfMatriculationForm
  */

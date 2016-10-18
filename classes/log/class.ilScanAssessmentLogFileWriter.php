@@ -2,12 +2,10 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 require_once 'Services/Calendar/classes/class.ilDateTime.php';
-
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentBaseLogWriter.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentLog.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentLogTraceProcessor.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentLoggingSettings.php';
-
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentBaseLogWriter.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLogTraceProcessor.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLoggingSettings.php');
 /**
  * Class ilScanAssessmentLogFileWriter
  */
