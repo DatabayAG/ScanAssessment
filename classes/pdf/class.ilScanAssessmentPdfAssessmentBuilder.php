@@ -3,7 +3,7 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMetaData.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 
@@ -147,7 +147,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$file_names		= array();
 			$start_time = microtime(TRUE);
 			$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
-			for($i = 0; $i <= $number; $i++)
+			for($i = 1; $i <= $number; $i++)
 			{
 				$data = new ilScanAssessmentPdfMetaData($this->test, date('d.m.Y'), false);
 				$pdf_h	= $this->createPdf($data);

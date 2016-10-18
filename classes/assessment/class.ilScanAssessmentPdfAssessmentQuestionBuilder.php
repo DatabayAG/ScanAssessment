@@ -1,8 +1,8 @@
 <?php
 
 require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
-ilScanAssessmentPlugin::getInstance()->includeClass('assessment_questions/class.ilScanAssessment_assMultipleChoice.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('assessment_questions/class.ilScanAssessment_assKprimChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assMultipleChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assKprimChoice.php');
 /**
  * Class ilScanAssessmentPdfQuestionBuilder
  */
