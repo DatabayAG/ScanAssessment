@@ -130,7 +130,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		if($this->doPdfFilesExistsInDirectory())
 		{
-			$form->addCommandButton(__CLASS__ . '.createPdfDocumentsAfterRemovingTheExisting', $pluginObject->txt('scas_recreate'));
+			$form->addCommandButton(__CLASS__ . '.removingTheExistingPdfs', $pluginObject->txt('scas_remove'));
 		}
 		else
 		{
@@ -151,6 +151,8 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		$list = new ilNestedListInputGUI();
+		$list->setTitle($this->getCoreController()->getPluginObject()->txt('scas_created_pdfs'));
+		$add_item = false;
 		if ($handle = opendir($path)) 
 		{
 			while (false !== ($entry = readdir($handle))) 
@@ -158,10 +160,14 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 				if($entry != '.' && $entry != '..')
 				{
 					$list->addListNode($entry, $entry);
+					$add_item = true;
 				}
 			}
-			$form->addItem($list);
 			closedir($handle);
+			if($add_item)
+			{
+				$form->addItem($list);
+			}
 		}
 	}
 
@@ -213,12 +219,18 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		));
 	}
 	
-	public function createPdfDocumentsAfterRemovingTheExistingCmd()
+	public function removingTheExistingPdfsCmd()
 	{
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		ilUtil::delDir($path, true);
-		$this->createPdfDocumentsCmd();
+		#ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_removed'), true);
+		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+			'ilScanAssessmentUserPackagesController.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
 	}
 
 	/**
