@@ -2,7 +2,8 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfPreviewBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
  * Class ilScanAssessmentUserPackagesController
@@ -21,6 +22,10 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected $configuration;
 
 	/**
+	 * @var ilScanAssessmentGlobalSettings
+	 */
+	protected $global_settings;
+	/**
 	 * 
 	 */
 	protected function init()
@@ -29,6 +34,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentUserPackagesConfiguration.php');
 		$this->configuration = new ilScanAssessmentUserPackagesConfiguration($this->test->getId());
+		$this->global_settings = ilScanAssessmentGlobalSettings::getInstance();
 		$this->isPreconditionFulfilled();
 	}
 
@@ -67,45 +73,68 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$ilTabs->setTabActive('user_packages');
 
 		$form = new ilPropertyFormGUI();
-		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_user_packages'));
+		$pluginObject = $this->getCoreController()->getPluginObject();
+
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
+		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
 		if($this->test->getFixedParticipants() === 1)
 		{
-			$creation = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_creation'), 'creation');
-			$creation->setInfo($this->getCoreController()->getPluginObject()->txt('scas_creation_info'));
+			$info = new ilNonEditableValueGUI();
+			$info->setValue($pluginObject->txt('scas_fixed_participants'));
+			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
+			$info->setTitle($pluginObject->txt('scas_tst_settings'));
+			$form->addItem($info);
+			$creation = new ilSelectInputGUI($pluginObject->txt('scas_creation'), 'creation');
+			$creation->setInfo($pluginObject->txt('scas_creation_info'));
 			$personalised = array(
-				'personalised' => $this->getCoreController()->getPluginObject()->txt('scas_creation_personalised'),
-				'non_personalised' => $this->getCoreController()->getPluginObject()->txt('scas_creation_non_personalised')
+				'personalised' => $pluginObject->txt('scas_creation_personalised'),
+				'non_personalised' => $pluginObject->txt('scas_creation_non_personalised')
 			);
 			$creation->setOptions($personalised);
 			$form->addItem($creation);
 		}
 		else
 		{
-			$count_pdfs = new ilNumberInputGUI($this->getCoreController()->getPluginObject()->txt('scas_count_pdfs'), 'count_pdfs');
-			$count_pdfs->setInfo($this->getCoreController()->getPluginObject()->txt('scas_count_pdfs_info'));
+			$info = new ilNonEditableValueGUI();
+			$info->setValue($pluginObject->txt('scas_non_fixed_participants'));
+			$info->setTitle($pluginObject->txt('scas_tst_settings'));
+			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
+			$form->addItem($info);
+			$count_pdfs = new ilNumberInputGUI($pluginObject->txt('scas_count_pdfs'), 'count_pdfs');
+			$count_pdfs->setInfo($pluginObject->txt('scas_count_pdfs_info'));
 			$count_pdfs->setMinValue(1);
 			$form->addItem($count_pdfs);
 		}
 
-		$complete_download = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_complete_download'), 'complete_download');
-		$complete_download->setInfo($this->getCoreController()->getPluginObject()->txt('scas_complete_download_info'));
-		$options = array(	'complete_flag' => $this->getCoreController()->getPluginObject()->txt('scas_download_as_flag'), 
-							'complete_zip' => $this->getCoreController()->getPluginObject()->txt('scas_download_as_zip')
+		$matriculation_number = new ilCheckboxInputGUI($pluginObject->txt('scas_matriculation'), 'matriculation');
+
+		$mat_sub_form = new ilSelectInputGUI($pluginObject->txt('scas_matriculation'), 'coding');
+		$mat_sub_item = array('matrix' => $pluginObject->txt('scas_matrix'),
+							  'textfield' => $pluginObject->txt('scas_textfield')
+		);
+		$mat_sub_form->setOptions($mat_sub_item);
+		$matriculation_number->addSubItem($mat_sub_form);
+		$matriculation_number->setInfo($pluginObject->txt('scas_matriculation_style') . ' ' . $this->global_settings->getMatriculationStyle());
+		$form->addItem($matriculation_number);
+
+		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
+		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
+		$options = array(	'complete_flag' => $pluginObject->txt('scas_download_as_flag'), 
+							'complete_zip' => $pluginObject->txt('scas_download_as_zip')
 		);
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
 
 		$this->showPdfFilesIfExisting($form);
-		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $this->getCoreController()->getPluginObject()->txt('scas_create_demo_pdf'));
+		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		if($this->doPdfFilesExistsInDirectory())
 		{
-			$form->addCommandButton(__CLASS__ . '.createPdfDocumentsAfterRemovingTheExisting', $this->getCoreController()->getPluginObject()->txt('scas_recreate'));
+			$form->addCommandButton(__CLASS__ . '.createPdfDocumentsAfterRemovingTheExisting', $pluginObject->txt('scas_recreate'));
 		}
 		else
 		{
-			$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $this->getCoreController()->getPluginObject()->txt('scas_create'));
+			$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $pluginObject->txt('scas_create'));
 		}
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));

@@ -3,6 +3,7 @@
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfConstants.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/pdf/class.ilScanAssessmentPdfHeaderForm.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/geometry/class.ilScanAssessmentVector.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
  * Class ilPDFAppendMarker
@@ -125,7 +126,7 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->SetLineWidth(0.6);
 		$this->Ln();
 		$this->Cell(40, 5, '', 1, 0, 'C', 1);
-		$this->Cell(120, 5, $this->metadata->getInstitution(), 1, 0, 'C', 1);
+		$this->Cell(120, 5, ilScanAssessmentGlobalSettings::getInstance()->getInstitution(), 1, 0, 'C', 1);
 		$this->Cell(20, 5, $this->metadata->getTestDate(), 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
 		if($this->pageNr === 1)
@@ -152,7 +153,7 @@ class ilPDFAppendMarker extends TCPDF{
 	{
 		global $lng;
 		$page = $lng->txt('page') . ' ' . $this->getAliasNumPage().'/'.$this->getAliasNbPages();
-		$this->MultiCell(0, 0, $this->metadata->getInstitution() . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
+		$this->MultiCell(0, 0, $this->metadata->getTestTitle() . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
 	/**

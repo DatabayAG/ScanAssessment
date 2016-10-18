@@ -23,11 +23,6 @@ class ilScanAssessmentPdfMetaData
 	/**
 	 * @var string
 	 */
-	protected $institution;
-
-	/**
-	 * @var string
-	 */
 	protected $student_name;
 
 	/**
@@ -47,12 +42,11 @@ class ilScanAssessmentPdfMetaData
 	 * @param $institution
 	 * @param $personalised
 	 */
-	public function __construct($test, $test_date, $institution, $personalised)
+	public function __construct($test, $test_date, $personalised)
 	{
 		$this->test_title	= $test->getTitle();
 		$this->author		= $test->getAuthor();
 		$this->test_date	= $test_date;
-		$this->institution	= $institution;
 		$this->personalised	= $personalised;
 	}
 
@@ -86,14 +80,6 @@ class ilScanAssessmentPdfMetaData
 	public function getAuthor()
 	{
 		return $this->author;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getInstitution()
-	{
-		return $this->institution;
 	}
 
 	/**

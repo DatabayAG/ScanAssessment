@@ -67,3 +67,11 @@ scas_results_returned_info#:#Ergebnisse an Test übergeben
 scas_previous_step_unfulfilled#:#Vorheriger Schritt noch nicht abgeschlossen
 scas_create#:#PDFs generieren
 scas_recreate#:#PDFs neu generieren
+scas_fixed_participants#:#Die Einstellung "Nur ausgewählte Teilnehmer" ist aktiviert
+scas_non_fixed_participants#:#Die Einstellung "Nur ausgewählte Teilnehmer" ist nicht aktiviert
+scas_tst_settings#:#Test Einstellungen
+scas_tst_settings_info#:#Diese Test Einstellungen beeinflussen die Darstellung auf diesem Formular
+scas_matriculation_style#:#Format der Matrikelnummer
+scas_matriculation_style_info#:#Benutzen Sie bitte "X" für Nummern und "-" um Abstände zu erzeugen
+scas_institution#:#Name Ihrer Institution
+scas_matriculation_style#:#Das Konfigurierte Matrikelnummer Format ist: 

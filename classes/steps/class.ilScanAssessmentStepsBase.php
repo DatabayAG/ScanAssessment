@@ -21,10 +21,10 @@ abstract class ilScanAssessmentStepsBase implements ilScanAssessmentStatusBarIte
 
 	/**
 	 * ilScanAssessmentStepsBase constructor.
-	 * @param ilScanAssessmentPlugin $plugin
-	 * @param ilObjTest                     $test
+	 * @param $plugin
+	 * @param ilObjTest $test
 	 */
-	public function __construct(ilScanAssessmentPlugin $plugin, ilObjTest $test)
+	public function __construct($plugin, ilObjTest $test)
 	{
 		$this->plugin = $plugin;
 		$this->test   = $test;

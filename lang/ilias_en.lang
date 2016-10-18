@@ -68,3 +68,11 @@ scas_results_returned_info#:#Results returned to test
 scas_previous_step_unfulfilled#:#Previous Step is unfulfilled.
 scas_create#:#Create PDFs
 scas_recreate#:#Recreate PDFs
+scas_fixed_participants#:#The setting "Fixed participants" is active
+scas_non_fixed_participants#:#The setting "Fixed participants" is not active
+scas_tst_settings#:#Test Settings
+scas_tst_settings_info#:#These test settings have an influence on this screen
+scas_matriculation_style#:#Matriculation Number Format
+scas_matriculation_style_info#:#Please use "X" for Numbers and "-" for layout gaps
+scas_institution#:#Name of your institution
+scas_matriculation_style#:#The configured matriculation format is:

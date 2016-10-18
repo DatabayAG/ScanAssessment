@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 require_once 'Services/Component/classes/class.ilPluginConfigGUI.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentGlobalSettings.php';
 
 /**
  * Class ilScanAssessmentConfigGUI
@@ -69,76 +70,81 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 	{
 		switch($cmd)
 		{
-			case 'cancel':
-
+			case 'saveConfigurationForm':
+				$this->saveConfigurationForm();
 				break;
 
+			case 'showConfigurationForm':
 			default:
-				$this->$cmd();
+				$this->showConfigurationForm();
 				break;
 		}
 	}
 
 	/**
-	 *
+	 * @param ilPropertyFormGUI $form
 	 */
-	protected function configure()
+	protected function showConfigurationForm(ilPropertyFormGUI $form = null)
 	{
 
+		if(!$form instanceof ilPropertyFormGUI)
+		{
+			$form = $this->getConfigurationForm();
+			$form->setValuesByArray(array(
+				'institution' => ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
+				'matriculation_style' => ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle()
+			));
+		}
+		$this->tpl->setContent($form->getHTML());
 	}
-	
+
+	/**
+	 * @return ilPropertyFormGUI
+	 */
+	protected function getConfigurationForm()
+	{
+		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
+
+		$form = new ilPropertyFormGUI();
+		$form->setTitle($this->lng->txt('settings'));
+		$form->setFormAction($this->ctrl->getFormAction($this, 'showConfigurationForm'));
+		$form->setShowTopButtons(true);
+
+		$institution = new ilTextInputGUI($this->getPluginObject()->txt('scas_institution'), 'institution');
+		$form->addItem($institution);
+
+		$matriculation = new ilTextInputGUI($this->getPluginObject()->txt('scas_matriculation_style'), 'matriculation_style');
+		$matriculation->setValidationRegexp('/^[X-]+$/');
+		$matriculation->setInfo($this->getPluginObject()->txt('scas_matriculation_style_info'));
+		$form->addItem($matriculation);
+
+		$form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
+
+		return $form;
+	}
 	/**
 	 *
 	 */
-	protected function cancel()
+	protected function saveConfigurationForm()
 	{
+		$form = $this->getConfigurationForm();
+		if($form->checkInput())
+		{
+			try
+			{
+				ilScanAssessmentGlobalSettings::getInstance()->setInstitution($form->getInput('institution'));
+				ilScanAssessmentGlobalSettings::getInstance()->setMatriculationStyle($form->getInput('matriculation_style'));
+				ilScanAssessmentGlobalSettings::getInstance()->save();
+				$this->ctrl->redirect($this, 'configure');
+			}
+			catch(ilException $e)
+			{
+				ilUtil::sendFailure($this->lng->txt('form_input_not_valid'));
+			}
+		}
 
-	}
-
-	/**
-	 * 
-	 */
-	protected function add()
-	{
-
-	}
-
-	/**
-	 *
-	 */
-	protected function edit()
-	{
-
-	}
-
-	/**
-	 * 
-	 */
-	protected function create()
-	{
-		
-			ilUtil::sendSuccess($this->lng->txt('saved_successfully'), true);
-			$this->ctrl->redirect($this);
-		
-	}
-
-	/**
-	 * 
-	 */
-	protected function update()
-	{
-		
-			ilUtil::sendSuccess($this->lng->txt('saved_successfully'), true);
-			$this->ctrl->redirect($this);
-		
-	}
-
-	/**
-	 * 
-	 */
-	protected function delete()
-	{
-		
+		$form->setValuesByPost();
+		$this->showConfigurationForm($form);
 	}
 
 	/**

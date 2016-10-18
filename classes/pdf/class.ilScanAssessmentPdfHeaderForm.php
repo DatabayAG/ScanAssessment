@@ -1,5 +1,5 @@
 <?php
-
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentGlobalSettings.php';
 /**
  * Class ilScanAssessmentPdfMatriculationForm
  */
@@ -28,6 +28,10 @@ class ilScanAssessmentPdfHeaderForm
 	 */
 	protected $metadata;
 
+	/**
+	 * @var ilScanAssessmentGlobalSettings
+	 */
+	protected $global_settings;
 
 	/**
 	 * ilScanAssessmentPdfHeaderForm constructor.
@@ -38,9 +42,10 @@ class ilScanAssessmentPdfHeaderForm
 	{
 		global $lng;
 		
-		$this->lng		= $lng;
-		$this->pdf		= $pdf;
-		$this->metadata = $metadata;
+		$this->lng				= $lng;
+		$this->pdf				= $pdf;
+		$this->metadata			= $metadata;
+		$this->global_settings	= ilScanAssessmentGlobalSettings::getInstance(); 
 	}
 
 	/**
@@ -122,12 +127,14 @@ class ilScanAssessmentPdfHeaderForm
 	}
 
 	/**
-	 * @param string $format
+	 * 
 	 */
-	protected function addMatriculationForm($format = 'XXX-XX-XX')
+	protected function addMatriculationForm()
 	{
-			$columns   = strlen($format);
-			$positions = array('head_row' => array(), 'value_rows' => array());
+			$format		= $this->global_settings->getMatriculationStyle();
+			$columns	= strlen($format);
+			$positions	= array('head_row' => array(), 'value_rows' => array());
+
 			$this->appendFirstAndSurnameBoxes($columns);
 
 			$this->pdf->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_MATRICULATION);

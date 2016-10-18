@@ -68,17 +68,6 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 		$shuffle->setOptions($shuffle_modes);
 		$form->addItem($shuffle);
 
-		$matriculation_number = new ilCheckboxInputGUI($this->getCoreController()->getPluginObject()->txt('scas_matriculation'), 'matriculation');
-
-		$mat_sub_form = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_matriculation'), 'coding');
-		$mat_sub_item = array('matrix' => $this->getCoreController()->getPluginObject()->txt('scas_matrix'),
-							   'textfield' => $this->getCoreController()->getPluginObject()->txt('scas_textfield')
-		);
-		$mat_sub_form->setOptions($mat_sub_item);
-		
-		$matriculation_number->addSubItem($mat_sub_form);
-		$form->addItem($matriculation_number);
-	
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
