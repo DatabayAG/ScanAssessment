@@ -2,7 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfAssessmentBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
@@ -148,7 +148,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	public function showPdfFilesIfExisting($form)
 	{
 		require_once 'Services/Form/classes/class.ilNestedListInputGUI.php';
-		$preview = new ilPdfPreviewBuilder($this->test);
+		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		$list = new ilNestedListInputGUI();
 		if ($handle = opendir($path)) 
@@ -170,7 +170,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	 */
 	protected function doPdfFilesExistsInDirectory()
 	{
-		$preview = new ilPdfPreviewBuilder($this->test);
+		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		if ($handle = opendir($path))
 		{
@@ -188,13 +188,13 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 	public function createDemoPdfCmd()
 	{
-		$demo = new ilPdfPreviewBuilder($this->test);
+		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$demo->createDemoPdf();
 	}
 
 	public function createPdfDocumentsCmd()
 	{
-		$demo = new ilPdfPreviewBuilder($this->test);
+		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		if($this->test->getFixedParticipants() === 1)
 		{
 			$demo->createFixedParticipantsPdf();
@@ -215,7 +215,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	
 	public function createPdfDocumentsAfterRemovingTheExistingCmd()
 	{
-		$preview = new ilPdfPreviewBuilder($this->test);
+		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		ilUtil::delDir($path, true);
 		$this->createPdfDocumentsCmd();

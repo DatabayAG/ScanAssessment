@@ -2,7 +2,6 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfBuilder.php');
 
 /**
  * Class ilScanAssessmentReturnDataController

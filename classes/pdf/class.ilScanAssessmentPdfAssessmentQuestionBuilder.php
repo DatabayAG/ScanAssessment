@@ -1,15 +1,15 @@
 <?php
 
 require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
-ilScanAssessmentPlugin::getInstance()->includeClass('questions/class.ilScanAssessment_assMultipleChoice.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('questions/class.ilScanAssessment_assKprimChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment_questions/class.ilScanAssessment_assMultipleChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment_questions/class.ilScanAssessment_assKprimChoice.php');
 /**
  * Class ilScanAssessmentPdfQuestionBuilder
  */
-class ilScanAssessmentPdfQuestionBuilder
+class ilScanAssessmentPdfAssessmentQuestionBuilder
 {
 
-	protected $supported_question_types = array(
+	protected $supported_assessment_question_types = array(
 		'assSingleChoice',
 		'assMultipleChoice',
 		'assKprimChoice'
@@ -86,7 +86,7 @@ class ilScanAssessmentPdfQuestionBuilder
 		foreach($this->test->getQuestions() as $key => $value)
 		{
 			$question = assQuestion::_instantiateQuestion($value);
-			if(in_array($question->getQuestionType(), $this->supported_question_types))
+			if(in_array($question->getQuestionType(), $this->supported_assessment_question_types))
 			{
 				$this->questions[]	= $question;
 				$this->log->debug(sprintf('Question with id %s of type %s instantiated.', $question->getId(), $question->getQuestionType()));

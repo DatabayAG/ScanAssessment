@@ -3,7 +3,7 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfQuestionBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMetaData.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 
@@ -12,7 +12,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentL
  * Class ilScanAssessmentLayoutController
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilPdfPreviewBuilder
+class ilScanAssessmentPdfAssessmentBuilder
 {
 
 	const PERSONALISED = false;
@@ -45,7 +45,7 @@ class ilPdfPreviewBuilder
 
 	/**
 	 * @param ilScanAssessmentPdfHelper $pdf_h
-	 * @param ilScanAssessmentPdfQuestionBuilder $question_builder
+	 * @param ilScanAssessmentPdfAssessmentQuestionBuilder $question_builder
 	 * @param $question
 	 * @param $counter
 	 */
@@ -98,7 +98,7 @@ class ilPdfPreviewBuilder
 	public function createPdf($data)
 	{
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
-		$question_builder = new ilScanAssessmentPdfQuestionBuilder($this->test, $pdf_h);
+		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
 
 		$this->addPageWithQrCode($pdf_h);
