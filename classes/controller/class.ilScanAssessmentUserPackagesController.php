@@ -73,6 +73,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$ilTabs->setTabActive('user_packages');
 
 		$form = new ilPropertyFormGUI();
+		$form->setShowTopButtons(false);
 		$pluginObject = $this->getCoreController()->getPluginObject();
 
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));

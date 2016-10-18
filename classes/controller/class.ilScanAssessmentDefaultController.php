@@ -25,7 +25,6 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
-
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 		$this->configuration = new ilScanAssessmentTestConfiguration($this->test->getId());
 	}
@@ -44,26 +43,29 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 		$ilTabs->setTabActive('settings');
 
 		$form = new ilPropertyFormGUI();
-		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_app_settings'));
+		$form->setShowTopButtons(false);
+		$pluginObject = $this->getCoreController()->getPluginObject();
 
-		$active = new ilCheckboxInputGUI($this->getCoreController()->getPluginObject()->txt('scas_active'), 'active');
-		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_active_info'));
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
+		$form->setTitle($pluginObject->txt('scas_app_settings'));
+
+		$active = new ilCheckboxInputGUI($pluginObject->txt('scas_active'), 'active');
+		$active->setInfo($pluginObject->txt('scas_active_info'));
 		$active->setValue(1);
 		$form->addItem($active);
 
-		$select_mode = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_mode'), 'mode');
-		$select_mode->setInfo($this->getCoreController()->getPluginObject()->txt('scas_mode_info'));
-		$modes = array('inline' => $this->getCoreController()->getPluginObject()->txt('scas_mode_inline'),
-					   'sheet' => $this->getCoreController()->getPluginObject()->txt('scas_answer_sheet')
+		$select_mode = new ilSelectInputGUI($pluginObject->txt('scas_mode'), 'mode');
+		$select_mode->setInfo($pluginObject->txt('scas_mode_info'));
+		$modes = array(	'inline' => $pluginObject->txt('scas_mode_inline'),
+						'sheet' => $pluginObject->txt('scas_answer_sheet')
 		);
 		$select_mode->setOptions($modes);
 		$form->addItem($select_mode);
 
-		$shuffle = new ilSelectInputGUI($this->getCoreController()->getPluginObject()->txt('scas_shuffling'), 'shuffling');
-		$shuffle->setInfo($this->getCoreController()->getPluginObject()->txt('scas_shuffling_info'));
-		$shuffle_modes = array('inline' => $this->getCoreController()->getPluginObject()->txt('scas_per_assessment'),
-					   'sheet' => $this->getCoreController()->getPluginObject()->txt('scas_per_user')
+		$shuffle = new ilSelectInputGUI($pluginObject->txt('scas_shuffling'), 'shuffling');
+		$shuffle->setInfo($pluginObject->txt('scas_shuffling_info'));
+		$shuffle_modes = array(	'inline' =>$pluginObject->txt('scas_per_assessment'),
+					  			 'sheet' => $pluginObject->txt('scas_per_user')
 		);
 		$shuffle->setOptions($shuffle_modes);
 		$form->addItem($shuffle);
