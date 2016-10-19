@@ -39,7 +39,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		$this->test	= $test;
 		$this->log	= ilScanAssessmentLog::getInstance();
-		$this->path_for_pdfs = $path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
+		$this->path_for_pdfs = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
 		$this->ensureSavePathExists($this->path_for_pdfs);
 	}
 

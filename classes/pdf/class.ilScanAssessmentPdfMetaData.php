@@ -39,7 +39,6 @@ class ilScanAssessmentPdfMetaData
 	 * ilScanAssessmentPdfMetaData constructor.
 	 * @param ilObjTest $test
 	 * @param $test_date
-	 * @param $institution
 	 * @param $personalised
 	 */
 	public function __construct($test, $test_date, $personalised)

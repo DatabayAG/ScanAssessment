@@ -20,6 +20,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected $configuration;
 
 	protected $path_to_scans;
+	protected $path_to_done;
 	
 	/**
 	 * 
@@ -29,7 +30,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 
 		$this->path_to_scans = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
+		$this->path_to_done = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/done';
 		$this->ensureSavePathExists($this->path_to_scans);
+		$this->ensureSavePathExists($this->path_to_done);
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -53,7 +56,96 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			));
 		}
 	}
-	
+
+	/**
+	 * @param $scanner
+	 * @param $log
+	 * @return array
+	 */
+	protected function detectMarker($scanner, $log)
+	{
+		$time_start = microtime(true);
+		$marker = $scanner->getMarkerPosition();
+		$time_end     = microtime(true);
+		$time         = $time_end - $time_start;
+		$log->debug('Marker Position detection duration: ' . $time);
+		$log->debug($marker);
+
+		return $marker;
+	}
+	/**
+	 * @param $log
+	 * @return array
+	 */
+	protected function detectQrCode($log)
+	{
+		$time_start = microtime(true);
+		$qr     = new ilScanAssessmentQrCode('/tmp/new_file.jpg');
+		$qr_pos = $qr->getQRPosition();
+		$log->debug($qr_pos);
+		$time_end     = microtime(true);
+		$time         = $time_end - $time_start;
+		$log->debug('QR Position detection duration: ' . $time);
+		$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
+
+		return $qr_pos;
+	}
+
+	/**
+	 * @param $marker
+	 * @param $qr_pos
+	 * @param $log
+	 * @return ilScanAssessmentAnswerScanner
+	 */
+	protected function detectAnswers($marker, $qr_pos, $log)
+	{
+		$time_start = microtime(true);
+		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg');
+		$log->debug($ans->scanImage($marker, $qr_pos));
+		$time_end = microtime(true);
+		$time     = $time_end - $time_start;
+		$log->debug('Answer Calculation duration:  ' . $time);
+
+		return $ans;
+	}
+
+	/**
+	 * @param $path
+	 * @param $entry
+	 * @return bool
+	 */
+	protected function analyseImage($path, $entry)
+	{
+		$log = ilScanAssessmentLog::getInstance();
+		$org = $path . '/' . $entry;
+		$done = $this->path_to_done . '/' . $entry;
+		$log->debug('Start with file: ' . $org);
+		
+		$scanner = new ilScanAssessmentMarkerDetection($org);
+
+		$marker = $this->detectMarker($scanner, $log);
+
+		$scanner->drawTempImage($scanner->getTempImage(), 'test_marker.jpg');
+		$scanner->drawTempImage($scanner->getImage(), 'new_file.jpg');
+
+		$qr_pos = $this->detectQrCode($log);
+
+		$this->detectAnswers($marker, $qr_pos, $log);
+
+		$log->debug('Coping file: ' . $org . ' to ' .$done );
+		copy($org, $done);
+
+		if(file_exists($done))
+		{
+			unlink($org);
+			$log->debug('Coping exist removing original: ' . $org);
+		}
+		else
+		{
+			$log->debug('Coping does not exist leaving original: ' . $org);
+		}
+	}
+
 	/**
 	 * @return ilPropertyFormGUI
 	 */
@@ -83,47 +175,37 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	public function analyseCmd()
 	{
-		$file = $this->path_to_scans . '/pruefung_r-0.jpg';
+		$path = $this->path_to_scans;
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentAnswerScanner.php';
-
-		$runs = 0;
-		for($i = 0; $i <= 0; $i++)
+		$files_found = false;
+		if ($handle = opendir($path)) 
 		{
-			echo '<br>Run '.$i .'<br>';
-			$demo = new ilScanAssessmentMarkerDetection($file);
-			$time_start = microtime(true);
-			$s_time_start = microtime(true);
-			$marker = $demo->getMarkerPosition();
-			print_r($marker);
-			$time_end = microtime(true);
-			$time = $time_end - $s_time_start;
-			$s_time_start = microtime(true);
-			$runs += $time;
-			echo '<br>Marker Position: ' . $time;
-			$demo->drawTempImage($demo->getTempImage(), 'test_marker.jpg');
-			$demo->drawTempImage($demo->getImage(), 'new_file.jpg');
-			$qr = new ilScanAssessmentQrCode('/tmp/new_file.jpg');
-			$qr_pos = $qr->getQRPosition();
-			echo print_r($qr_pos);
-			$time_end = microtime(true);
-			$time = $time_end - $s_time_start;
-			$s_time_start = microtime(true);
-			$runs += $time;
-			echo '<br>QR Position: ' . $time. '<br>';
-			$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
-			$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg');
-			echo print_r($ans->scanImage($marker, $qr_pos ));
-			$time_end = microtime(true);
-			$time = $time_end - $s_time_start;
-			$runs += $time;
-			echo '<br>Answer Calculation: ' . $time;
-
+			while (false !== ($entry = readdir($handle))) 
+			{
+				if(is_dir($path .'/'. $entry) === false)
+				{
+					$files_found = true;
+					$this->analyseImage($path, $entry);
+				}
+			}
+			closedir($handle);
 		}
-		$runs = $runs / $i;
-		echo '<br><br>' . $runs;
-		exit();
+		if($files_found)
+		{
+			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'), true);
+		}
+		else
+		{
+			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'), true);
+		}
+		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+			'ilScanAssessmentScanController.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
 	}
 
 	/**

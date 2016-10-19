@@ -76,3 +76,5 @@ scas_matriculation_style_info#:#Benutzen Sie bitte "X" für Nummern und "-" um A
 scas_institution#:#Name Ihrer Institution
 scas_matriculation_style#:#Das Konfigurierte Matrikelnummer Format ist: 
 scas_created_pdfs#:#Erzeugte PDFs
+scas_files_found#:#Dateien gefunden und analysiert.
+scas_no_files_found#:#Keine Dateien gefunden.

@@ -77,3 +77,5 @@ scas_matriculation_style_info#:#Please use "X" for Numbers and "-" for layout ga
 scas_institution#:#Name of your institution
 scas_matriculation_style#:#The configured matriculation format is:
 scas_created_pdfs#:#Created PDFs
+scas_files_found#:#Files found and analysed.
+scas_no_files_found#:#No files found.

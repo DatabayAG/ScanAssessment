@@ -128,7 +128,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsActivePrecondition.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsFixedTestPrecondition.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentHasValidQuestionsPrecondition.php');
-		
+
 		$this->preconditions[] = new ilScanAssessmentIsActivePrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->preconditions[] = new ilScanAssessmentIsFixedTestPrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->preconditions[] = new ilScanAssessmentHasValidQuestionsPrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
@@ -152,7 +152,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentUserPackagesExportedStep.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentScanStep.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentReturnResultsStep.php');
-		
+
 		$this->steps[] = new ilScanAssessmentIsActivatedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentLayoutStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentUserPackagesExportedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
