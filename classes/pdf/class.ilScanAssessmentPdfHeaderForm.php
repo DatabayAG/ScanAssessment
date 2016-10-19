@@ -183,6 +183,8 @@ class ilScanAssessmentPdfHeaderForm
 				}
 			}
 			$this->matriculation_positions = $positions;
+			$log = ilScanAssessmentLog::getInstance();
+			$log->debug($positions);
 			$this->pdf->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE);
 	}
 }

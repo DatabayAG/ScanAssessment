@@ -8,8 +8,8 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 class ilScanAssessmentCheckBoxElement
 {
 	const MIN_VALUE_BLACK		= 150;
-	const MIN_MARKED_AREA		= 0.25;
-	const MARKED_AREA_CHECKED	= 0.35;
+	const MIN_MARKED_AREA		= 0.35;
+	const MARKED_AREA_CHECKED	= 0.45;
 	const MARKED_AREA_UNCHECKED	= 0.90;
 	const BOX_SIZE				= 5;
 	const CHECKED				= 2;
@@ -45,7 +45,7 @@ class ilScanAssessmentCheckBoxElement
 		$this->image_helper		= $image_helper;
 		$this->color_mapping	= array(
 			self::UNTOUCHED	=> $this->image_helper->getYellow(),
-			self::UNCHECKED	=> $this->image_helper->getBlue(),
+			self::UNCHECKED	=> $this->image_helper->getPink(),
 			self::CHECKED	=> $this->image_helper->getGreen()
 		);
 	}

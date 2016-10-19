@@ -180,7 +180,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function drawTempImage($img, $fn)
 	{
-		imagejpeg($img, '/tmp/'  . $fn);
+		imagejpeg($img, $fn);
 	}
 
 	public function getWhite()

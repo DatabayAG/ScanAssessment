@@ -119,11 +119,11 @@ class ilScanAssessmentScanner
 
 	/**
 	 * @param $img
-	 * @param $fn
+	 * @param $path_to_file
 	 */
-	public function drawTempImage($img, $fn)
+	public function drawTempImage($img, $path_to_file)
 	{
-		$this->image_helper->drawTempImage($img, $fn);
+		$this->image_helper->drawTempImage($img, $path_to_file);
 	}
 	
 	/**

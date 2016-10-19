@@ -29,10 +29,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 
-		$this->path_to_scans = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
-		$this->path_to_done = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/done';
+		$this->path_to_scans	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
 		$this->ensureSavePathExists($this->path_to_scans);
-		$this->ensureSavePathExists($this->path_to_done);
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -80,13 +78,13 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function detectQrCode($log)
 	{
 		$time_start = microtime(true);
-		$qr     = new ilScanAssessmentQrCode('/tmp/new_file.jpg');
-		$qr_pos = $qr->getQRPosition();
+		$qr			= new ilScanAssessmentQrCode('/tmp/new_file.jpg');
+		$qr_pos		= $qr->getQRPosition();
 		$log->debug($qr_pos);
 		$time_end     = microtime(true);
 		$time         = $time_end - $time_start;
 		$log->debug('QR Position detection duration: ' . $time);
-		$qr->drawTempImage($qr->getTempImage(), 'test_qr.jpg');
+		$qr->drawTempImage($qr->getTempImage(),  $this->path_to_done . '/test_qr.jpg');
 
 		return $qr_pos;
 	}
@@ -100,7 +98,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function detectAnswers($marker, $qr_pos, $log)
 	{
 		$time_start = microtime(true);
-		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg');
+		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg', $this->path_to_done);
 		$log->debug($ans->scanImage($marker, $qr_pos));
 		$time_end = microtime(true);
 		$time     = $time_end - $time_start;
@@ -119,21 +117,22 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
 		$done = $this->path_to_done . '/' . $entry;
+
 		$log->debug('Start with file: ' . $org);
-		
+
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 
 		$marker = $this->detectMarker($scanner, $log);
 
-		$scanner->drawTempImage($scanner->getTempImage(), 'test_marker.jpg');
-		$scanner->drawTempImage($scanner->getImage(), 'new_file.jpg');
+		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+		$scanner->drawTempImage($scanner->getImage(), '/tmp/new_file.jpg');
 
 		$qr_pos = $this->detectQrCode($log);
 
 		$this->detectAnswers($marker, $qr_pos, $log);
 
 		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		copy($org, $done);
+		#copy($org, $done);
 
 		if(file_exists($done))
 		{
@@ -144,6 +143,14 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		{
 			$log->debug('Coping does not exist leaving original: ' . $org);
 		}
+	}
+
+	protected function getNextFreeAnalysingFolder()
+	{
+		$path	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/';
+		$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
+		$this->path_to_done	= $path . $counter;
+		$this->ensureSavePathExists($this->path_to_done);
 	}
 
 	/**
@@ -186,6 +193,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			{
 				if(is_dir($path .'/'. $entry) === false)
 				{
+					$this->getNextFreeAnalysingFolder();
 					$files_found = true;
 					$this->analyseImage($path, $entry);
 				}
