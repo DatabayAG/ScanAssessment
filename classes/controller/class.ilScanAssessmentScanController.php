@@ -99,7 +99,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	{
 		$time_start = microtime(true);
 		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg', $this->path_to_done);
-		$log->debug($ans->scanImage($marker, $qr_pos));
+		$val = $ans->scanImage($marker, $qr_pos);
+		#$log->debug($val);
 		$time_end = microtime(true);
 		$time     = $time_end - $time_start;
 		$log->debug('Answer Calculation duration:  ' . $time);

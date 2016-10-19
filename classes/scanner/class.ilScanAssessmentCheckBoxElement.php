@@ -128,7 +128,7 @@ class ilScanAssessmentCheckBoxElement
 				}
 			}
 		}
-		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox pixels total %s, black %s, white %s.', $total, $black, $white));
+		#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox pixels total %s, black %s, white %s.', $total, $black, $white));
 		return new ilScanAssessmentArea($total, $white, $black);
 	}
 
@@ -147,12 +147,12 @@ class ilScanAssessmentCheckBoxElement
 			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
 			{
 				$value	= self::CHECKED;
-				ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is checked %s.', $area->percentBlack()));
+				#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is checked %s.', $area->percentBlack()));
 			}
 			else
 			{
 				$value	= self::UNCHECKED;
-				ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is unchecked %s.', $area->percentBlack()));
+				#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is unchecked %s.', $area->percentBlack()));
 			}
 		}
 
@@ -160,7 +160,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
 		}
-		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
+		#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
 		return $value;
 	}
 

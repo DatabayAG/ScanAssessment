@@ -81,16 +81,15 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
 
 				$rad = rad2deg(atan2($dx, $dy));
-
+				$this->log->debug(sprintf('Rotation (%s).', $rad));
 				if($rotated==false && abs($rad) > 0.05) 
 				{
 					$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
-					$this->image_helper->drawLine($im, 0, 0, 500, 500, $this->image_helper->getPink());
-					$im = $this->image_helper->rotate($rad * -1);
+					$im = $this->image_helper->rotate(($rad  + 0.040133474845091) * -1 );
 					$this->setTempImage($im);
 					$this->setImage($im);
 					return $this->findMarker($im, true, $threshold);
-				} 
+				}
 				else 
 				{
 					$this->drawDebugSquareFromVector($locate_top_left);

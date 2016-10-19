@@ -65,7 +65,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 			$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 			$marked = $checkbox->isMarked($im, true);
-			$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+			#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 
 			$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked);
 		}
@@ -97,7 +97,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 				$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 				$marked = $checkbox->isMarked($im, true);
-				$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+				#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 				if($marked === 2)
 				{
 					$matriculation[$key] = $row;
@@ -118,26 +118,22 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			['qid' => 450, 'aid' => -1, 'a_text' => 'Die Entscheidung ist getroffen.', 'x' => 49, 'y' => '121.64375'],
 			['qid' => 450, 'aid' => -1, 'a_text' => 'Das ist mein Urteil.', 'x' => 49, 'y' => '126.1125'],
 			['qid' => 450, 'aid' => -1, 'a_text' => 'So soll es sein.', 'x' => 49, 'y' => '130.58125'],
-			/*['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso', 'x' => 49, 'y' => '90.650002666667'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 'x' => 49, 'y' => '94.677780666667'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 'x' => 49, 'y' => '98.705558666667'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 'x' => 49, 'y' => '102.73333666667'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 'x' => 49, 'y' => '119.81667066667'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 'x' => 49, 'y' => '123.84444866667'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung', 'x' => 49, 'y' => '127.87222666667'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 'x' => 49, 'y' => '131.90000466667'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder', 'x' => 49, 'y' => '148.98333866667'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 'x' => 49, 'y' => '153.01111666667'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 'x' => 49, 'y' => '157.03889466667'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 'x' => 49, 'y' => '161.06667266667'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Neu-Delhi', 'x' => 49, 'y' => '178.15000666667'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Mumbai', 'x' => 49, 'y' => '182.17778466667'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Bangkok', 'x' => 49, 'y' => '186.20556266667'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Peking', 'x' => 49, 'y' => '190.23334066667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Metropolis', 'x' => 49, 'y' => '207.31667466667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Delphi', 'x' => 49, 'y' => '211.34445266667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Herat', 'x' => 49, 'y' => '215.37223066667'],
-			['qid' => 460, 'aid' => -1, 'a_text' => 'Konstantinopel', 'x' => 49, 'y' => '219.40000866667'],*/
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso', 'x' => 49, 'y' => '151.51875'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 'x' => 49, 'y' => '155.9875'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 'x' => 49, 'y' => '160.45625'],
+			['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 'x' => 49, 'y' => '164.925'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 'x' => 49, 'y' => '185.8625'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 'x' => 49, 'y' => '190.33125'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung', 'x' => 49, 'y' => '194.8'],
+			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 'x' => 49, 'y' => '199.26875'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder', 'x' => 49, 'y' => '220.20625'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 'x' => 49, 'y' => '224.675'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 'x' => 49, 'y' => '229.14375'],
+			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 'x' => 49, 'y' => '233.6125'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Neu-Delhi', 'x' => 49, 'y' => '254.55'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Mumbai', 'x' => 49, 'y' => '259.01875'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Bangkok', 'x' => 49, 'y' => '263.4875'],
+			['qid' => 458, 'aid' => -1, 'a_text' => 'Peking', 'x' => 49, 'y' => '267.95625']
 		];
 	}
 
