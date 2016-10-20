@@ -81,3 +81,5 @@ scas_files_found#:#Files found and analysed.
 scas_no_files_found#:#No files found.
 scas_settings#:#Setting
 scas_pdf#:#PDF
+scas_no_name_field#:#Omit Name fields
+scas_no_name_field_info#:#Don't add a Name Form to PDF

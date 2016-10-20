@@ -40,6 +40,11 @@ class ilScanAssessmentUserPackagesConfiguration
 	protected $documents_generated;
 
 	/**
+	 * @var boolean
+	 */
+	protected $no_name_field; 
+	
+	/**
 	 * @param int $test_obj_id
 	 */
 	public function __construct($test_obj_id)
@@ -71,6 +76,7 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setDownloadStyle($row['download_style']);
 		$this->setPersonalised($row['personalised']);
 		$this->setDocumentsGenerated($row['documents_generated']);
+		$this->setNoNameField($row['no_name_field']);
 	}
 	
 	public function setValuesFromPost()
@@ -80,6 +86,7 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setMatriculationStyle((int) $_POST['coding']);
 		$this->setDownloadStyle((int) $_POST['complete_download']);
 		$this->setPersonalised((int) $_POST['personalised']);
+		$this->setNoNameField((int) $_POST['no_name_field']);
 	}
 
 	public function save()
@@ -100,7 +107,8 @@ class ilScanAssessmentUserPackagesConfiguration
 				'matriculation_style'	=> array('integer', $this->getMatriculationStyle()),
 				'download_style'		=> array('integer', $this->getDownloadStyle()),
 				'personalised'			=> array('integer', $this->isPersonalised()),
-				'documents_generated'	=> array('integer', $this->getDocumentsGenerated())
+				'documents_generated'	=> array('integer', $this->getDocumentsGenerated()),
+				'no_name_field'			=> array('integer', $this->isNoNameField())
 			));
 	}
 
@@ -214,6 +222,22 @@ class ilScanAssessmentUserPackagesConfiguration
 	public function setDocumentsGenerated($documents_generated)
 	{
 		$this->documents_generated = $documents_generated;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isNoNameField()
+	{
+		return $this->no_name_field;
+	}
+
+	/**
+	 * @param boolean $no_name_field
+	 */
+	public function setNoNameField($no_name_field)
+	{
+		$this->no_name_field = $no_name_field;
 	}
 	
 	

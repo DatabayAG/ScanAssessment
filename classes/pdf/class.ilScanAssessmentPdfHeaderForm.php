@@ -109,12 +109,15 @@ class ilScanAssessmentPdfHeaderForm
 	protected function insertFirstAndSurnameBoxes($columns, $width)
 	{
 		$this->pdf->Ln(1);
-		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
-		if($this->shouldMatriculationMatrixBePrinted() && $columns > 0)
+		if( ! $this->metadata->isNoNameField())
 		{
-			$this->pdf->Ln();
+			$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('firstname') . ': ', 1, 'L', 1, 0, '', '', true);
+			if($this->shouldMatriculationMatrixBePrinted() && $columns > 0)
+			{
+				$this->pdf->Ln();
+			}
+			$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
 		}
-		$this->pdf->MultiCell($width, 26, ' ' . $this->lng->txt('lastname') . ': ', 1, 'L', 0, 1, '', '', true);
 	}
 
 	/**

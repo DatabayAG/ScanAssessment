@@ -57,3 +57,15 @@ if(!$ilDB->tableExists('pl_scas_user_packages'))
 	$ilDB->addPrimaryKey('pl_scas_user_packages', array('tst_id'));
 }
 ?>
+<#3>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_user_packages', 'no_name_field'))
+{
+	$ilDB->addTableColumn('pl_scas_user_packages', 'no_name_field',
+		array(
+			'type'    => 'integer',
+			'length'  => '1'
+		)
+	);
+}
+?>

@@ -80,3 +80,5 @@ scas_files_found#:#Dateien gefunden und analysiert.
 scas_no_files_found#:#Keine Dateien gefunden.
 scas_settings#:#Einstellungen
 scas_pdf#:#PDF
+scas_no_name_field#:#Namens Formular auslassen
+scas_no_name_field_info#:#Es werden keine Namensfelder in das PDF eingefügt

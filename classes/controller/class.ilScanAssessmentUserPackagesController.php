@@ -136,6 +136,15 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$matriculation_number->addSubItem($mat_sub_form);
 		$form->addItem($matriculation_number);
 
+		$no_names = new ilCheckboxInputGUI($pluginObject->txt('scas_no_name_field'), 'no_name_field');
+		$no_names->setInfo($pluginObject->txt('scas_no_name_field_info'));
+		$no_names->setValue(1);
+		if($this->configuration->isNoNameField() == 1)
+		{
+			$no_names->setChecked(true);
+		}
+		$form->addItem($no_names);
+
 		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
 		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
 		$options = array(	0 => $pluginObject->txt('scas_download_as_flag'), 
