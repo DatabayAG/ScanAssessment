@@ -49,11 +49,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	protected function addTabs($active_sub = 'user_packages_settings')
 	{
 		parent::addTabs();
-		/**
-		 * @var $ilTabs ilTabsGUI
-		 */
-		global $ilTabs;
-		$ilTabs->setSubTabActive('user_packages_pdf');
+		$this->tabs->setSubTabActive('user_packages_pdf');
 	}
 
 	/**
@@ -110,6 +106,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	{
 		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$demo->createDemoPdf();
+		$this->log->debug(sprintf('Demo pdf for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
 	}
 
 	public function createPdfDocumentsCmd()
@@ -155,6 +152,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$path = $preview->getPathForPdfs();
 		ilUtil::delDir($path, true);
+		$this->log->debug(sprintf('Removed pdfs for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
 		#ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_removed'), true);
 		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
 			'ilScanAssessmentUserPackagesControllerPdf.default',

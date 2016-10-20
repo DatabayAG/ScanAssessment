@@ -25,6 +25,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	 * @var ilScanAssessmentGlobalSettings
 	 */
 	protected $global_settings;
+
 	/**
 	 * 
 	 */
@@ -63,14 +64,10 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected function addTabs($active_sub = 'user_packages_settings')
 	{
 		$pluginObject = $this->getCoreController()->getPluginObject();
-		/**
-		 * @var $ilTabs ilTabsGUI
-		 */
-		global $ilTabs;
-		$ilTabs->setTabActive('user_packages');
-		$ilTabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), $this->getLink());
-		$ilTabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
-		$ilTabs->setSubTabActive($active_sub);
+		$this->tabs->setTabActive('user_packages');
+		$this->tabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), $this->getLink());
+		$this->tabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
+		$this->tabs->setSubTabActive($active_sub);
 	}
 	
 	/**
