@@ -22,6 +22,15 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
+		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
+		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
+		$options = array(	0 => $pluginObject->txt('scas_download_as_flag'),
+							 1 => $pluginObject->txt('scas_download_as_zip')
+		);
+		$complete_download->setValue($this->configuration->getDownloadStyle());
+		$complete_download->setOptions($options);
+		$form->addItem($complete_download);
+
 		$this->showPdfFilesIfExisting($form);
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		if($this->doPdfFilesExistsInDirectory())

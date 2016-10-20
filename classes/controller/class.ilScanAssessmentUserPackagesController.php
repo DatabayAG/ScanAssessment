@@ -145,15 +145,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		}
 		$form->addItem($no_names);
 
-		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
-		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
-		$options = array(	0 => $pluginObject->txt('scas_download_as_flag'), 
-							1 => $pluginObject->txt('scas_download_as_zip')
-		);
-		$complete_download->setValue($this->configuration->getDownloadStyle());
-		$complete_download->setOptions($options);
-		$form->addItem($complete_download);
-
 		$date_box = new ilDateTimeInputGUI($pluginObject->txt('scas_assessment_date'), 'assessment_date');
 		$date_box->setInfo($pluginObject->txt('scas_assessment_date_info'));
 		$date_box->setDate(new ilDateTime($this->configuration->getAssessmentDate(), IL_CAL_UNIX));
