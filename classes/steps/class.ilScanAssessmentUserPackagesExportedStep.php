@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 require_once dirname(__FILE__) . '/class.ilScanAssessmentStepsBase.php';
+require_once dirname(__FILE__) . '/../pdf/class.ilScanAssessmentPdfAssessmentBuilder.php';
 
 /**
  * Class class.ilScanAssessmentUserPackagesExportedStep.php
@@ -30,6 +31,19 @@ class ilScanAssessmentUserPackagesExportedStep extends ilScanAssessmentStepsBase
 	 */
 	public function isFulfilled()
 	{
-		return true;
+		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+		$path = $preview->getPathForPdfs();
+		if ($handle = opendir($path))
+		{
+			while (false !== ($entry = readdir($handle)))
+			{
+				if($entry != '.' && $entry != '..')
+				{
+					return true;
+				}
+			}
+			closedir($handle);
+		}
+		return false;
 	}
 }

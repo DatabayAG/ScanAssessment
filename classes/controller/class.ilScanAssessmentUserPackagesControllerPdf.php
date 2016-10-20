@@ -121,8 +121,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		}
 		else
 		{
-			$todo_get_value_from_number_input = 2;
-			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
+			$demo->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
 		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
 		ilUtil::redirect($this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
