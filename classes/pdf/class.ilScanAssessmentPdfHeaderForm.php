@@ -94,7 +94,7 @@ class ilScanAssessmentPdfHeaderForm
 		if($this->shouldMatriculationMatrixBePrinted() && $columns > 0)
 		{
 			$this->insertFirstAndSurnameBoxes($columns, $first_column);
-			$this->pdf->MultiCell($second_column, 52, ' ' . $this->lng->txt('matriculation') . ': ', 1, 'C', 0, 1, $first_column + 15, 35, true);
+			$this->pdf->MultiCell($second_column, 52, ' ' . $this->lng->txt('matriculation') . ': ', 1, 'C', 0, 1, $first_column + 15, 37, true);
 		}
 		else
 		{
@@ -165,7 +165,7 @@ class ilScanAssessmentPdfHeaderForm
 			{
 				for($i = 0; $i <= 9; $i++)
 				{
-					$y = 45 + ($i * 4);
+					$y = 47 + ($i * 4);
 					$x = 186 - ($columns * 4);
 					$this->pdf->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x + 1.5, $y + 0.3, true);
 

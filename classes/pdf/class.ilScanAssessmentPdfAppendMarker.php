@@ -125,13 +125,13 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->SetFillColor(255, 255, 255);
 		$this->SetLineWidth(0.6);
 		$this->Ln();
-		$this->Cell(40, 5, '', 1, 0, 'C', 1);
-		$this->Cell(120, 5, ilScanAssessmentGlobalSettings::getInstance()->getInstitution(), 1, 0, 'C', 1);
-		$this->Cell(20, 5, $this->metadata->getTestDate(), 1, 0, 'C', 1);
+		$this->Cell(40, 7, '', 1, 0, 'C', 1);
+		$this->Cell(120, 7, ilScanAssessmentGlobalSettings::getInstance()->getInstitution(), 1, 0, 'C', 1);
+		$this->Cell(20, 7, $this->metadata->getTestDate(), 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
+		$this->Ln();
 		if($this->pageNr === 1)
 		{
-			$this->Ln();
 			$this->Ln(1);
 			$this->Cell(40, 8, ' ' . $this->metadata->getAuthor(), 'LTB', 0, 'L', 1);
 			$this->Cell(120, 8, $this->metadata->getTestTitle(), 'TB', 0, 'C', 1);
