@@ -1,9 +1,9 @@
 <?php
-
+ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentUserPackagesConfiguration.php');
 /**
  * Class ilScanAssessmentPdfMetaData
  */
-class ilScanAssessmentPdfMetaData
+class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfiguration
 {
 	/**
 	 * @var string
@@ -43,6 +43,8 @@ class ilScanAssessmentPdfMetaData
 	 */
 	public function __construct($test, $test_date, $personalised)
 	{
+		parent::__construct($test->getId());
+
 		$this->test_title	= $test->getTitle();
 		$this->author		= $test->getAuthor();
 		$this->test_date	= $test_date;
