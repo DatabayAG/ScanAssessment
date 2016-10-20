@@ -86,7 +86,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		$this->addTabs();
 
-
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 

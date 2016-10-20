@@ -116,7 +116,7 @@ class ilScanAssessmentUserPackagesControllerPdfs extends ilScanAssessmentUserPac
 			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
 		}
 		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
-		ilUtil::redirect($this->getLink());
+		ilUtil::redirect($this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
 	}
 
 
