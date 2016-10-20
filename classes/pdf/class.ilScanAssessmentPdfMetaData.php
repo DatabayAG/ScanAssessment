@@ -13,11 +13,6 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	/**
 	 * @var string
 	 */
-	protected $test_date;
-
-	/**
-	 * @var string
-	 */
 	protected $author;
 
 	/**
@@ -38,16 +33,14 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	/**
 	 * ilScanAssessmentPdfMetaData constructor.
 	 * @param ilObjTest $test
-	 * @param $test_date
 	 * @param $personalised
 	 */
-	public function __construct($test, $test_date, $personalised)
+	public function __construct($test, $personalised)
 	{
 		parent::__construct($test->getId());
 
 		$this->test_title	= $test->getTitle();
 		$this->author		= $test->getAuthor();
-		$this->test_date	= $test_date;
 		$this->personalised	= $personalised;
 	}
 
@@ -65,14 +58,6 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	public function getTestTitle()
 	{
 		return $this->test_title;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getTestDate()
-	{
-		return $this->test_date;
 	}
 
 	/**

@@ -69,3 +69,15 @@ if(!$ilDB->tableColumnExists('pl_scas_user_packages', 'no_name_field'))
 	);
 }
 ?>
+<#4>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_user_packages', 'assessment_date'))
+{
+	$ilDB->addTableColumn('pl_scas_user_packages', 'assessment_date',
+		array(
+			'type'    => 'integer',
+			'length'  => '4'
+		)
+	);
+}
+?>

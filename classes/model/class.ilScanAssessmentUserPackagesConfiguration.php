@@ -44,6 +44,9 @@ class ilScanAssessmentUserPackagesConfiguration
 	 */
 	protected $no_name_field; 
 	
+	
+	protected $assessment_date;
+	
 	/**
 	 * @param int $test_obj_id
 	 */
@@ -77,6 +80,7 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setPersonalised($row['personalised']);
 		$this->setDocumentsGenerated($row['documents_generated']);
 		$this->setNoNameField($row['no_name_field']);
+		$this->setAssessmentDate($row['assessment_date']);
 	}
 	
 	public function setValuesFromPost()
@@ -87,6 +91,10 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setDownloadStyle((int) $_POST['complete_download']);
 		$this->setPersonalised((int) $_POST['personalised']);
 		$this->setNoNameField((int) $_POST['no_name_field']);
+
+		$date = ilUtil::stripSlashesRecursive($_POST['assessment_date']);
+		$date = new ilDateTime($date["date"]." ".$date["time"], IL_CAL_DATETIME);
+		$this->setAssessmentDate($date->getUnixTime());
 	}
 
 	public function save()
@@ -108,7 +116,8 @@ class ilScanAssessmentUserPackagesConfiguration
 				'download_style'		=> array('integer', $this->getDownloadStyle()),
 				'personalised'			=> array('integer', $this->isPersonalised()),
 				'documents_generated'	=> array('integer', $this->getDocumentsGenerated()),
-				'no_name_field'			=> array('integer', $this->isNoNameField())
+				'no_name_field'			=> array('integer', $this->isNoNameField()),
+				'assessment_date'		=> array('integer', $this->getAssessmentDate())
 			));
 	}
 
@@ -239,6 +248,20 @@ class ilScanAssessmentUserPackagesConfiguration
 	{
 		$this->no_name_field = $no_name_field;
 	}
-	
-	
+
+	/**
+	 * @return mixed
+	 */
+	public function getAssessmentDate()
+	{
+		return $this->assessment_date;
+	}
+
+	/**
+	 * @param mixed $assessment_date
+	 */
+	public function setAssessmentDate($assessment_date)
+	{
+		$this->assessment_date = $assessment_date;
+	}
 }

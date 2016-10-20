@@ -83,3 +83,5 @@ scas_settings#:#Setting
 scas_pdf#:#PDF
 scas_no_name_field#:#Omit Name fields
 scas_no_name_field_info#:#Don't add a Name Form to PDF
+scas_assessment_date#:#Date of Assessment
+scas_assessment_date_info#:#--

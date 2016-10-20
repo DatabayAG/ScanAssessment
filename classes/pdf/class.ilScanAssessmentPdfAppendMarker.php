@@ -127,7 +127,8 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->Ln();
 		$this->Cell(40, 7, '', 1, 0, 'C', 1);
 		$this->Cell(120, 7, ilScanAssessmentGlobalSettings::getInstance()->getInstitution(), 1, 0, 'C', 1);
-		$this->Cell(20, 7, $this->metadata->getTestDate(), 1, 0, 'C', 1);
+		$date = date('d.m.Y',$this->metadata->getAssessmentDate());
+		$this->Cell(20, 7, $date, 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
 		$this->Ln();
 		if($this->pageNr === 1)

@@ -153,6 +153,12 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$complete_download->setValue($this->configuration->getDownloadStyle());
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
+
+		$date_box = new ilDateTimeInputGUI($pluginObject->txt('scas_assessment_date'), 'assessment_date');
+		$date_box->setInfo($pluginObject->txt('scas_assessment_date_info'));
+		$date_box->setDate(new ilDateTime($this->configuration->getAssessmentDate(), IL_CAL_UNIX));
+		$form->addItem($date_box);
+
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;

@@ -82,3 +82,5 @@ scas_settings#:#Einstellungen
 scas_pdf#:#PDF
 scas_no_name_field#:#Namens Formular auslassen
 scas_no_name_field_info#:#Es werden keine Namensfelder in das PDF eingefügt
+scas_assessment_date#:#Datum des Assessments
+scas_assessment_date_info#:#--
