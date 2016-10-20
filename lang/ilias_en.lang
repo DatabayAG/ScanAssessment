@@ -79,3 +79,5 @@ scas_matriculation_style#:#The configured matriculation format is:
 scas_created_pdfs#:#Created PDFs
 scas_files_found#:#Files found and analysed.
 scas_no_files_found#:#No files found.
+scas_settings#:#Setting
+scas_pdf#:#PDF

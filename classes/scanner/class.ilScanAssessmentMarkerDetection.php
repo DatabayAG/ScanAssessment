@@ -85,7 +85,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				if($rotated==false && abs($rad) > 0.05) 
 				{
 					$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
-					$im = $this->image_helper->rotate(($rad  + 0.040133474845091) * -1 );
+					$im = $this->image_helper->rotate($rad * -1 );
 					$this->setTempImage($im);
 					$this->setImage($im);
 					return $this->findMarker($im, true, $threshold);

@@ -17,7 +17,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected $test;
 
 	/**
-	 * @var ilScanAssessmentTestConfiguration
+	 * @var ilScanAssessmentUserPackagesConfiguration
 	 */
 	protected $configuration;
 
@@ -44,6 +44,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
 		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 
@@ -59,22 +60,32 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		}
 	}
 
-	/**
-	 * @return ilPropertyFormGUI
-	 */
-	protected function getForm()
+	protected function addTabs($active_sub = 'user_packages_settings')
 	{
-		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
-
+		$pluginObject = $this->getCoreController()->getPluginObject();
 		/**
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
 		$ilTabs->setTabActive('user_packages');
+		$ilTabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), $this->getLink());
+		$ilTabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdfs'));
+		$ilTabs->setSubTabActive($active_sub);
+	}
+	
+	/**
+	 * @return ilPropertyFormGUI
+	 */
+	protected function getForm()
+	{
+		$pluginObject = $this->getCoreController()->getPluginObject();
 
+		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 		$form = new ilPropertyFormGUI();
 		$form->setShowTopButtons(false);
-		$pluginObject = $this->getCoreController()->getPluginObject();
+
+		$this->addTabs();
+
 
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
@@ -92,6 +103,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 				'personalised' => $pluginObject->txt('scas_creation_personalised'),
 				'non_personalised' => $pluginObject->txt('scas_creation_non_personalised')
 			);
+			$creation->setValue($this->configuration->isPersonalised());
 			$creation->setOptions($personalised);
 			$form->addItem($creation);
 		}
@@ -103,158 +115,55 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
 			$form->addItem($info);
 			$count_pdfs = new ilNumberInputGUI($pluginObject->txt('scas_count_pdfs'), 'count_pdfs');
+			$count_pdfs->setValue($this->configuration->getCountDocuments());
 			$count_pdfs->setInfo($pluginObject->txt('scas_count_pdfs_info'));
 			$count_pdfs->setMinValue(1);
 			$form->addItem($count_pdfs);
 		}
 
 		$matriculation_number = new ilCheckboxInputGUI($pluginObject->txt('scas_matriculation'), 'matriculation');
-
+		$matriculation_number->setInfo($pluginObject->txt('scas_matriculation_style') . ' ' . $this->global_settings->getMatriculationStyle());
+		$matriculation_number->setValue(1);
+		if($this->configuration->isMatriculationCode() == 1)
+		{
+			$matriculation_number->setChecked(true);
+		}
 		$mat_sub_form = new ilSelectInputGUI($pluginObject->txt('scas_matriculation'), 'coding');
-		$mat_sub_item = array('matrix' => $pluginObject->txt('scas_matrix'),
-							  'textfield' => $pluginObject->txt('scas_textfield')
+		$mat_sub_item = array(0 => $pluginObject->txt('scas_matrix'),
+							  1 => $pluginObject->txt('scas_textfield')
 		);
 		$mat_sub_form->setOptions($mat_sub_item);
+		$mat_sub_form->setValue($this->configuration->getMatriculationStyle());
 		$matriculation_number->addSubItem($mat_sub_form);
-		$matriculation_number->setInfo($pluginObject->txt('scas_matriculation_style') . ' ' . $this->global_settings->getMatriculationStyle());
 		$form->addItem($matriculation_number);
 
 		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
 		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
-		$options = array(	'complete_flag' => $pluginObject->txt('scas_download_as_flag'), 
-							'complete_zip' => $pluginObject->txt('scas_download_as_zip')
+		$options = array(	0 => $pluginObject->txt('scas_download_as_flag'), 
+							1 => $pluginObject->txt('scas_download_as_zip')
 		);
+		$complete_download->setValue($this->configuration->getDownloadStyle());
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
-
-		$this->showPdfFilesIfExisting($form);
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
-		if($this->doPdfFilesExistsInDirectory())
-		{
-			$form->addCommandButton(__CLASS__ . '.removingTheExistingPdfs', $pluginObject->txt('scas_remove'));
-		}
-		else
-		{
-			$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $pluginObject->txt('scas_create'));
-		}
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
-		$form->addCommandButton(__CLASS__ . '.createDemoPdfAndCutToImages', 'Create Example Scans');
 
 		return $form;
 	}
-
-	/**
-	 * @param $form
-	 */
-	public function showPdfFilesIfExisting($form)
-	{
-		require_once 'Services/Form/classes/class.ilNestedListInputGUI.php';
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
-		$list = new ilNestedListInputGUI();
-		$list->setTitle($this->getCoreController()->getPluginObject()->txt('scas_created_pdfs'));
-		$add_item = false;
-		if ($handle = opendir($path)) 
-		{
-			while (false !== ($entry = readdir($handle))) 
-			{
-				if($entry != '.' && $entry != '..')
-				{
-					$list->addListNode($entry, $entry);
-					$add_item = true;
-				}
-			}
-			closedir($handle);
-			if($add_item)
-			{
-				$form->addItem($list);
-			}
-		}
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected function doPdfFilesExistsInDirectory()
-	{
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if($entry != '.' && $entry != '..')
-				{
-					return true;
-				}
-			}
-			closedir($handle);
-		}
-		return false;
-	}
-
 	public function createDemoPdfCmd()
 	{
 		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		$demo->createDemoPdf();
 	}
 
-	public function createPdfDocumentsCmd()
+	protected function getLink($ctrl = 'ilScanAssessmentUserPackagesController')
 	{
-		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		if($this->test->getFixedParticipants() === 1)
-		{
-			$demo->createFixedParticipantsPdf();
-		}
-		else
-		{
-			$todo_get_value_from_number_input = 2;
-			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
-		}
-		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
+		return $this->getCoreController()->getPluginObject()->getLinkTarget(
+			$ctrl . '.default',
 			array(
 				'ref_id' => (int)$_GET['ref_id']
 			)
-		));
-	}
-
-	public function createDemoPdfAndCutToImagesCmd()
-	{
-		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		if($this->test->getFixedParticipants() === 1)
-		{
-			$demo->createFixedParticipantsPdf();
-		}
-		else
-		{
-			$todo_get_value_from_number_input = 2;
-			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
-		}
-		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() ;
-		exec('convert -density 300 '. $path .'/pdf/*.pdf -quality 100 ' . $path . '/scans/scans.jpg');
-		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
-	}
-	
-	public function removingTheExistingPdfsCmd()
-	{
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
-		ilUtil::delDir($path, true);
-		#ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_removed'), true);
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
+		);
 	}
 
 	/**
@@ -269,7 +178,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		{
 			try
 			{
-				$this->configuration->bindForm($form);
+				$this->configuration->setValuesFromPost();
 				$this->configuration->save();
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
 			}
@@ -290,14 +199,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	}
 
 	/**
-	 * @param ilPropertyFormGUI $form
-	 */
-	protected function bindModelToForm(ilPropertyFormGUI $form)
-	{
-		$form->setValuesByArray($this->configuration->toArray());
-	}
-
-	/**
 	 * @param ilPropertyFormGUI|null $form
 	 * @return string
 	 */
@@ -307,7 +208,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		if(!($form instanceof ilPropertyFormGUI))
 		{
 			$form  = $this->getForm();
-			$this->bindModelToForm($form);
 		}
 
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
@@ -326,9 +226,10 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStepsGUI.php');
 		$status_bar = new ilScanAssessmentStepsGUI();
-		foreach($this->configuration->getSteps() as $steps)
+		$steps = new ilScanAssessmentTestConfiguration($this->test->getId());
+		foreach($steps->getSteps() as $step)
 		{
-			$status_bar->addItem($steps);
+			$status_bar->addItem($step);
 		}
 		return $status_bar->getHtml();
 	}
