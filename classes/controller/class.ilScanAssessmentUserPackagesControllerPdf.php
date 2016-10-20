@@ -6,7 +6,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
 /**
  * Class ilScanAssessmentUserPackagesControllerPdfs
  */
-class ilScanAssessmentUserPackagesControllerPdfs extends ilScanAssessmentUserPackagesController
+class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPackagesController
 {
 	/**
 	 * @return ilPropertyFormGUI
@@ -19,7 +19,7 @@ class ilScanAssessmentUserPackagesControllerPdfs extends ilScanAssessmentUserPac
 		$form = new ilPropertyFormGUI();
 		$form->setShowTopButtons(false);
 		$this->addTabs();
-		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
 		$this->showPdfFilesIfExisting($form);
@@ -122,21 +122,20 @@ class ilScanAssessmentUserPackagesControllerPdfs extends ilScanAssessmentUserPac
 
 	public function createDemoPdfAndCutToImagesCmd()
 	{
-		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+		$pdfs = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		if($this->test->getFixedParticipants() === 1)
 		{
-			$demo->createFixedParticipantsPdf();
+			$pdfs->createFixedParticipantsPdf();
 		}
 		else
 		{
-			$todo_get_value_from_number_input = 2;
-			$demo->createNonPersonalisedPdf($todo_get_value_from_number_input);
+			$pdfs->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
 		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() ;
 		exec('convert -density 300 '. $path .'/pdf/*.pdf -quality 100 ' . $path . '/scans/scans.jpg');
 		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
 		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
+			'ilScanAssessmentUserPackagesControllerPdf.default',
 			array(
 				'ref_id' => (int)$_GET['ref_id']
 			)
@@ -150,7 +149,7 @@ class ilScanAssessmentUserPackagesControllerPdfs extends ilScanAssessmentUserPac
 		ilUtil::delDir($path, true);
 		#ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_removed'), true);
 		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesController.default',
+			'ilScanAssessmentUserPackagesControllerPdf.default',
 			array(
 				'ref_id' => (int)$_GET['ref_id']
 			)

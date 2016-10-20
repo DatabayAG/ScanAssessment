@@ -69,7 +69,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		global $ilTabs;
 		$ilTabs->setTabActive('user_packages');
 		$ilTabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), $this->getLink());
-		$ilTabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdfs'));
+		$ilTabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
 		$ilTabs->setSubTabActive($active_sub);
 	}
 	
@@ -86,7 +86,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		$this->addTabs();
 
-		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
 		if($this->test->getFixedParticipants() === 1)
@@ -144,7 +144,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$complete_download->setValue($this->configuration->getDownloadStyle());
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
-		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
@@ -157,12 +156,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 	protected function getLink($ctrl = 'ilScanAssessmentUserPackagesController')
 	{
-		return $this->getCoreController()->getPluginObject()->getLinkTarget(
-			$ctrl . '.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		);
+		return $this->getCoreController()->getPluginObject()->getLinkTarget($ctrl . '.default',	array('ref_id' => (int)$_GET['ref_id']));
 	}
 
 	/**
