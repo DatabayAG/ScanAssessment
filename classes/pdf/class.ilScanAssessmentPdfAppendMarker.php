@@ -154,7 +154,9 @@ class ilPDFAppendMarker extends TCPDF{
 	{
 		global $lng;
 		$page = $lng->txt('page') . ' ' . $this->getAliasNumPage().'/'.$this->getAliasNbPages();
-		$this->MultiCell(0, 0, $this->metadata->getTestTitle() . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
+		$assessment_identification = $this->metadata->getTestId() . '-' . $this->metadata->getIdentification() . '-'. $this->getAliasNumPage();
+		$this->MultiCell(0, 0, $this->metadata->getTestTitle() . ' - ' . $page, 0, 'C', 0, 1, 0, $this->getPageHeight() - 14, true);
+		$this->MultiCell(0, 0, $assessment_identification, 0, 'C', 0, 1, 0, $this->getPageHeight() - 10, true);
 	}
 
 	/**

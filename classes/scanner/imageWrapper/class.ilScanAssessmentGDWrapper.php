@@ -99,7 +99,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function rotate($rad)
 	{
-		$white = imagecolorallocate($this->getImage(), 255,255,255);
+		$white = imagecolorallocate($this->getImage(), 0,255,255);
 		$rotated = imagerotate($this->getImage(), $rad, $white);
 		$this->setImage($rotated);
 		return $rotated;

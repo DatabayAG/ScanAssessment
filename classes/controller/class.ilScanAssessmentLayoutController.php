@@ -9,6 +9,10 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
  */
 class ilScanAssessmentLayoutController extends ilScanAssessmentController
 {
+	const TITLE_AND_POINTS		= 0;
+	const ONLY_TITLE			= 1;
+	const QUESTION_NUMBER_ONLY	= 2;
+
 	/**
 	 * @var ilObjTest
 	 */
@@ -52,8 +56,8 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	 */
 	protected function getForm()
 	{
+		$pluginObject = $this->getCoreController()->getPluginObject();
 		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
-
 		/**
 		 * @var $ilTabs ilTabsGUI
 		 */
@@ -61,11 +65,30 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$ilTabs->setTabActive('layout');
 
 		$form = new ilPropertyFormGUI();
-		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_layout'));
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
+		$form->setTitle($pluginObject->txt('scas_layout'));
+		
+		$info = new ilNonEditableValueGUI();
+		$title_setting	= $this->test->getTitleOutput();
+		if($title_setting < self::QUESTION_NUMBER_ONLY)
+		{
+			$info->setValue($pluginObject->txt('scas_question_title'));
+			if($title_setting < self::ONLY_TITLE)
+			{
+				$info->setValue($pluginObject->txt('scas_question_title_and_points'));
+			}
+		}
+		else
+		{
+			$info->setValue($pluginObject->txt('scas_question_non_title'));
+		}
 
-		$active = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
-		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
+		$info->setInfo($pluginObject->txt('scas_tst_settings_title_info'));
+		$info->setTitle($pluginObject->txt('scas_tst_settings_title'));
+		$form->addItem($info);
+		
+		$active = new ilFileInputGUI($pluginObject->txt('scas_upload'), 'upload');
+		$active->setInfo($pluginObject->txt('scas_upload_info'));
 		$form->addItem($active);
 
 			$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));

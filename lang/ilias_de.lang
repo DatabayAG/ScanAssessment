@@ -84,3 +84,8 @@ scas_no_name_field#:#Namens Formular auslassen
 scas_no_name_field_info#:#Es werden keine Namensfelder in das PDF eingefügt
 scas_assessment_date#:#Datum des Assessments
 scas_assessment_date_info#:#--
+scas_question_non_title#:#Weder Fragentitel noch Punkte werden angezeigt
+scas_question_title#:#Nur Fragentitel
+scas_question_title_and_points#:#Frage Titel und Punkte werden angezeigt
+scas_tst_settings_title#:#Die Testeinstellung "Zeige Fragentitel" ist eingestellt auf:
+scas_tst_settings_title_info#:#Diese Testeinstellung beeinflusst, die Darstellung der Fragentitel im Pdf.
