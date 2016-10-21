@@ -16,8 +16,8 @@ scas_active_info#:#If all other preconditions are fulfilled and this option is s
 scas_preconditions#:#Preconditions
 scas_pc_is_active#:#Test Online? 
 scas_pc_is_active_info#:#Please set this test to 'online'.
-scas_pc_is_rnd_or_fixed_test#:#Mode 'Random Set of Questions' or 'Fixed Set of Questions'? 
-scas_pc_is_rnd_or_fixed_test_info#:#Please choose the test mode 'Random Set of Questions' or 'Fixed Set of Questions'.
+scas_pc_is_fixed_test#:#Mode 'Fixed Set of Questions'? 
+scas_pc_is_fixed_test_info#:#Please choose the test mode 'Fixed Set of Questions'.
 scas_pc_has_valid_questions#:#Valid Questions?
 scas_pc_has_valid_questions_info#:#Only questions of type 'Multiple Choice Question (Single Answer)', 'Multiple Choice Question (Multiple Answers)' and 'Kprim' are supported.
 scas_cant_save_pc#:#Please ensure all preconditions are fulfilled.

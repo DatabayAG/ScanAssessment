@@ -114,7 +114,7 @@ class ilScanAssessmentUserPackagesConfiguration
 				'matriculation_code'	=> array('integer', $this->isMatriculationCode()),
 				'matriculation_style'	=> array('integer', $this->getMatriculationStyle()),
 				'download_style'		=> array('integer', $this->getDownloadStyle()),
-				'personalised'			=> array('integer', $this->isPersonalised()),
+				'personalised'			=> array('integer', $this->isNotPersonalised()),
 				'documents_generated'	=> array('integer', $this->getDocumentsGenerated()),
 				'no_name_field'			=> array('integer', $this->isNoNameField()),
 				'assessment_date'		=> array('integer', $this->getAssessmentDate())
@@ -204,7 +204,7 @@ class ilScanAssessmentUserPackagesConfiguration
 	/**
 	 * @return boolean
 	 */
-	public function isPersonalised()
+	public function isNotPersonalised()
 	{
 		return $this->personalised;
 	}

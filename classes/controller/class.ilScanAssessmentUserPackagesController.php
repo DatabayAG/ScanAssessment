@@ -93,15 +93,15 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
 			$info->setTitle($pluginObject->txt('scas_tst_settings'));
 			$form->addItem($info);
-			$creation = new ilSelectInputGUI($pluginObject->txt('scas_creation'), 'creation');
-			$creation->setInfo($pluginObject->txt('scas_creation_info'));
-			$personalised = array(
-				'personalised' => $pluginObject->txt('scas_creation_personalised'),
-				'non_personalised' => $pluginObject->txt('scas_creation_non_personalised')
+			$personalised = new ilSelectInputGUI($pluginObject->txt('scas_creation'), 'personalised');
+			$personalised->setInfo($pluginObject->txt('scas_creation_info'));
+			$personalised_options = array(
+				0 => $pluginObject->txt('scas_creation_personalised'),
+				1 => $pluginObject->txt('scas_creation_non_personalised')
 			);
-			$creation->setValue($this->configuration->isPersonalised());
-			$creation->setOptions($personalised);
-			$form->addItem($creation);
+			$personalised->setOptions($personalised_options);
+			$personalised->setValue($this->configuration->isNotPersonalised());
+			$form->addItem($personalised);
 		}
 		else
 		{

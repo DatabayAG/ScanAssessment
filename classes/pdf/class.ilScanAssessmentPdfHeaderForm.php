@@ -134,7 +134,7 @@ class ilScanAssessmentPdfHeaderForm
 	 */
 	public function insertIdentification()
 	{
-		if(! $this->metadata->getPersonalised())
+		if($this->metadata->isNotPersonalised())
 		{
 			$format		= $this->global_settings->getMatriculationStyle();
 			$columns	= strlen($format);

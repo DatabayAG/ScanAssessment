@@ -16,8 +16,8 @@ scas_active_info#:#Wenn alle anderen Voraussetzungen erfüllt sind und Sie diese
 scas_preconditions#:#Voraussetzungen 
 scas_pc_is_active#:#Test Online? 
 scas_pc_is_active_info#:#Bitte schalten Sie den Test 'online'.
-scas_pc_is_rnd_or_fixed_test#:#Modus 'Zufällige Fragenauswahl' oder 'Fest definierte Fragenauswahl'? 
-scas_pc_is_rnd_or_fixed_test_info#:#Bitte beachten Sie, dass ausschließlich Tests mit dem Modus 'Zufällige Fragenauswahl' oder 'Fest definierte Fragenauswahl' unterstützt werden.
+scas_pc_is_fixed_test#:#Modus 'Fest definierte Fragenauswahl'? 
+scas_pc_is_fixed_test_info#:#Bitte beachten Sie, dass ausschließlich Tests mit dem 'Fest definierte Fragenauswahl' unterstützt werden.
 scas_pc_has_valid_questions#:#Korrekte Fragenkonfiguration?
 scas_pc_has_valid_questions_info#:#Bitte beachten Sie, dass ausschließlich Fragen vom Typ 'Single Choice', 'Multiple Choice' und 'Kprim' unterstützt werden.
 scas_cant_save_pc#:#Bitte erfüllen Sie vor dem Aktivieren alle Voraussetzungen.

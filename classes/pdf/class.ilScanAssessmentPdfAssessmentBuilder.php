@@ -15,7 +15,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentL
 class ilScanAssessmentPdfAssessmentBuilder
 {
 
-	const PERSONALISED = false;
+	const FILE_TYPE = '.pdf';
 	/**
 	 * @var 
 	 */
@@ -84,7 +84,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
-		$data = new ilScanAssessmentPdfMetaData($this->test, false, 'DEMO');
+		$data = new ilScanAssessmentPdfMetaData($this->test, 'DEMO');
 		$pdf_h	= $this->createPdf($data);
 		$pdf_h->inline();
 		$end_time = microtime(TRUE);
@@ -120,18 +120,24 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$file_names		= array();
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
+		$counter = 0;
 		foreach($participants as $usr_id => $user)
 		{
-			$data		= new ilScanAssessmentPdfMetaData($this->test, true, $usr_id);
+			$data		= new ilScanAssessmentPdfMetaData($this->test, $usr_id);
 			$usr_obj	= new ilObjUser($usr_id);
 
-			$data->setStudentMatriculation($usr_obj->getMatriculation());
-			$data->setStudentName($usr_obj->getFullname());
-
 			$pdf_h	= $this->createPdf($data);
-			$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $user['lastname'] . '_' . $user['firstname'] . '.pdf';
+			$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $counter . self::FILE_TYPE;
+
+			if(! $data->isNotPersonalised())
+			{
+				$data->setStudentMatriculation($usr_obj->getMatriculation());
+				$data->setStudentName($usr_obj->getFullname());
+				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $user['lastname'] . '_' . $user['firstname'] . self::FILE_TYPE;
+			}
 			$file_names[] = $filename;
 			$pdf_h->writeFile($filename);
+			$counter++;
 		}
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, count($participants)));
@@ -149,9 +155,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 			for($i = 1; $i <= $number; $i++)
 			{
-				$data = new ilScanAssessmentPdfMetaData($this->test, false, $i);
+				$data = new ilScanAssessmentPdfMetaData($this->test, $i);
 				$pdf_h	= $this->createPdf($data);
-				$filename = $this->path_for_pdfs . $i . '.pdf';
+				$filename = $this->path_for_pdfs . $i . self::FILE_TYPE;
 				$file_names[] = $filename;
 				$pdf_h->writeFile($filename);
 			}
