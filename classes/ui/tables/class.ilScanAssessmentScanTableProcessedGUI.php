@@ -35,6 +35,7 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 		$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('filename');
+		$this->setShowRowsSelector(false);
 		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_processed_files'));
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
@@ -52,8 +53,6 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 		{
 			$this->addMultiCommand('confirmDeleteComment', ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
 		}
-
-		$this->setShowRowsSelector(true);
 	}
 
 	/**
@@ -87,6 +86,6 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 		#$this->ctrl->setParameter($this->parent_obj, 'comment_id', $a_set['comment_id']);
 		
 		$current_selection_list->addItem(ilScanAssessmentPlugin::getInstance()->txt('scas_edit'), '', '$link_target');
-		$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
+		#$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
 	}
 }

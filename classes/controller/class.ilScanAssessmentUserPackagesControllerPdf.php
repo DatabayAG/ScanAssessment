@@ -59,7 +59,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	public function showPdfFilesIfExisting()
 	{
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTablePdfGUI.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTablePdfGUI.php');
 		$tbl = new ilScanAssessmentScanTablePdfGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
 		$tbl->setData($this->getFolderFiles($preview->getPathForPdfs()));
 		return $tbl;

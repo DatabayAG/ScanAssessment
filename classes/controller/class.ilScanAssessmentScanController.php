@@ -294,7 +294,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function displayUnprocessedFiles()
 	{
 		
-		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTableUnprocessedGUI.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableUnprocessedGUI.php');
 		$tbl = new ilScanAssessmentScanTableUnprocessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
 		$tbl->setData($this->getUnprocessedFilesData());
 		return $tbl;
@@ -306,7 +306,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function displayProcessedFiles()
 	{
 
-		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTableProcessedGUI.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableProcessedGUI.php');
 		$tbl = new ilScanAssessmentScanTableProcessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
 		$tbl->setData($this->getProcessedFilesData());
 		return $tbl;

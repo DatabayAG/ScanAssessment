@@ -4,9 +4,9 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 require_once 'Services/User/classes/class.ilUserUtil.php';
 
 /**
- * Class ilScanAssessmentScanTableGUI
+ * Class ilScanAssessmentScanTablePdfGUI
  */
-class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
+class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 {
 
 	/**
@@ -29,13 +29,14 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 		$this->parent_obj = $a_parent_obj;
 		$this->parent_cmd = $a_parent_cmd;
 
-		$this->setId('scas_unprocessed_table' );
+		$this->setId('scas_scan_pdf_table' );
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
 		$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('filename');
-		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_unprocessed_files'));
+		$this->setShowRowsSelector(false);
+		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_created_pdfs'));
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
 		$this->addColumn('', 'file_id',  '1px', true);
@@ -52,8 +53,15 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 		{
 			$this->addMultiCommand('confirmDeleteComment', ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
 		}
+	}
 
-		$this->setShowRowsSelector(true);
+	/**
+	 * @param string $column
+	 * @return bool
+	 */
+	public function numericOrdering($column)
+	{
+		
 	}
 
 	/**
@@ -78,6 +86,6 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 		#$this->ctrl->setParameter($this->parent_obj, 'comment_id', $a_set['comment_id']);
 		
 		$current_selection_list->addItem(ilScanAssessmentPlugin::getInstance()->txt('scas_edit'), '', '$link_target');
-		$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
+		#$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
 	}
 }

@@ -14,12 +14,24 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	/**
 	 * @var array
 	 */
-	protected $tabs_mapping = array(
+	protected $tabs = array(
 		'ilScanAssessmentDefaultController.default'			=> 'settings',
 		'ilScanAssessmentLayoutController.default'			=> 'layout',
 		'ilScanAssessmentUserPackagesController.default'	=> 'user_packages',
 		'ilScanAssessmentScanController.default'			=> 'scan',
 		'ilScanAssessmentReturnDataController.default'		=> 'return',
+	);
+
+	/**
+	 * @var array
+	 */
+	protected $tabs_mapping = array(
+		'ilScanAssessmentDefaultController'			=> 'settings',
+		'ilScanAssessmentLayoutController'			=> 'layout',
+		'ilScanAssessmentUserPackagesController'	=> 'user_packages',
+		'ilScanAssessmentUserPackagesControllerPdf'	=> 'user_packages',
+		'ilScanAssessmentScanController'			=> 'scan',
+		'ilScanAssessmentReturnDataController'		=> 'return',
 	);
 
 	/**
@@ -80,7 +92,8 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 					);
 
 					$this->addStepsTabs();
-					$ilTabs->activateTab($this->tabs_mapping[$ilCtrl->getCmd()]);
+					$parts = explode('.', $ilCtrl->getCmd());
+					$ilTabs->activateTab($this->tabs_mapping[$parts[0]]);
 					
 				}
 			}
@@ -93,7 +106,7 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	 */
 	protected function addStepsTabs()
 	{
-		foreach($this->tabs_mapping as $key => $value)
+		foreach($this->tabs as $key => $value)
 		{
 			$this->appendStepTab($value, 'scas_' . $value, $key);
 		}
