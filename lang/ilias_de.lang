@@ -89,3 +89,10 @@ scas_question_title#:#Nur Fragentitel
 scas_question_title_and_points#:#Frage Titel und Punkte werden angezeigt
 scas_tst_settings_title#:#Die Testeinstellung "Zeige Fragentitel" ist eingestellt auf:
 scas_tst_settings_title_info#:#Diese Testeinstellung beeinflusst, die Darstellung der Fragentitel im Pdf.
+scas_file_name#:#Dateiname
+scas_file_date#:#Datei Datum
+scas_file_size#:#Dateigröße
+scas_actions#:#Aktionen
+scas_edit#:#Editieren
+scas_unprocessed_files#:#Noch nicht analysierte Dateien
+scas_processed_files#:#Analysierte Dateien

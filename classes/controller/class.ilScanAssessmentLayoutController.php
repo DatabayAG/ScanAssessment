@@ -87,9 +87,10 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$info->setTitle($pluginObject->txt('scas_tst_settings_title'));
 		$form->addItem($info);
 		
-		$active = new ilFileInputGUI($pluginObject->txt('scas_upload'), 'upload');
-		$active->setInfo($pluginObject->txt('scas_upload_info'));
-		$form->addItem($active);
+		$file = new ilFileInputGUI($pluginObject->txt('scas_upload'), 'upload');
+		$file->setInfo($pluginObject->txt('scas_upload_info'));
+		$file->setDisabled(true);
+		$form->addItem($file);
 
 			$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 

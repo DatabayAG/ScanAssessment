@@ -4,7 +4,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentUserPackagesController.php');
 
 /**
- * Class ilScanAssessmentUserPackagesControllerPdfs
+ * Class ilScanAssessmentUserPackagesControllerPdf
  */
 class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPackagesController
 {
@@ -25,9 +25,10 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
 		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
 		$options = array(	0 => $pluginObject->txt('scas_download_as_flag'),
-							 1 => $pluginObject->txt('scas_download_as_zip')
+							1 => $pluginObject->txt('scas_download_as_zip')
 		);
 		$complete_download->setValue($this->configuration->getDownloadStyle());
+		$complete_download->setDisabled(true);
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
 
@@ -53,34 +54,56 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	}
 
 	/**
-	 * @param ilPropertyFormGUI $form
+	 * 
 	 */
-	public function showPdfFilesIfExisting($form)
+	public function showPdfFilesIfExisting()
 	{
-		require_once 'Services/Form/classes/class.ilNestedListInputGUI.php';
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
-		$list = new ilNestedListInputGUI();
-		$list->setTitle($this->getCoreController()->getPluginObject()->txt('scas_created_pdfs'));
-		$add_item = false;
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if($entry != '.' && $entry != '..')
-				{
-					$list->addListNode($entry, $entry);
-					$add_item = true;
-				}
-			}
-			closedir($handle);
-			if($add_item)
-			{
-				$form->addItem($list);
-			}
-		}
+		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTablePdfGUI.php');
+		$tbl = new ilScanAssessmentScanTablePdfGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
+		$tbl->setData($this->getFolderFiles($preview->getPathForPdfs()));
+		return $tbl;
 	}
 
+	protected function getFolderFiles($path)
+	{
+		$files	= array();
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		{
+			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
+			{
+				$size = (int) ($filename->getSize() / 1024);
+				$date = date('d. F Y H:i:s', $filename->getMtime());
+				$files[] = array('file_id' => $filename, 'file_name' => $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
+			}
+		}
+		return $files;
+	}
+
+	/**
+	 * @param ilPropertyFormGUI|null $form
+	 * @return string
+	 */
+	public function defaultCmd(ilPropertyFormGUI $form = null)
+	{
+
+		if(!($form instanceof ilPropertyFormGUI))
+		{
+			$form  = $this->getForm();
+		}
+
+		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
+		$tpl->setVariable('FORM', $form->getHTML());
+
+		$sidebar = $this->renderSteps();
+		$tpl->setVariable('STATUS', $sidebar);
+		
+		$tpl->setCurrentBlock('detail_table');
+		$tbl = $this->showPdfFilesIfExisting();
+		$tpl->setVariable('CONTENT', $tbl->getHTML());
+		
+		return $tpl->get();
+	}
 	/**
 	 * @return bool
 	 */

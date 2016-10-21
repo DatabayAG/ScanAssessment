@@ -90,3 +90,10 @@ scas_question_title#:#Only Question Titles
 scas_question_title_and_points#:#Question Titles and Available Points
 scas_tst_settings_title#:#The test setting "Show Question Title" is set to:
 scas_tst_settings_title_info#:#This test setting influences the display of question titles in the pdf.
+scas_file_name#:#Filename
+scas_file_date#:#Filedate
+scas_file_size#:#Filesize
+scas_actions#:#Actions
+scas_edit#:#Edit
+scas_unprocessed_files#:#Unprocessed Files
+scas_processed_files#:#Processed Files

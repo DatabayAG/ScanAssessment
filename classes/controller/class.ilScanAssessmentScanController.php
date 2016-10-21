@@ -171,9 +171,10 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_layout'));
 
-		$active = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
-		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
-		$form->addItem($active);
+		$upload = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
+		$upload->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
+		$upload->setDisabled(true);
+		$form->addItem($upload);
 
 		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
@@ -270,13 +271,87 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 			$this->bindModelToForm($form);
 		}
 
+		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
-		
+		$tpl->setCurrentBlock('detail_table');
+		$tbl = $this->displayUnprocessedFiles();
+		$tpl->setVariable('CONTENT', $tbl->getHTML());
+		$tpl->parseCurrentBlock();
+		$tpl->setCurrentBlock('detail_table');
+		$tbl = $this->displayProcessedFiles();
+		$tpl->setVariable('CONTENT', $tbl->getHTML());
+		$tpl->parseCurrentBlock();
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();
+	}
+
+	/**
+	 * @return ilScanAssessmentScanTableUnprocessedGUI
+	 */
+	protected function displayUnprocessedFiles()
+	{
+		
+		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTableUnprocessedGUI.php');
+		$tbl = new ilScanAssessmentScanTableUnprocessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
+		$tbl->setData($this->getUnprocessedFilesData());
+		return $tbl;
+	}
+
+	/**
+	 * @return ilScanAssessmentScanTableProcessedGUI
+	 */
+	protected function displayProcessedFiles()
+	{
+
+		ilScanAssessmentPlugin::getInstance()->includeClass('tables/class.ilScanAssessmentScanTableProcessedGUI.php');
+		$tbl = new ilScanAssessmentScanTableProcessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
+		$tbl->setData($this->getProcessedFilesData());
+		return $tbl;
+	}
+
+	protected function getUnprocessedFilesData()
+	{
+		$path	= $this->path_to_scans;
+		$files	= array();
+		if ($handle = opendir($path))
+		{
+			while (false !== ($entry = readdir($handle)))
+			{
+				if(is_dir($path .'/'. $entry) === false)
+				{
+					$size = (int) (filesize($path . '/' .$entry) / 1024);
+					$date = date('d. F Y H:i:s', filemtime($path . '/' .$entry));
+					$files[] = array('file_id' => $entry, 'file_name' => $entry, 'file_size' => $size . 'K', 'file_date' => $date);
+				}
+			}
+			closedir($handle);
+		}
+		return $files;
+	}
+
+	protected function getProcessedFilesData()
+	{
+		$path	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/';;
+		$files	= $this->getFolderFiles($path);
+		return $files;
+	}
+
+	protected function getFolderFiles($path)
+	{
+		$files	= array();
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		{
+			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
+			{
+				$size = (int) ($filename->getSize() / 1024);
+				$date = date('d. F Y H:i:s', $filename->getMtime());
+				$files[] = array('file_id' => $filename, 'file_name' => basename($filename->getPath()) . '/' . $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
+			}
+		}
+		return $files;
 	}
 
 	/**
