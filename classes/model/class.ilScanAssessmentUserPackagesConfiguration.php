@@ -42,9 +42,11 @@ class ilScanAssessmentUserPackagesConfiguration
 	/**
 	 * @var boolean
 	 */
-	protected $no_name_field; 
-	
-	
+	protected $no_name_field;
+
+	/**
+	 * @var 
+	 */
 	protected $assessment_date;
 	
 	/**

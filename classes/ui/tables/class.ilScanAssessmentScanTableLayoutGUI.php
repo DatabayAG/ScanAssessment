@@ -4,9 +4,9 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 require_once 'Services/User/classes/class.ilUserUtil.php';
 
 /**
- * Class ilScanAssessmentScanTablePdfGUI
+ * Class ilScanAssessmentScanTableLayoutGUI
  */
-class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
+class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 {
 
 	/**
@@ -29,25 +29,30 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 		$this->parent_obj = $a_parent_obj;
 		$this->parent_cmd = $a_parent_cmd;
 
-		$this->setId('scas_scan_pdf_table' );
+		$this->setId('scas_layout_table' );
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
 		$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('filename');
 		$this->setShowRowsSelector(false);
-		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_created_pdfs'));
+		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_layout'));
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
 		$this->addColumn('', 'file_id',  '1px', true);
 		$this->setSelectAllCheckbox('file_id');
+
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_date'), 'file_date');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_size'), 'file_size');
 		
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'), 'actions', '10%');
-	}
 
+		$link = 'ilScanAssessmentLayoutController.areYouSureDeleteEntries';
+		$this->addMultiCommand($link, ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
+
+	}
+	
 	/**
 	 * @param string $column
 	 * @return bool

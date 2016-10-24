@@ -97,3 +97,8 @@ scas_actions#:#Actions
 scas_edit#:#Edit
 scas_unprocessed_files#:#Unprocessed Files
 scas_processed_files#:#Processed Files
+scas_delete#:#Delete
+scas_sure_delete_file#:#Are you sure you want to delete this files?
+scas_files_deleted#:#Files were removed.
+scas_confirm#:#Confirm
+scas_cancel#:#Cancel

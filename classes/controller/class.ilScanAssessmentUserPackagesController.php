@@ -167,8 +167,6 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 	 */
 	public function saveFormCmd()
 	{
-		$disable = false;
-
 		$form = $this->getForm();
 		if($form->checkInput())
 		{
@@ -180,16 +178,11 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 			}
 			catch(ilException $e)
 			{
-				$disable = true;
 				ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt($e->getMessage()));
 			}
 		}
 
 		$form->setValuesByPost();
-		if($disable)
-		{
-			$form->getItemByPostVar('active')->setChecked(false);
-		}
 
 		return $this->defaultCmd($form);
 	}

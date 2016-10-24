@@ -98,7 +98,6 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 		
-		$tpl->setCurrentBlock('detail_table');
 		$tbl = $this->showPdfFilesIfExisting();
 		$tpl->setVariable('CONTENT', $tbl->getHTML());
 		

@@ -96,3 +96,8 @@ scas_actions#:#Aktionen
 scas_edit#:#Editieren
 scas_unprocessed_files#:#Noch nicht analysierte Dateien
 scas_processed_files#:#Analysierte Dateien
+scas_delete#:#Löschen
+scas_sure_delete_file#:#Sind Sie sicher, dass sie die Dateien löschen wollen?
+scas_files_deleted#:#Dateien wurden gelöscht.
+scas_confirm#:#Bestätigen
+scas_cancel#:#Abbrechen

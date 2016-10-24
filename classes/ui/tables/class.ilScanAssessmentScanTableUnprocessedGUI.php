@@ -40,19 +40,13 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
 		$this->addColumn('', 'file_id',  '1px', true);
-		
+		$this->setSelectAllCheckbox('file_id');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_date'), 'file_date');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_size'), 'file_size');
 		
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'), 'actions', '10%');
 
-		$this->setSelectAllCheckbox('comment_id');
-
-		if($a_parent_cmd == 'file_id')
-		{
-			$this->addMultiCommand('confirmDeleteComment', ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
-		}
 	}
 
 	/**
