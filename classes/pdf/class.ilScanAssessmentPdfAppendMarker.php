@@ -1,5 +1,4 @@
 <?php
-#require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/libs/fpdi/fpdi.php';
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfConstants.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHeaderForm.php');
