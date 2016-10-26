@@ -68,6 +68,11 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 			{
 				$value = ilUtil::formCheckbox(0, 'file_id[]', $value);
 			}
+			else if($key == 'file_name')
+			{
+				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentUserPackagesControllerPdf' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
+				$this->tpl->setVariable('VAL_LINK', $link);
+			}
 			
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}

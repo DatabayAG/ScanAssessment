@@ -184,4 +184,22 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 			)
 		));
 	}
+
+	/**
+	 */
+	public function downloadPdfCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/' . $file_name;
+		if(file_exists($file_path))
+		{
+			ilUtil::deliverFile($file_path, $file_name, '', 'I');
+		}
+		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+			'ilScanAssessmentUserPackagesControllerPdf.default',
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+	}
 }

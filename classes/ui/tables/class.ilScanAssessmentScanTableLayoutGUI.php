@@ -52,15 +52,6 @@ class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 		$this->addMultiCommand($link, ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
 
 	}
-	
-	/**
-	 * @param string $column
-	 * @return bool
-	 */
-	public function numericOrdering($column)
-	{
-		
-	}
 
 	/**
 	 * @param array $a_set
