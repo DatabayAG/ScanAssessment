@@ -50,15 +50,6 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 	}
 
 	/**
-	 * @param string $column
-	 * @return bool
-	 */
-	public function numericOrdering($column)
-	{
-		
-	}
-
-	/**
 	 * @param array $a_set
 	 */
 	protected function fillRow($a_set)
@@ -69,7 +60,11 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 			{
 				$value = ilUtil::formCheckbox(0, 'file_id[]', $value);
 			}
-			
+			else if($key == 'file_name')
+			{
+				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentScanController' . '.downloadProcessedImage',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
+				$this->tpl->setVariable('VAL_LINK', $link);
+			}
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}
 

@@ -40,13 +40,7 @@ class ilScanAssessmentReturnDataController extends ilScanAssessmentController
 
 		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$scan->isFulfilled())
 		{
-			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
-			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-				'ilScanAssessmentScanController.default',
-				array(
-					'ref_id' => (int)$_GET['ref_id']
-				)
-			));
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanController.default');
 		}
 	}
 	

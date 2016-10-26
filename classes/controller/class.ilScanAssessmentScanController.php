@@ -19,7 +19,14 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	 */
 	protected $configuration;
 
+	/**
+	 * @var string
+	 */
 	protected $path_to_scans;
+
+	/**
+	 * @var string
+	 */
 	protected $path_to_done;
 	
 	/**
@@ -45,13 +52,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		
 		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
 		{
-			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
-			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-				'ilScanAssessmentUserPackagesController.default',
-				array(
-					'ref_id' => (int)$_GET['ref_id']
-				)
-			));
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentLayoutController.default');
 		}
 	}
 
@@ -204,18 +205,12 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		}
 		if($files_found)
 		{
-			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'), true);
+			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'));
 		}
 		else
 		{
-			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'), true);
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'));
 		}
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentScanController.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
 	}
 
 	/**
@@ -377,6 +372,25 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		{
 			ilUtil::makeDirParents($path);
 		}
+	}
+	
+	public function downloadScanImageCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/' . $file_name;
+		$this->download($file_path, $file_name);
+	}
+
+	public function downloadProcessedImageCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/' . $file_name;
+		$this->download($file_path, $file_name);
+	}
+
+	public function getDefaultClassAndCommand()
+	{
+		return 'ilScanAssessmentScanController.default';
 	}
 
 }

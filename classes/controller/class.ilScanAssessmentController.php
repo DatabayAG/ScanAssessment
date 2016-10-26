@@ -95,4 +95,51 @@ abstract class ilScanAssessmentController
 	{
 		return $this->core_controller;
 	}
+
+	/**
+	 * @param $txt
+	 */
+	protected function redirectAndInfo($txt)
+	{
+		ilUtil::sendInfo($txt, true);
+		$this->redirect($this->getDefaultClassAndCommand());
+	}
+	
+	protected function download($file_path, $file_name)
+	{
+		if(file_exists($file_path))
+		{
+			ilUtil::deliverFile($file_path, $file_name, '', 'I');
+		}
+		$this->redirect($this->getDefaultClassAndCommand());
+	}
+
+	/**
+	 * @param      $txt
+	 * @param null $class_and_command
+	 */
+	protected function redirectAndFailure($txt, $class_and_command = null)
+	{
+		if($class_and_command == null)
+		{
+			$class_and_command = $this->getDefaultClassAndCommand();
+		}
+		ilUtil::sendFailure($txt, true);
+		$this->redirect($class_and_command);
+	}
+
+	protected function redirect($class_and_command)
+	{
+		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
+			$class_and_command,
+			array(
+				'ref_id' => (int)$_GET['ref_id']
+			)
+		));
+	}
+
+	public function getDefaultClassAndCommand()
+	{
+		return 'ilScanAssessmentController.default';
+	}
 }

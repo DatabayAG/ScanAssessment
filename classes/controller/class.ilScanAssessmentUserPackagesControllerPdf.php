@@ -33,7 +33,8 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$complete_download->setOptions($options);
 		$form->addItem($complete_download);
 
-		$this->showPdfFilesIfExisting($form);
+		$this->showPdfFilesIfExisting();
+
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		if($this->doPdfFilesExistsInDirectory())
 		{
@@ -143,31 +144,24 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		{
 			$demo->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
-		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
-		ilUtil::redirect($this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
+		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 
 
 	public function createDemoPdfAndCutToImagesCmd()
 	{
-		$pdfs = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+		$pdf = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		if($this->test->getFixedParticipants() === 1)
 		{
-			$pdfs->createFixedParticipantsPdf();
+			$pdf->createFixedParticipantsPdf();
 		}
 		else
 		{
-			$pdfs->createNonPersonalisedPdf($this->configuration->getCountDocuments());
+			$pdf->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
 		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() ;
 		exec('convert -density 300 '. $path .'/pdf/*.pdf -quality 100 ' . $path . '/scans/scans.jpg');
-		ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'), true);
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesControllerPdf.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
+		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 
 	public function removingTheExistingPdfsCmd()
@@ -176,30 +170,18 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$path = $preview->getPathForPdfs();
 		ilUtil::delDir($path, true);
 		$this->log->debug(sprintf('Removed pdfs for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
-		#ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_removed'), true);
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesControllerPdf.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
+		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_deleted'));
 	}
 
-	/**
-	 */
 	public function downloadPdfCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
 		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/' . $file_name;
-		if(file_exists($file_path))
-		{
-			ilUtil::deliverFile($file_path, $file_name, '', 'I');
-		}
-		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-			'ilScanAssessmentUserPackagesControllerPdf.default',
-			array(
-				'ref_id' => (int)$_GET['ref_id']
-			)
-		));
+		$this->download($file_path, $file_name);
+	}
+
+	public function getDefaultClassAndCommand()
+	{
+		return 'ilScanAssessmentUserPackagesControllerPdf.default';
 	}
 }

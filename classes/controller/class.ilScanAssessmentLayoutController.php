@@ -41,13 +41,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		if(! $activated->isFulfilled())
 		{
-			ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), true);
-			ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
-				'ilScanAssessmentDefaultController.default',
-				array(
-					'ref_id' => (int)$_GET['ref_id']
-				)
-			));
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentDefaultController.default');
 		}
 	}
 	
