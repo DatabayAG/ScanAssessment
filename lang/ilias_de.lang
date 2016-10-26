@@ -101,3 +101,4 @@ scas_sure_delete_file#:#Sind Sie sicher, dass sie die Dateien löschen wollen?
 scas_files_deleted#:#Dateien wurden gelöscht.
 scas_confirm#:#Bestätigen
 scas_cancel#:#Abbrechen
+scas_download_pdf#:#PDFs herunterladen

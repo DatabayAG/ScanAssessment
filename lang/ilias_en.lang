@@ -102,3 +102,4 @@ scas_sure_delete_file#:#Are you sure you want to delete this files?
 scas_files_deleted#:#Files were removed.
 scas_confirm#:#Confirm
 scas_cancel#:#Cancel
+scas_download_pdf#:#Download PDFs

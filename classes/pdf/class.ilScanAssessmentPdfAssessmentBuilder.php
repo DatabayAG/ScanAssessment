@@ -22,6 +22,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	protected $path_for_pdfs;
 
 	/**
+	 * @var
+	 */
+	protected $path_for_zip;
+
+	/**
 	 * @var ilObjTest
 	 */
 	protected $test;
@@ -37,10 +42,12 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	public function __construct(ilObjTest $test)
 	{
-		$this->test	= $test;
-		$this->log	= ilScanAssessmentLog::getInstance();
-		$this->path_for_pdfs = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
+		$this->test				= $test;
+		$this->log				= ilScanAssessmentLog::getInstance();
+		$this->path_for_pdfs	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
+		$this->path_for_zip		= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/zip/';
 		$this->ensureSavePathExists($this->path_for_pdfs);
+		$this->ensureSavePathExists($this->path_for_zip);
 	}
 
 	/**
@@ -219,5 +226,14 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		return $this->path_for_pdfs;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPathForZip()
+	{
+		return $this->path_for_zip;
+	}
+
 
 }
