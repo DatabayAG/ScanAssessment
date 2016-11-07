@@ -1,9 +1,9 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once dirname(__FILE__) . '/class.ilScanAssessmentStepsBase.php';
-require_once dirname(__FILE__) . '/../pdf/class.ilScanAssessmentPdfAssessmentBuilder.php';
-require_once dirname(__FILE__). '/../class.ilScanAssessmentFileHelper.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentStepsBase.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfAssessmentBuilder.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 /**
  * Class class.ilScanAssessmentUserPackagesExportedStep.php
  * @author Guido Vollbach <gvollbach@databay.de>

@@ -1,6 +1,6 @@
 <?php
 
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/model/class.ilScanAssessmentTestConfiguration.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 
 class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguration
 {

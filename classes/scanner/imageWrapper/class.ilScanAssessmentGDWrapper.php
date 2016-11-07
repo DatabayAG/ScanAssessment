@@ -1,5 +1,5 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/interfaces/interface.ilScanAssessmentImageWrapper.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilScanAssessmentImageWrapper.php');
 
 /**
  * Class ilScanAssessmentGDWrapper

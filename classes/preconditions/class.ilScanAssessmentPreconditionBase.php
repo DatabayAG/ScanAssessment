@@ -1,7 +1,7 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once dirname(__FILE__) . '/../../interfaces/interface.ilScanAssessmentStatusBarItem.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilScanAssessmentStatusBarItem.php');
 
 /**
  * Class ilScanAssessmentPreconditionBase

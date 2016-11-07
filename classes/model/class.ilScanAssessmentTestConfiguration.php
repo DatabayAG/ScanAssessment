@@ -2,7 +2,7 @@
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 require_once 'Services/ActiveRecord/class.ActiveRecord.php';
-require_once dirname(__FILE__) . '/../../interfaces/interface.ilScanAssessmentModel.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilScanAssessmentModel.php');
 
 /**
  * Class ilScanAssessmentTestConfiguration

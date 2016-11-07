@@ -1,6 +1,7 @@
 <?php
 
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentScanner.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
+
 
 class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 {

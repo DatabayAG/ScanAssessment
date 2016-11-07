@@ -1,8 +1,7 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once dirname(__FILE__) . '/class.ilScanAssessmentPreconditionBase.php';
-
+ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentPreconditionBase.php');
 /**
  * Class ilScanAssessmentHasValidQuestionsPrecondition
  * @author Guido Vollbach <gvollbach@databay.de>

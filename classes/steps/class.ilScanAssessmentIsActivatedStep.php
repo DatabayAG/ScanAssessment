@@ -1,8 +1,8 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once dirname(__FILE__) . '/class.ilScanAssessmentStepsBase.php';
-require_once dirname(__FILE__) . '/../model/class.ilScanAssessmentTestConfiguration.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentStepsBase.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 
 /**
  * Class ilScanAssessmentIsActivatedStep
