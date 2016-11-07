@@ -1,12 +1,14 @@
 <?php
 
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/model/class.ilScanAssessmentTestConfiguration.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentFileHelper.php';
 
 class ilScanAssessmentLayoutConfiguration extends ilScanAssessmentTestConfiguration
 {
 	protected $uploaded_file;
 
 	protected $path_to_layout;
+
 	/**
 	 * @param int $test_obj_id
 	 */
@@ -16,7 +18,8 @@ class ilScanAssessmentLayoutConfiguration extends ilScanAssessmentTestConfigurat
 		{
 			$this->setTestId($test_obj_id);
 			$this->read();
-			$this->path_to_layout = ilUtil::getDataDir() . '/scanAssessment/tst_' . $test_obj_id . '/layout';
+			$file_helper = new ilScanAssessmentFileHelper($test_obj_id);
+			$this->path_to_layout = $file_helper->getLayoutPath();
 		}
 	}
 
@@ -32,32 +35,12 @@ class ilScanAssessmentLayoutConfiguration extends ilScanAssessmentTestConfigurat
 
 	public function save()
 	{
-		$this->ensureSavePathExists($this->path_to_layout);
 		if(file_exists($this->uploaded_file['tmp_name']))
 		{
 			ilUtil::moveUploadedFile($this->uploaded_file['tmp_name'], $this->uploaded_file['name'], $this->path_to_layout .'/'. $this->uploaded_file['name']);
 			global $ilUser;
 			ilScanAssessmentLog::getInstance()->info(sprintf('File: %s was added to test with id %s by user with the id: %s', $this->uploaded_file['name'], $this->test_id,  $ilUser->getId()));
 		}
-	}
-
-	/**
-	 * @param $path
-	 */
-	protected function ensureSavePathExists($path)
-	{
-		if( ! is_dir($path))
-		{
-			ilUtil::makeDirParents($path);
-		}
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getPathToLayout()
-	{
-		return $this->path_to_layout;
 	}
 
 }

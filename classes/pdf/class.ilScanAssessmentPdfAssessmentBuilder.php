@@ -6,6 +6,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMetaData.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 
 
 /**
@@ -37,6 +38,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	protected $log;
 
 	/**
+	 * @var ilScanAssessmentFileHelper
+	 */
+	protected $file_helper;
+
+	/**
 	 * ilPdfPreviewBuilder constructor.
 	 * @param ilObjTest $test
 	 */
@@ -44,10 +50,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		$this->test				= $test;
 		$this->log				= ilScanAssessmentLog::getInstance();
-		$this->path_for_pdfs	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/';
-		$this->path_for_zip		= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/zip/';
-		$this->ensureSavePathExists($this->path_for_pdfs);
-		$this->ensureSavePathExists($this->path_for_zip);
+		$this->file_helper		= new ilScanAssessmentFileHelper($this->test->getId());
+		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
+		$this->path_for_zip		= $this->file_helper->getZipPath();
 	}
 
 	/**
@@ -108,7 +113,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	
 	protected function getConfiguredFilesToPrepend($org_file)
 	{
-		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' .  $this->test->getId() . '/layout';
+		$path = $this->file_helper->getLayoutPath();
 		$files = array();
 		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
 		{
@@ -221,25 +226,6 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		$this->addQrCodeToPage($pdf_h);
 		$pdf_h->addPage();
-	}
-
-	/**
-	 * @param $path
-	 */
-	protected function ensureSavePathExists($path)
-	{
-		if( ! is_dir($path))
-		{
-			ilUtil::makeDirParents($path);
-		}
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getPathForPdfs()
-	{
-		return $this->path_for_pdfs;
 	}
 
 	/**

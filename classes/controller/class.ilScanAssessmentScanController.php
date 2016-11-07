@@ -36,8 +36,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 
-		$this->path_to_scans	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans';
-		$this->ensureSavePathExists($this->path_to_scans);
+		$this->path_to_scans	= $this->file_helper->getScanPath();
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -149,7 +148,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	protected function getNextFreeAnalysingFolder()
 	{
-		$path	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/';
+		$path	= $this->file_helper->getAnalysedPath();
 		$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
 		$this->path_to_done	= $path . $counter;
 		$this->ensureSavePathExists($this->path_to_done);
@@ -329,7 +328,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	protected function getProcessedFilesData()
 	{
-		$path	= ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/';;
+		$path	= $this->file_helper->getAnalysedPath();
 		$files	= $this->getFolderFiles($path);
 		return $files;
 	}
@@ -363,28 +362,17 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return $status_bar->getHtml();
 	}
 
-	/**
-	 * @param $path
-	 */
-	protected function ensureSavePathExists($path)
-	{
-		if( ! is_dir($path))
-		{
-			ilUtil::makeDirParents($path);
-		}
-	}
-	
 	public function downloadScanImageCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
-		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/' . $file_name;
+		$file_path = $this->file_helper->getScanPath() . $file_name;
 		$this->download($file_path, $file_name);
 	}
 
 	public function downloadProcessedImageCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
-		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/scans/analysed/' . $file_name;
+		$file_path = $this->file_helper->getAnalysedPath() . $file_name;
 		$this->download($file_path, $file_name);
 	}
 

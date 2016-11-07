@@ -29,7 +29,6 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
-		
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentLayoutConfiguration.php');
 		$this->configuration = new ilScanAssessmentLayoutConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -143,17 +142,17 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	
 	public function areYouSureDeleteEntriesCmd()
 	{
-		$default = $this->defaultCmd();;
 		if(!isset($_POST['file_id']) || !is_array($_POST['file_id']) || !count($_POST['file_id']))
 		{
 			ilUtil::sendFailure($this->lng->txt('select_one'));
-			return $default;
+			return $this->defaultCmd();
 		}
 
 		require_once 'Services/Utilities/classes/class.ilConfirmationGUI.php';
 		$pluginObject = $this->getCoreController()->getPluginObject();
 		$confirm = new ilConfirmationGUI();
-		$confirm->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.deleteFiles'));
+		$confirm->setFormAction($pluginObject->getFormAction(__CLASS__ . '.deleteFiles'));
+		#$confirm->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.deleteFiles'));
 		$post_ids = $_POST['file_id'];
 		if(is_array($post_ids))
 		{
@@ -169,12 +168,12 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 
 	}
 
-	public function CancelCmd()
+	public function cancelCmd()
 	{
 		return $this->defaultCmd();
 	}
 
-	public function DeleteFilesCmd()
+	public function deleteFilesCmd()
 	{
 		if(array_key_exists('files', $_POST))
 		{
@@ -183,7 +182,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 			{
 				foreach($files as $file)
 				{
-					$full_path = $this->configuration->getPathToLayout() . '/' . $file;
+					$full_path = $this->file_helper->getLayoutPath()  . '/' . $file;
 					if(file_exists($full_path))
 					{
 						unlink($full_path);
@@ -199,7 +198,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	public function downloadPdfCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
-		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/layout/' . $file_name;
+		$file_path = $this->file_helper->getLayoutPath() . $file_name;
 		$this->download($file_path, $file_name);
 	}
 
@@ -210,7 +209,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	{
 		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableLayoutGUI.php');
 		$tbl = new ilScanAssessmentScanTableLayoutGUI(new ilScanAssessmentUIHookGUI(), '');
-		$tbl->setData($this->getFolderFiles($this->configuration->getPathToLayout()));
+		$tbl->setData($this->getFolderFiles($this->file_helper->getLayoutPath()));
 		return $tbl;
 	}
 

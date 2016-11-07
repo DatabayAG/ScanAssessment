@@ -1,6 +1,7 @@
 <?php
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/log/class.ilScanAssessmentLog.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentFileHelper.php';
 
 /**
  * Class ilScanAssessmentController
@@ -54,11 +55,19 @@ abstract class ilScanAssessmentController
 	 */
 	protected $db;
 
+	/**
+	 * @var ilScanAssessmentLog
+	 */
 	protected $log;
 	/**
 	 * @var array
 	 */
 	protected $parameters = array();
+
+	/**
+	 * 
+	 */
+	protected $file_helper;
 
 	/**
 	 * @param ilScanAssessmentUIHookGUI $controller
@@ -76,6 +85,8 @@ abstract class ilScanAssessmentController
 		$this->user				= $ilUser;
 		$this->db				= $ilDB;
 		$this->log				= ilScanAssessmentLog::getInstance();
+		$this->test 			= ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
+		$this->file_helper		= new ilScanAssessmentFileHelper($this->test->getId());
 		$this->core_controller	= $controller;
 
 		$this->init();

@@ -3,7 +3,7 @@
 
 require_once dirname(__FILE__) . '/class.ilScanAssessmentStepsBase.php';
 require_once dirname(__FILE__) . '/../pdf/class.ilScanAssessmentPdfAssessmentBuilder.php';
-
+require_once dirname(__FILE__). '/../class.ilScanAssessmentFileHelper.php';
 /**
  * Class class.ilScanAssessmentUserPackagesExportedStep.php
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -31,8 +31,8 @@ class ilScanAssessmentUserPackagesExportedStep extends ilScanAssessmentStepsBase
 	 */
 	public function isFulfilled()
 	{
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
+		$helper = new ilScanAssessmentFileHelper($this->test->getId());
+		$path = $helper->getPdfPath();
 		if ($handle = opendir($path))
 		{
 			while (false !== ($entry = readdir($handle)))

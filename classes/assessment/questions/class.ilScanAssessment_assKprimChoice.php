@@ -1,6 +1,7 @@
 <?php
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/interfaces/interface.ilScanAssessmentQuestion.php';
-require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/assessment/questions/class.ilScanAssessmentQuestionHandler.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilScanAssessmentQuestion.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessmentQuestionHandler.php');
+
 /**
  * Class ilScanAssessmentMultipleChoice
  */

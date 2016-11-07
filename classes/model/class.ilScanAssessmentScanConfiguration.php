@@ -9,7 +9,7 @@ class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguratio
 	 */
 	public function bindForm(ilPropertyFormGUI $form)
 	{
-		$this->ensureSavePathExists();
+
 	}
 
 	/**
@@ -19,16 +19,5 @@ class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguratio
 	{
 		
 	}
-
-	/**
-	 *
-	 */
-	protected function ensureSavePathExists()
-	{
-		$path = ilUtil::getDataDir() . '/' .  self::PARENT_FOLDER_NAME . '/tst_' . $this->obj_id . '/' . self::SCAN_UPLOAD_FOLDER;
-		if( ! is_dir($path))
-		{
-			ilUtil::makeDirParents($path);
-		}
-	}
+	
 }
