@@ -51,11 +51,8 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 	{
 		$pluginObject = $this->getCoreController()->getPluginObject();
 		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
-		/**
-		 * @var $ilTabs ilTabsGUI
-		 */
-		global $ilTabs;
-		$ilTabs->setTabActive('layout');
+
+		$this->setActiveLayoutTab();
 
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
@@ -140,8 +137,20 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		return $tpl->get();
 	}
 	
+	protected function setActiveLayoutTab()
+	{
+		/**
+		 * @var $ilTabs ilTabsGUI
+		 */
+		global $ilTabs;
+		$ilTabs->setTabActive('layout');
+	}
+	
 	public function areYouSureDeleteEntriesCmd()
 	{
+
+		$this->setActiveLayoutTab();
+
 		if(!isset($_POST['file_id']) || !is_array($_POST['file_id']) || !count($_POST['file_id']))
 		{
 			ilUtil::sendFailure($this->lng->txt('select_one'));
@@ -152,7 +161,6 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$pluginObject = $this->getCoreController()->getPluginObject();
 		$confirm = new ilConfirmationGUI();
 		$confirm->setFormAction($pluginObject->getFormAction(__CLASS__ . '.deleteFiles'));
-		#$confirm->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.deleteFiles'));
 		$post_ids = $_POST['file_id'];
 		if(is_array($post_ids))
 		{

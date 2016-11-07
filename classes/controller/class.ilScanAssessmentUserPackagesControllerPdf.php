@@ -168,8 +168,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 	public function removingTheExistingPdfsCmd()
 	{
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path    = $preview->getPathForPdfs();
+		$path    = $this->file_helper->getPdfPath();
 		ilUtil::delDir($path, true);
 		$this->log->debug(sprintf('Removed pdfs for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_deleted'));

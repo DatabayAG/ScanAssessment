@@ -52,7 +52,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->log				= ilScanAssessmentLog::getInstance();
 		$this->file_helper		= new ilScanAssessmentFileHelper($this->test->getId());
 		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
-		$this->path_for_zip		= $this->file_helper->getZipPath();
+		$this->path_for_zip		= $this->file_helper->getPdfZipPath();
 	}
 
 	/**

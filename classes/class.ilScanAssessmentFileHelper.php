@@ -63,9 +63,9 @@ class ilScanAssessmentFileHelper
 	/**
 	 * @return string
 	 */
-	public function getZipPath()
+	public function getPdfZipPath()
 	{
-		$path = $this->getScanPath() . 'zip/';
+		$path = $this->getPdfPath() . 'zip/';
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -83,7 +83,7 @@ class ilScanAssessmentFileHelper
 	/**
 	 * @param $path
 	 */
-	protected function ensurePathExists($path)
+	public function ensurePathExists($path)
 	{
 		if( ! is_dir($path))
 		{

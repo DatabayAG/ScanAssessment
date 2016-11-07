@@ -2,6 +2,9 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentMarkerDetection.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentQrCode.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
 
 /**
  * Class ilScanAssessmentScanController
@@ -151,7 +154,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$path	= $this->file_helper->getAnalysedPath();
 		$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
 		$this->path_to_done	= $path . $counter;
-		$this->ensureSavePathExists($this->path_to_done);
+		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
 	/**
@@ -185,9 +188,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	public function analyseCmd()
 	{
 		$path = $this->path_to_scans;
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentMarkerDetection.php';
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentQrCode.php';
-		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/class.ilScanAssessmentAnswerScanner.php';
 		$files_found = false;
 		if ($handle = opendir($path)) 
 		{
