@@ -196,6 +196,13 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		return $this->defaultCmd();
 	}
 
+	public function downloadPdfCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/layout/' . $file_name;
+		$this->download($file_path, $file_name);
+	}
+
 	/**
 	 *
 	 */
