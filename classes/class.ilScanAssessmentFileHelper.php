@@ -6,6 +6,13 @@
 class ilScanAssessmentFileHelper
 {
 
+	const LAYOUT			= '/layout/';
+	const PDF				= '/pdf/';
+	const SCANS				= '/scans/';
+	const SCAN_ASSESSMENT	= '/scanAssessment/';
+	const ANALYSED			= 'analysed/';
+	const ZIP				= 'zip/';
+
 	/**
 	 * @var int
 	 */
@@ -25,7 +32,7 @@ class ilScanAssessmentFileHelper
 	 */
 	public function getLayoutPath()
 	{
-		$path = $this->getBasePath() . '/layout/';
+		$path = $this->getBasePath() . self::LAYOUT;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -35,7 +42,7 @@ class ilScanAssessmentFileHelper
 	 */
 	public function getPdfPath()
 	{
-		$path = $this->getBasePath() . '/pdf/';
+		$path = $this->getBasePath() . self::PDF;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -45,7 +52,7 @@ class ilScanAssessmentFileHelper
 	 */
 	public function getScanPath()
 	{
-		$path = $this->getBasePath() . '/scans/';
+		$path = $this->getBasePath() . self::SCANS;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -55,7 +62,7 @@ class ilScanAssessmentFileHelper
 	 */
 	public function getAnalysedPath()
 	{
-		$path = $this->getScanPath() . '/analysed/';
+		$path = $this->getScanPath() . self::ANALYSED;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -65,7 +72,7 @@ class ilScanAssessmentFileHelper
 	 */
 	public function getPdfZipPath()
 	{
-		$path = $this->getPdfPath() . 'zip/';
+		$path = $this->getPdfPath() . self::ZIP;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -75,7 +82,7 @@ class ilScanAssessmentFileHelper
 	 */
 	protected function getBasePath()
 	{
-		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test_id;
+		$path = ilUtil::getDataDir() . self::SCAN_ASSESSMENT . 'tst_' . $this->test_id;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -121,6 +128,7 @@ class ilScanAssessmentFileHelper
 	}
 
 	/**
+	 * @param $path
 	 * @return bool
 	 */
 	public function doFilesExistsInDirectory($path)
@@ -129,12 +137,9 @@ class ilScanAssessmentFileHelper
 		{
 			while(false !== ($entry = readdir($handle)))
 			{
-				if($entry != '.' && $entry != '..')
+				if(is_file($path . $entry))
 				{
-					if(is_file($path . $entry))
-					{
-						return true;
-					}
+					return true;
 				}
 			}
 			closedir($handle);
