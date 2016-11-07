@@ -1,7 +1,7 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentStepsBase.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentStepsBase.php');
 
 /**
  * Class ilScanAssessmentIsActivatedStep
