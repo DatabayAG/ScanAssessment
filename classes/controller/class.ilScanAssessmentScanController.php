@@ -170,7 +170,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
-		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_layout'));
+		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_scan'));
 
 		$upload = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
 		$upload->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));

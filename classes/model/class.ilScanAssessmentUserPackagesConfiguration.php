@@ -208,7 +208,12 @@ class ilScanAssessmentUserPackagesConfiguration
 	 */
 	public function isNotPersonalised()
 	{
-		return $this->personalised;
+		$test = new ilObjTest($this->getTestId(), false);
+		if($test->getFixedParticipants() === 1)
+		{
+			return $this->personalised;
+		}
+		return 1;
 	}
 
 	/**

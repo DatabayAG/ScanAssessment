@@ -9,8 +9,32 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
  */
 class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPackagesController
 {
-	const FLAG	= 0;
-	const ZIP	= 1;
+	const FLAG = 0;
+	const ZIP = 1;
+
+	/**
+	 * @param ilPropertyFormGUI|null $form
+	 * @return string
+	 */
+	public function defaultCmd(ilPropertyFormGUI $form = null)
+	{
+
+		if(!($form instanceof ilPropertyFormGUI))
+		{
+			$form = $this->getForm();
+		}
+
+		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
+		$tpl->setVariable('FORM', $form->getHTML());
+
+		$sidebar = $this->renderSteps();
+		$tpl->setVariable('STATUS', $sidebar);
+
+		$tbl = $this->showPdfFilesIfExisting();
+		$tpl->setVariable('CONTENT', $tbl->getHTML());
+
+		return $tpl->get();
+	}
 
 	/**
 	 * @return ilPropertyFormGUI
@@ -28,8 +52,9 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
 		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
-		$options = array(self::FLAG => $pluginObject->txt('scas_download_as_flag'),
-						 self::ZIP  => $pluginObject->txt('scas_download_as_zip')
+		$options = array(
+			self::FLAG => $pluginObject->txt('scas_download_as_flag'),
+			self::ZIP  => $pluginObject->txt('scas_download_as_zip')
 		);
 		$complete_download->setValue($this->configuration->getDownloadStyle());
 		$complete_download->setOptions($options);
@@ -59,7 +84,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public function showPdfFilesIfExisting()
 	{
@@ -72,13 +97,13 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 	protected function getFolderFiles($path)
 	{
-		$files	= array();
-		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		$files = array();
+		foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
 		{
 			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
 			{
-				$size = (int) ($filename->getSize() / 1024);
-				$date = date('d. F Y H:i:s', $filename->getMtime());
+				$size    = (int)($filename->getSize() / 1024);
+				$date    = date('d. F Y H:i:s', $filename->getMtime());
 				$files[] = array('file_id' => $filename, 'file_name' => $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
 			}
 		}
@@ -86,38 +111,15 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 	}
 
 	/**
-	 * @param ilPropertyFormGUI|null $form
-	 * @return string
-	 */
-	public function defaultCmd(ilPropertyFormGUI $form = null)
-	{
-
-		if(!($form instanceof ilPropertyFormGUI))
-		{
-			$form  = $this->getForm();
-		}
-
-		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
-		$tpl->setVariable('FORM', $form->getHTML());
-
-		$sidebar = $this->renderSteps();
-		$tpl->setVariable('STATUS', $sidebar);
-		
-		$tbl = $this->showPdfFilesIfExisting();
-		$tpl->setVariable('CONTENT', $tbl->getHTML());
-		
-		return $tpl->get();
-	}
-	/**
 	 * @return bool
 	 */
 	protected function doPdfFilesExistsInDirectory()
 	{
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
-		if ($handle = opendir($path))
+		$path    = $preview->getPathForPdfs();
+		if($handle = opendir($path))
 		{
-			while (false !== ($entry = readdir($handle)))
+			while(false !== ($entry = readdir($handle)))
 			{
 				if($entry != '.' && $entry != '..')
 				{
@@ -150,7 +152,6 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 
-
 	public function createDemoPdfAndCutToImagesCmd()
 	{
 		$pdf = new ilScanAssessmentPdfAssessmentBuilder($this->test);
@@ -163,14 +164,14 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 			$pdf->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
 		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId();
-		exec('convert -density 300 '. $path .'/pdf/*.pdf -quality 100 ' . $path . '/scans/scans.jpg');
+		exec('convert -density 300 ' . $path . '/pdf/*.pdf -quality 100 ' . $path . '/scans/scans.jpg');
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 
 	public function removingTheExistingPdfsCmd()
 	{
 		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$path = $preview->getPathForPdfs();
+		$path    = $preview->getPathForPdfs();
 		ilUtil::delDir($path, true);
 		$this->log->debug(sprintf('Removed pdfs for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_deleted'));
@@ -181,14 +182,14 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
 		$file_path = ilUtil::getDataDir() . '/scanAssessment/tst_' . $this->test->getId() . '/pdf/' . $file_name;
 		$this->download($file_path, $file_name);
-	}	
+	}
 
 	public function downloadMultiplePdfsCmd()
 	{
-		$download_option = (int) $_POST['complete_download'];
-		$preview = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		$files = $this->getFolderFiles($preview->getPathForPdfs());
-		$only_names = array();
+		$download_option = (int)$_POST['complete_download'];
+		$preview         = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+		$files           = $this->getFolderFiles($preview->getPathForPdfs());
+		$only_names      = array();
 		foreach($files as $value)
 		{
 			$only_names[] = $value['file_id']->getPathName();
@@ -205,11 +206,6 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 			$this->createZipAndDeliver($preview, $only_names);
 		}
 		$this->redirect($this->getDefaultClassAndCommand());
-	}
-
-	public function getDefaultClassAndCommand()
-	{
-		return 'ilScanAssessmentUserPackagesControllerPdf.default';
 	}
 
 	/**
@@ -234,5 +230,10 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		{
 			ilUtil::deliverFile($zip_file, 'complete.zip', 'I');
 		}
+	}
+
+	public function getDefaultClassAndCommand()
+	{
+		return 'ilScanAssessmentUserPackagesControllerPdf.default';
 	}
 }

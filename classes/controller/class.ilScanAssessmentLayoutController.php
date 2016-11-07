@@ -207,7 +207,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		return $tbl;
 	}
 
-	protected function getFolderFiles($path)
+	public function getFolderFiles($path)
 	{
 		$files	= array();
 		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)

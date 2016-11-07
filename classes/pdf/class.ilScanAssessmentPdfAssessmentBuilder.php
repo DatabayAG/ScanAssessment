@@ -99,15 +99,26 @@ class ilScanAssessmentPdfAssessmentBuilder
 
 		$utils = new ilScanAssessmentPdfUtils();
 		$utils->concat($this->getConfiguredFilesToPrepend($filename));
+		$utils->writePdfFile($filename);
 		$utils->getPdfInline($filename);
 
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating demo pdf finished for test %s which took %s seconds.', $this->test->getId(), $end_time - $start_time));
 	}
 	
-	protected function getConfiguredFilesToPrepend($filename)
+	protected function getConfiguredFilesToPrepend($org_file)
 	{
-		return array('/home/gvollbach/Downloads/1.pdf', $filename);
+		$path = ilUtil::getDataDir() . '/scanAssessment/tst_' .  $this->test->getId() . '/layout';
+		$files = array();
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		{
+			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
+			{
+				$files[] = $filename;
+			}
+		}
+		$files[] = $org_file;
+		return $files;
 	}
 
 	/**
@@ -178,10 +189,14 @@ class ilScanAssessmentPdfAssessmentBuilder
 			for($i = 1; $i <= $number; $i++)
 			{
 				$data = new ilScanAssessmentPdfMetaData($this->test, $i);
+				
 				$pdf_h	= $this->createPdf($data);
 				$filename = $this->path_for_pdfs . $i . self::FILE_TYPE;
 				$file_names[] = $filename;
 				$pdf_h->writeFile($filename);
+				$utils = new ilScanAssessmentPdfUtils();
+				$utils->concat($this->getConfiguredFilesToPrepend($filename));
+				$utils->writePdfFile($filename);
 			}
 			$end_time = microtime(TRUE);
 			$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, $number));
