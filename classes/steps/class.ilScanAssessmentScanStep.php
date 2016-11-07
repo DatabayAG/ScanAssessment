@@ -30,6 +30,6 @@ class ilScanAssessmentScanStep extends ilScanAssessmentStepsBase
 	 */
 	public function isFulfilled()
 	{
-		return false;
+		return true;
 	}
 }

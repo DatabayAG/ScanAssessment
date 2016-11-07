@@ -61,10 +61,6 @@ class ilScanAssessmentReturnDataController extends ilScanAssessmentController
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_return'));
 
-		$active = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
-		$active->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
-		$form->addItem($active);
-
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;

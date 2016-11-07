@@ -63,7 +63,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 		$this->showPdfFilesIfExisting();
 
-		if($this->doPdfFilesExistsInDirectory())
+		if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getPdfPath()))
 		{
 			$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
 			$form->addCommandButton(__CLASS__ . '.removingTheExistingPdfs', $pluginObject->txt('scas_remove_all'));
@@ -108,26 +108,6 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 			}
 		}
 		return $files;
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected function doPdfFilesExistsInDirectory()
-	{
-		$path    = $this->file_helper->getPdfPath();
-		if($handle = opendir($path))
-		{
-			while(false !== ($entry = readdir($handle)))
-			{
-				if($entry != '.' && $entry != '..')
-				{
-					return true;
-				}
-			}
-			closedir($handle);
-		}
-		return false;
 	}
 
 	public function createDemoPdfCmd()
@@ -207,26 +187,11 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 	/**
 	 * @param $preview
-	 * @param $only_names
+	 * @param $files
 	 */
-	protected function createZipAndDeliver($preview, $only_names)
+	protected function createZipAndDeliver($preview, $files)
 	{
-		$zip      = new ZipArchive;
-		$zip_file = $preview->getPathForZip() . '/complete.zip';
-		if(file_exists($zip_file))
-		{
-			unlink($zip_file);
-		}
-		$zip->open($zip_file, ZipArchive::CREATE);
-		foreach($only_names as $file)
-		{
-			$zip->addFile($file, basename($file));
-		}
-		$zip->close();
-		if(file_exists($zip_file))
-		{
-			ilUtil::deliverFile($zip_file, 'complete.zip', 'I');
-		}
+		$this->file_helper->createZipAndDeliverFromFiles($preview->getPathForZip(), $files, 'complete.zip');
 	}
 
 	public function getDefaultClassAndCommand()

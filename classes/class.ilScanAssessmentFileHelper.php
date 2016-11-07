@@ -90,4 +90,55 @@ class ilScanAssessmentFileHelper
 			ilUtil::makeDirParents($path);
 		}
 	}
+
+	/**
+	 * @param $path
+	 * @param array $files
+	 * @param $name
+	 */
+	public function createZipAndDeliverFromFiles($path, $files, $name)
+	{
+		$zip      = new ZipArchive;
+		$zip_file = $path . $name;
+
+		if(is_array($files))
+		{
+			$zip->open($zip_file, ZipArchive::CREATE);
+			foreach($files as $file)
+			{
+				if(file_exists($file))
+				{
+					$zip->addFile($file, basename($file));
+				}
+			}
+			$zip->close();
+		}
+
+		if(file_exists($zip_file))
+		{
+			ilUtil::deliverFile($zip_file, $name, 'zip', true, true);
+		}
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function doFilesExistsInDirectory($path)
+	{
+		if($handle = opendir($path))
+		{
+			while(false !== ($entry = readdir($handle)))
+			{
+				if($entry != '.' && $entry != '..')
+				{
+					if(is_file($path . $entry))
+					{
+						return true;
+					}
+				}
+			}
+			closedir($handle);
+		}
+		return false;
+	}
 }

@@ -32,18 +32,6 @@ class ilScanAssessmentUserPackagesExportedStep extends ilScanAssessmentStepsBase
 	public function isFulfilled()
 	{
 		$helper = new ilScanAssessmentFileHelper($this->test->getId());
-		$path = $helper->getPdfPath();
-		if ($handle = opendir($path))
-		{
-			while (false !== ($entry = readdir($handle)))
-			{
-				if($entry != '.' && $entry != '..')
-				{
-					return true;
-				}
-			}
-			closedir($handle);
-		}
-		return false;
+		return $helper->doFilesExistsInDirectory($helper->getPdfPath());
 	}
 }
