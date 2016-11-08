@@ -146,4 +146,27 @@ class ilScanAssessmentFileHelper
 		}
 		return false;
 	}
+
+	/**
+	 * @param $path
+	 * @return array
+	 */
+	public function getFilesFromFolderRecursive($path)
+	{
+		$files	= array();
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		{
+			if(! is_dir($filename->getFilename()))
+			{
+				$size = (int) ($filename->getSize() / 1024);
+				$date = date('d. F Y H:i:s', $filename->getMtime());
+				$files[] = array('file_id' => $filename->getPathName(), 
+								 'splfileinfo' => $filename, 
+								 'file_name' => basename($filename->getPath()) . '/' . $filename->getBaseName(), 
+								 'file_size' => $size . 'K', 
+								 'file_date' => $date);
+			}
+		}
+		return $files;
+	}
 }

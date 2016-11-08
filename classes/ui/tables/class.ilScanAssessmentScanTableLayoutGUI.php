@@ -32,7 +32,7 @@ class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 		$this->setId('scas_layout_table' );
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
-		$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
+		#$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('filename');
 		$this->setShowRowsSelector(false);
@@ -42,7 +42,7 @@ class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 		$this->addColumn('', 'file_id',  '1px', true);
 		$this->setSelectAllCheckbox('file_id');
 
-		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name');
+		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name', '', false, 'ilScanAssessmentLayoutController' );
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_date'), 'file_date');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_size'), 'file_size');
 		

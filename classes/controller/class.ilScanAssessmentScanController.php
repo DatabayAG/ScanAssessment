@@ -65,10 +65,10 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	 */
 	protected function detectMarker($scanner, $log)
 	{
-		$time_start = microtime(true);
-		$marker = $scanner->getMarkerPosition();
-		$time_end     = microtime(true);
-		$time         = $time_end - $time_start;
+		$time_start	= microtime(true);
+		$marker		= $scanner->getMarkerPosition();
+		$time_end	= microtime(true);
+		$time		= $time_end - $time_start;
 		$log->debug('Marker Position detection duration: ' . $time);
 		$log->debug($marker);
 
@@ -114,7 +114,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	/**
 	 * @param $path
 	 * @param $entry
-	 * @return bool
 	 */
 	protected function analyseImage($path, $entry)
 	{
@@ -168,7 +167,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('layout');
+		$ilTabs->setTabActive('scan');
 
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
@@ -287,7 +286,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	 */
 	protected function displayUnprocessedFiles()
 	{
-		
 		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableUnprocessedGUI.php');
 		$tbl = new ilScanAssessmentScanTableUnprocessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
 		$tbl->setData($this->getUnprocessedFilesData());
@@ -299,7 +297,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	 */
 	protected function displayProcessedFiles()
 	{
-
 		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableProcessedGUI.php');
 		$tbl = new ilScanAssessmentScanTableProcessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
 		$tbl->setData($this->getProcessedFilesData());
@@ -329,22 +326,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function getProcessedFilesData()
 	{
 		$path	= $this->file_helper->getAnalysedPath();
-		$files	= $this->getFolderFiles($path);
-		return $files;
-	}
-
-	protected function getFolderFiles($path)
-	{
-		$files	= array();
-		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
-		{
-			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
-			{
-				$size = (int) ($filename->getSize() / 1024);
-				$date = date('d. F Y H:i:s', $filename->getMtime());
-				$files[] = array('file_id' => $filename, 'file_name' => basename($filename->getPath()) . '/' . $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
-			}
-		}
+		$files	= $this->file_helper->getFilesFromFolderRecursive($path);
 		return $files;
 	}
 
