@@ -28,6 +28,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	protected $path_for_zip;
 
 	/**
+	 * @var
+	 */
+	protected $document_information = array();
+
+	/**
 	 * @var ilObjTest
 	 */
 	protected $test;
@@ -60,6 +65,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 * @param ilScanAssessmentPdfAssessmentQuestionBuilder $question_builder
 	 * @param $question
 	 * @param $counter
+	 * @return array
 	 */
 	protected function addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter)
 	{
@@ -72,7 +78,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->log->debug(sprintf('Starting transaction for page %s ...', $pdf->getPage()));
 
 		$start_page = $pdf->getPage();
-		$question_builder->addQuestionToPdf($question, $counter);
+		$answers = $question_builder->addQuestionToPdf($question, $counter);
 
 		if($pdf->getPage() != $start_page)
 		{
@@ -80,13 +86,14 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$pdf->rollbackTransaction(true);
 
 			$this->addPageWithQrCode($pdf_h);
-			$question_builder->addQuestionToPdf($question, $counter);
+			$answers = $question_builder->addQuestionToPdf($question, $counter);
 		}
 		else
 		{
 			$pdf->commitTransaction();
 			$this->log->debug(sprintf('Transaction worked for page %s commit.', $pdf->getPage()));
 		}
+		return array('page' => $pdf->getPage(), 'question' => $question->getId() ,'answers' => $answers);
 	}
 
 	/**
@@ -135,12 +142,13 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
 		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
+		$this->document_information = array();
 
 		$this->addPageWithQrCode($pdf_h);
 		$counter = 1;
 		foreach($questions as $question)
 		{
-			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
+			$this->document_information[] = $this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
 		return $pdf_h;

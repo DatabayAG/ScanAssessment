@@ -75,7 +75,8 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 		/** @var ilScanAssessmentQuestion $instance */
 		$instance = new $class($this->pdf_helper, $this->circleStyle);
 		$instance->writeQuestionTitleToPdf($question, $this->test , $counter);
-		$instance->writeQuestionToPdf($question);
+		$answer_positions = $instance->writeQuestionToPdf($question);
+		return $answer_positions;
 	}
 
 	/**

@@ -33,7 +33,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x1 = $this->pdf_helper->pdf->GetX() + 34;
 			$x2 = $this->pdf_helper->pdf->GetX() + 39;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
+			$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getOrder(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
 		}
 	}
 }

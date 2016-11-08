@@ -49,8 +49,9 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	public function writeQuestionToPdf($question)
 	{
 		$this->writeQuestionTextToPdf($question);
-		$this->writeAnswersToPdf($question);
+		$positions = $this->writeAnswersToPdf($question);
 		$this->writeQuestionEndToPdf();
+		return $positions;
 	}
 
 	/**
