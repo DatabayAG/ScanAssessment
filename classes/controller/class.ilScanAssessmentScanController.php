@@ -25,11 +25,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	/**
 	 * @var string
 	 */
-	protected $path_to_scans;
-
-	/**
-	 * @var string
-	 */
 	protected $path_to_done;
 	
 	/**
@@ -38,8 +33,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
-
-		$this->path_to_scans	= $this->file_helper->getScanPath();
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -168,8 +161,15 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		 */
 		global $ilTabs;
 		$ilTabs->setTabActive('scan');
-
 		$form = new ilPropertyFormGUI();
+
+		if($this->checkIfScanAssessmentCronExists())
+		{
+			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_cron_found_and_active'));
+		}
+
+		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_scan'));
 
@@ -178,29 +178,78 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$upload->setDisabled(true);
 		$form->addItem($upload);
 
-		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
 	}
 
+	/**
+	 * @return bool
+	 */
+	protected function checkIfScanAssessmentCronExists()
+	{
+		$cron_plugin_path = 'Customizing/global/plugins/Services/Cron/CronHook/ScanAssessmentCron/classes/class.ilScanAssessmentCronPlugin.php';
+		if(file_exists($cron_plugin_path))
+		{
+			require_once $cron_plugin_path;
+			$cron_plugin = new ilScanAssessmentCronPlugin();
+			if($cron_plugin->isActive())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public function analyseCmd()
 	{
-		$path = $this->path_to_scans;
+		$path = $this->file_helper->getScanPath();
 		$files_found = false;
-		if ($handle = opendir($path)) 
+		try
 		{
-			while (false !== ($entry = readdir($handle))) 
+			if($this->file_helper->acquireLock())
 			{
-				if(is_dir($path .'/'. $entry) === false)
+				$this->log->info('Created lock file: ' . $this->file_helper->getLockFilePath() . '.');
+
+				if ($handle = opendir($path))
 				{
-					$this->getNextFreeAnalysingFolder();
-					$files_found = true;
-					$this->analyseImage($path, $entry);
+					while (false !== ($entry = readdir($handle)))
+					{
+						if(is_dir($path .'/'. $entry) === false)
+						{
+							if($entry !== 'scan_assessment.lock')
+							{
+								$this->getNextFreeAnalysingFolder();
+								$files_found = true;
+								$this->analyseImage($path, $entry);
+							}
+						}
+					}
+					closedir($handle);
 				}
 			}
-			closedir($handle);
 		}
+		catch(Exception $e)
+		{
+			$this->log->crit($e->getMessage());
+		}
+
+		try
+		{
+			if($this->file_helper->releaseLock())
+			{
+				$this->log->info('Removed lock file: ' . $this->file_helper->getLockFilePath() . '.');
+			}
+			else
+			{
+				$this->log->debug('No lock to remove: ' . $this->file_helper->getLockFilePath() . '.');
+			}
+		}
+		catch(ilException $e)
+		{
+			$this->log->crit($e->getMessage());
+		}
+		
 		if($files_found)
 		{
 			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'));
@@ -305,7 +354,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	protected function getUnprocessedFilesData()
 	{
-		$path	= $this->path_to_scans;
+		$path	= $this->file_helper->getScanPath();
 		$files	= array();
 		if ($handle = opendir($path))
 		{

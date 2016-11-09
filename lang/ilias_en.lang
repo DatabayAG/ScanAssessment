@@ -103,3 +103,4 @@ scas_files_deleted#:#Files were removed.
 scas_confirm#:#Confirm
 scas_cancel#:#Cancel
 scas_download_pdf#:#Download PDFs
+scas_cron_found_and_active#:#ScanAssessment cronjob plugin found and active
