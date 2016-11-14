@@ -21,19 +21,19 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected $configuration;
 
 	/**
-	 * @param null $test_id
+	 * 
 	 */
-	public function init($test_id = null)
+	public function init()
 	{
-		if($test_id === null)
-		{
-			$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
-		}
+		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
 	}
 
+	/**
+	 * 
+	 */
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
@@ -99,6 +99,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return false;
 	}
 
+	/**
+	 * 
+	 */
 	public function analyseCmd()
 	{
 		$scan_process = new ilScanAssessmentScanProcess($this->file_helper, $this->test->getId());
@@ -213,6 +216,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return $tbl;
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function getUnprocessedFilesData()
 	{
 		$path	= $this->file_helper->getScanPath();
@@ -233,6 +239,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return $files;
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function getProcessedFilesData()
 	{
 		$path	= $this->file_helper->getAnalysedPath();
@@ -254,6 +263,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return $status_bar->getHtml();
 	}
 
+	/**
+	 * 
+	 */
 	public function downloadScanImageCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
@@ -261,6 +273,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$this->download($file_path, $file_name);
 	}
 
+	/**
+	 * 
+	 */
 	public function downloadProcessedImageCmd()
 	{
 		$file_name = ilUtil::stripSlashes($_GET['file_name']);
@@ -268,6 +283,9 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$this->download($file_path, $file_name);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDefaultClassAndCommand()
 	{
 		return 'ilScanAssessmentScanController.default';

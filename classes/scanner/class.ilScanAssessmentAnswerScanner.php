@@ -69,7 +69,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 			$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked);
 		}
-		$this->log->debug(sprintf('Done scanning checkboxes.'));
+		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
 		$this->findMatriculation($im);
 		return $this->checkbox_container;
@@ -83,7 +83,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
 
 		$im2 = $im;
-		$this->log->debug(sprintf('Starting to scan checkboxes...'));
+		$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
 		$matriculation = array();
 		foreach($this->getMatriculationPosition() as $key => $col)
 		{
@@ -105,8 +105,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 			}
 		}
-		$this->log->debug($matriculation);
-		$this->log->debug(sprintf('Done scanning checkboxes.'));
+		#$this->log->debug($matriculation);
+		$this->log->debug(sprintf('...done scanning matriculation checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
 		#return $this->checkbox_container;
 	}

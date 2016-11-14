@@ -10,24 +10,24 @@ class ilScanAssessmentScanProcess
 	const FOUND		= 0;
 	const LOCKED	= 1;
 	const NOT_FOUND	= 2;
-	
+
 	/**
 	 * @var string
 	 */
 	protected $path_to_done;
 
 	/**
-	 * @var
+	 * @var ilScanAssessmentFileHelper
 	 */
 	protected $file_helper;
 
 	/**
-	 * @var 
+	 * @var ilScanAssessmentLog
 	 */
 	protected $log;
 
 	/**
-	 * @var
+	 * @var ilObjTest
 	 */
 	protected $test;
 
@@ -66,7 +66,7 @@ class ilScanAssessmentScanProcess
 	protected function detectQrCode($log)
 	{
 		$time_start = microtime(true);
-		$qr			= new ilScanAssessmentQrCode('/tmp/new_file.jpg');
+		$qr			= new ilScanAssessmentQrCode( $this->file_helper->getScanTempPath() . 'new_file.jpg');
 		$qr_pos		= $qr->getQRPosition();
 		$time_end   = microtime(true);
 		$time       = $time_end - $time_start;
@@ -84,7 +84,7 @@ class ilScanAssessmentScanProcess
 	protected function detectAnswers($marker, $qr_pos, $log)
 	{
 		$time_start = microtime(true);
-		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg', $this->path_to_done);
+		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file.jpg', $this->path_to_done);
 		$val = $ans->scanImage($marker, $qr_pos);
 		#$log->debug($val);
 		$time_end = microtime(true);
@@ -103,7 +103,7 @@ class ilScanAssessmentScanProcess
 	{
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
-
+		copy($org, $this->file_helper->getScanTempPath() . 'new_file.jpg');
 		$log->debug('Start with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
@@ -166,6 +166,9 @@ class ilScanAssessmentScanProcess
 		return $identification;
 	}
 
+	/**
+	 * @param string $identifier
+	 */
 	protected function getAnalysingFolder($identifier = '')
 	{
 		$path	= $this->file_helper->getAnalysedPath();
@@ -180,59 +183,49 @@ class ilScanAssessmentScanProcess
 		}
 		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
-	
+
+	/**
+	 * @return int
+	 */
 	public function analyse()
 	{
 		$path = $this->file_helper->getScanPath();
 		$return_value	= self::NOT_FOUND;
 
-		try
+		if($this->acquireScanLock())
 		{
-			if($this->acquireScanLock())
-			{
-				$this->log->info('Created lock file: ' . $this->getScanLockFilePath() . '.');
+			$this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
 
-				if ($handle = opendir($path))
+			if ($handle = opendir($path))
+			{
+				while (false !== ($entry = readdir($handle)))
 				{
-					while (false !== ($entry = readdir($handle)))
+					if(is_dir($path . '/' . $entry) === false)
 					{
-						if(is_dir($path . '/' . $entry) === false)
+						if($entry !== 'scan_assessment.lock')
 						{
-							if($entry !== 'scan_assessment.lock')
-							{
-								$return_value = self::FOUND;
-								$this->analyseImage($path, $entry);
-							}
+							$return_value = self::FOUND;
+							$this->analyseImage($path, $entry);
 						}
 					}
-					closedir($handle);
 				}
-			}
-			else
-			{
-				$return_value = self::LOCKED;
+				closedir($handle);
 			}
 		}
-		catch(Exception $e)
+		else
 		{
-			$this->log->crit($e->getMessage());
+			$return_value = self::LOCKED;
 		}
 
-		try
+		if($this->releaseScanLock())
 		{
-			if($this->releaseScanLock())
-			{
-				$this->log->info('Removed lock file: ' . $this->getScanLockFilePath() . '.');
-			}
-			else
-			{
-				$this->log->debug('No lock to remove: ' . $this->getScanLockFilePath() . '.');
-			}
+			$this->log->info(sprintf('Removed lock file: %s' , $this->getScanLockFilePath()));
 		}
-		catch(ilException $e)
+		else
 		{
-			$this->log->crit($e->getMessage());
+			$this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
 		}
+
 		return $return_value;
 	}
 
