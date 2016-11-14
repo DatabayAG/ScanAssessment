@@ -115,4 +115,15 @@ interface ilScanAssessmentImageWrapper
 	 */
 	public function getBlue();
 
+	/**
+	 * @param $dst_im
+	 * @param $src_im
+	 * @param $dst_x
+	 * @param $dst_y
+	 * @param $src_x
+	 * @param $src_y
+	 * @param $src_w
+	 * @param $src_h
+	 */
+	public function copyImage($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
 }

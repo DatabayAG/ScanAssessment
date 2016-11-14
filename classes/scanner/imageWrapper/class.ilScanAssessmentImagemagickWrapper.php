@@ -221,4 +221,9 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	{
 		return '#0000FF';
 	}
+
+	public function copyImage($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h)
+	{
+		// TODO: Implement copyImage() method.
+	}
 }

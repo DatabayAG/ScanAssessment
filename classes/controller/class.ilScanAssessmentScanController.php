@@ -5,6 +5,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentMarkerDetection.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentQrCode.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('../libs/php-qrcode-detector-decoder/lib/QrReader.php');
 
 /**
  * Class ilScanAssessmentScanController
@@ -76,9 +77,8 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$time_start = microtime(true);
 		$qr			= new ilScanAssessmentQrCode('/tmp/new_file.jpg');
 		$qr_pos		= $qr->getQRPosition();
-		$log->debug($qr_pos);
-		$time_end     = microtime(true);
-		$time         = $time_end - $time_start;
+		$time_end   = microtime(true);
+		$time       = $time_end - $time_start;
 		$log->debug('QR Position detection duration: ' . $time);
 		$qr->drawTempImage($qr->getTempImage(),  $this->path_to_done . '/test_qr.jpg');
 
@@ -123,8 +123,16 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
 		$scanner->drawTempImage($scanner->getImage(), '/tmp/new_file.jpg');
 
+		/** @var ilScanAssessmentVector $qr_pos */
 		$qr_pos = $this->detectQrCode($log);
-
+		//TODO: replace with factory begin
+		$im2 = imagecrop($scanner->image_helper->getImage(), ['x' => $qr_pos->getPosition()->getX(), 'y' => $qr_pos->getPosition()->getY(), 'width' => $qr_pos->getLength(), 'height' => $qr_pos->getLength()]);
+		if ($im2 !== FALSE) {
+			imagejpeg($im2, $this->path_to_done . '/qr.jpg');
+		}
+		$qrcode = new QrReader($this->path_to_done . '/qr.jpg');
+		$this->log->debug(sprintf('Found id %s in qr code.', $qrcode->text()));
+		//TODO: replace with factory end
 		$this->detectAnswers($marker, $qr_pos, $log);
 
 		$log->debug('Coping file: ' . $org . ' to ' .$done );

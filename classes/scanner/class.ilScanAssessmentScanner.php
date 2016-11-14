@@ -36,7 +36,7 @@ class ilScanAssessmentScanner
 	/**
 	 * @var ilScanAssessmentImageWrapper
 	 */
-	protected $image_helper;
+	public $image_helper;
 
 	/**
 	 * @var ilScanAssessmentLog

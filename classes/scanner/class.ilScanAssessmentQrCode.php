@@ -1,6 +1,8 @@
 <?php
 
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentVector.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentPoint.php');
 
 
 class ilScanAssessmentQrCode extends ilScanAssessmentScanner
@@ -24,8 +26,8 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 		{
 			return false;
 		} 
-		$position = $res[0];
-		return $position;
+
+		return $res;
 	}
 
 	protected function findQR(&$im, $rotate = false) {
@@ -119,8 +121,8 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 					break;
 				}
 			}
-
-			$cord = array("x" => $fixedMaxX, "y" => $fixedMaxY, "w" => $sq);
+			
+			$vec = new ilScanAssessmentVector( new ilScanAssessmentPoint($fixedMaxX - $sq, $fixedMaxY - $sq), $sq);
 
 			if($found)
 			{
@@ -132,7 +134,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 
 		} else return false;
 
-		return array($cord);
+		return $vec;
 	}
 
 
