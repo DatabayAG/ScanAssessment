@@ -1,5 +1,5 @@
 <?php
-
+ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 /**
  * Class ilScanAssessmentFileHelper
  */
@@ -12,6 +12,7 @@ class ilScanAssessmentFileHelper
 	const SCAN_ASSESSMENT	= '/scanAssessment/';
 	const ANALYSED			= 'analysed/';
 	const ZIP				= 'zip/';
+	const TEMP				= 'tmp/';
 
 	/**
 	 * @var int
@@ -19,12 +20,18 @@ class ilScanAssessmentFileHelper
 	protected $test_id;
 
 	/**
+	 * @var ilScanAssessmentLog
+	 */
+	protected $log;
+
+	/**
 	 * ilScanAssessmentFileHelper constructor.
 	 * @param $test_id
 	 */
 	public function __construct($test_id)
 	{
-		$this->test_id = $test_id;
+		$this->test_id	= $test_id;
+		$this->log		= ilScanAssessmentLog::getInstance();
 	}
 
 	/**
@@ -53,6 +60,16 @@ class ilScanAssessmentFileHelper
 	public function getScanPath()
 	{
 		$path = $this->getBasePath() . self::SCANS;
+		$this->ensurePathExists($path);
+		return $path;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getScanTempPath()
+	{
+		$path = $this->getScanPath() . self::TEMP;
 		$this->ensurePathExists($path);
 		return $path;
 	}
@@ -95,6 +112,7 @@ class ilScanAssessmentFileHelper
 		if( ! is_dir($path))
 		{
 			ilUtil::makeDirParents($path);
+			$this->log->debug(sprintf('Created non existing path %s', $path));
 		}
 	}
 
@@ -169,4 +187,26 @@ class ilScanAssessmentFileHelper
 		}
 		return $files;
 	}
+
+	/**
+	 * @param $src
+	 * @param $dest
+	 * @return bool
+	 */
+	public function moveFile($src, $dest)
+	{
+		if(file_exists($src))
+		{
+			copy($src, $dest);
+			if(file_exists($dest))
+			{
+				unlink($src);
+				$this->log->debug(sprintf('Copy %s exist removing original %s', $dest, $src));
+				return true;
+			}
+		}
+		$this->log->warn(sprintf('Copy %s does NOT exist will not remove original %s', $dest, $src));
+		return false;
+	}
+
 }

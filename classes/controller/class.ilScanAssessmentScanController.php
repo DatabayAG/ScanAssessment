@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentMarkerDetection.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentQrCode.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
@@ -54,7 +55,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	/**
 	 * @param $scanner
-	 * @param $log
+	 * @param ilScanAssessmentLog $log
 	 * @return array
 	 */
 	protected function detectMarker($scanner, $log)
@@ -69,7 +70,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return $marker;
 	}
 	/**
-	 * @param $log
+	 * @param ilScanAssessmentLog $log
 	 * @return array
 	 */
 	protected function detectQrCode($log)
@@ -80,7 +81,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$time_end   = microtime(true);
 		$time       = $time_end - $time_start;
 		$log->debug('QR Position detection duration: ' . $time);
-		$qr->drawTempImage($qr->getTempImage(),  $this->path_to_done . '/test_qr.jpg');
 
 		return $qr_pos;
 	}
@@ -88,7 +88,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	/**
 	 * @param $marker
 	 * @param $qr_pos
-	 * @param $log
+	 * @param ilScanAssessmentLog $log
 	 * @return ilScanAssessmentAnswerScanner
 	 */
 	protected function detectAnswers($marker, $qr_pos, $log)
@@ -107,53 +107,87 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	/**
 	 * @param $path
 	 * @param $entry
+	 * @return bool
 	 */
 	protected function analyseImage($path, $entry)
 	{
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
-		$done = $this->path_to_done . '/' . $entry;
 
 		$log->debug('Start with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
-
 		$marker = $this->detectMarker($scanner, $log);
-
-		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
-		$scanner->drawTempImage($scanner->getImage(), '/tmp/new_file.jpg');
 
 		/** @var ilScanAssessmentVector $qr_pos */
 		$qr_pos = $this->detectQrCode($log);
-		//TODO: replace with factory begin
-		$im2 = imagecrop($scanner->image_helper->getImage(), ['x' => $qr_pos->getPosition()->getX(), 'y' => $qr_pos->getPosition()->getY(), 'width' => $qr_pos->getLength(), 'height' => $qr_pos->getLength()]);
-		if ($im2 !== FALSE) {
-			imagejpeg($im2, $this->path_to_done . '/qr.jpg');
-		}
-		$qrcode = new QrReader($this->path_to_done . '/qr.jpg');
-		$this->log->debug(sprintf('Found id %s in qr code.', $qrcode->text()));
-		//TODO: replace with factory end
-		$this->detectAnswers($marker, $qr_pos, $log);
-
-		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		#copy($org, $done);
-
-		if(file_exists($done))
+		$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
+		if ($im2 !== FALSE)
 		{
-			unlink($org);
-			$log->debug('Coping exist removing original: ' . $org);
+			$path = $this->file_helper->getScanTempPath() . '/qr.jpg';
+			$scanner->image_helper->drawTempImage($im2, $path);
+			if(! $this->processQrCode($path, $org))
+			{
+				return false;
+			}
 		}
 		else
 		{
-			$log->debug('Coping does not exist leaving original: ' . $org);
+			$this->log->warn('No QR Code found!');
+			$this->getAnalysingFolder();
 		}
+		$done = $this->path_to_done . '/' . $entry;
+
+		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+
+		$this->detectAnswers($marker, $qr_pos, $log);
+
+		$log->debug('Coping file: ' . $org . ' to ' .$done );
+		$this->file_helper->moveFile($org, $done);
+		return true;
 	}
 
-	protected function getNextFreeAnalysingFolder()
+	/**
+	 * @param $path
+	 * @param $org
+	 * @return false|ilScanAssessmentIdentification
+	 */
+	protected function processQrCode($path, $org)
+	{
+		$code = $this->readQrCode($path);
+		if($code != false)
+		{
+			$identification = new ilScanAssessmentIdentification();
+			$identification->parseIdentificationString($code);
+			if($identification->getTestId() != $this->test->getId())
+			{
+				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
+				return false;
+			}
+		}
+		else
+		{
+			$this->log->warn('QR Code could not be read!');
+			return false;
+		}
+
+		$this->getAnalysingFolder($code);
+		$this->file_helper->moveFile($path, $this->path_to_done . '/qr.jpg');
+		return $identification;
+	}
+
+	protected function getAnalysingFolder($identifier = '')
 	{
 		$path	= $this->file_helper->getAnalysedPath();
-		$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
-		$this->path_to_done	= $path . $counter;
+		if($identifier === '')
+		{
+			$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
+			$this->path_to_done	= $path . $counter;
+		}
+		else
+		{
+			$this->path_to_done	= $path . $identifier;
+		}
 		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
@@ -229,7 +263,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 						{
 							if($entry !== 'scan_assessment.lock')
 							{
-								$this->getNextFreeAnalysingFolder();
 								$files_found = true;
 								$this->analyseImage($path, $entry);
 							}
@@ -433,6 +466,22 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		return 'ilScanAssessmentScanController.default';
 	}
 
+	/**
+	 * @param $path
+	 * @return bool
+	 */
+	protected function readQrCode($path)
+	{
+		$qr_code = new QrReader($path);
+		$txt = $qr_code->text();
+		if($txt != '')
+		{
+			$this->log->debug(sprintf('Found id %s in qr code.', $txt));
+			return $txt;
+		}
+		return false;
+	}
+	
 	/**
 	 * @return bool
 	 */

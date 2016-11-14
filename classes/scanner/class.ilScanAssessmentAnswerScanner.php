@@ -26,7 +26,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 * @param $fn
 	 * @param $path_to_save
 	 */
-	public function __construct($fn, $path_to_save)
+	public function __construct($fn = null, $path_to_save)
 	{
 		$this->path_to_save = $path_to_save;
 		parent::__construct($fn);
