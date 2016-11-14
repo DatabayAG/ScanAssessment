@@ -2,11 +2,7 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentMarkerDetection.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentQrCode.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('../libs/php-qrcode-detector-decoder/lib/QrReader.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanProcess.php');
 
 /**
  * Class ilScanAssessmentScanController
@@ -25,16 +21,14 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected $configuration;
 
 	/**
-	 * @var string
+	 * @param null $test_id
 	 */
-	protected $path_to_done;
-	
-	/**
-	 * 
-	 */
-	protected function init()
+	public function init($test_id = null)
 	{
-		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
+		if($test_id === null)
+		{
+			$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
+		}
 		$this->getCoreController()->getPluginObject()->includeClass('model/class.ilScanAssessmentScanConfiguration.php');
 		$this->configuration = new ilScanAssessmentScanConfiguration($this->test->getId());
 		$this->isPreconditionFulfilled();
@@ -51,144 +45,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		{
 			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentUserPackagesControllerPdf.default');
 		}
-	}
-
-	/**
-	 * @param $scanner
-	 * @param ilScanAssessmentLog $log
-	 * @return array
-	 */
-	protected function detectMarker($scanner, $log)
-	{
-		$time_start	= microtime(true);
-		$marker		= $scanner->getMarkerPosition();
-		$time_end	= microtime(true);
-		$time		= $time_end - $time_start;
-		$log->debug('Marker Position detection duration: ' . $time);
-		$log->debug($marker);
-
-		return $marker;
-	}
-	/**
-	 * @param ilScanAssessmentLog $log
-	 * @return array
-	 */
-	protected function detectQrCode($log)
-	{
-		$time_start = microtime(true);
-		$qr			= new ilScanAssessmentQrCode('/tmp/new_file.jpg');
-		$qr_pos		= $qr->getQRPosition();
-		$time_end   = microtime(true);
-		$time       = $time_end - $time_start;
-		$log->debug('QR Position detection duration: ' . $time);
-
-		return $qr_pos;
-	}
-
-	/**
-	 * @param $marker
-	 * @param $qr_pos
-	 * @param ilScanAssessmentLog $log
-	 * @return ilScanAssessmentAnswerScanner
-	 */
-	protected function detectAnswers($marker, $qr_pos, $log)
-	{
-		$time_start = microtime(true);
-		$ans = new ilScanAssessmentAnswerScanner('/tmp/new_file.jpg', $this->path_to_done);
-		$val = $ans->scanImage($marker, $qr_pos);
-		#$log->debug($val);
-		$time_end = microtime(true);
-		$time     = $time_end - $time_start;
-		$log->debug('Answer Calculation duration:  ' . $time);
-
-		return $ans;
-	}
-
-	/**
-	 * @param $path
-	 * @param $entry
-	 * @return bool
-	 */
-	protected function analyseImage($path, $entry)
-	{
-		$log = ilScanAssessmentLog::getInstance();
-		$org = $path . '/' . $entry;
-
-		$log->debug('Start with file: ' . $org);
-
-		$scanner = new ilScanAssessmentMarkerDetection($org);
-		$marker = $this->detectMarker($scanner, $log);
-
-		/** @var ilScanAssessmentVector $qr_pos */
-		$qr_pos = $this->detectQrCode($log);
-		$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
-		if ($im2 !== FALSE)
-		{
-			$path = $this->file_helper->getScanTempPath() . '/qr.jpg';
-			$scanner->image_helper->drawTempImage($im2, $path);
-			if(! $this->processQrCode($path, $org))
-			{
-				return false;
-			}
-		}
-		else
-		{
-			$this->log->warn('No QR Code found!');
-			$this->getAnalysingFolder();
-		}
-		$done = $this->path_to_done . '/' . $entry;
-
-		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
-
-		$this->detectAnswers($marker, $qr_pos, $log);
-
-		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		$this->file_helper->moveFile($org, $done);
-		return true;
-	}
-
-	/**
-	 * @param $path
-	 * @param $org
-	 * @return false|ilScanAssessmentIdentification
-	 */
-	protected function processQrCode($path, $org)
-	{
-		$code = $this->readQrCode($path);
-		if($code != false)
-		{
-			$identification = new ilScanAssessmentIdentification();
-			$identification->parseIdentificationString($code);
-			if($identification->getTestId() != $this->test->getId())
-			{
-				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
-				return false;
-			}
-		}
-		else
-		{
-			$this->log->warn('QR Code could not be read!');
-			return false;
-		}
-
-		$this->getAnalysingFolder($code);
-		$this->file_helper->moveFile($path, $this->path_to_done . '/qr.jpg');
-		return $identification;
-	}
-
-	protected function getAnalysingFolder($identifier = '')
-	{
-		$path	= $this->file_helper->getAnalysedPath();
-		if($identifier === '')
-		{
-			$counter = (count(glob("$path/*",GLOB_ONLYDIR)));
-			$this->path_to_done	= $path . $counter;
-		}
-		else
-		{
-			$this->path_to_done	= $path . $identifier;
-		}
-		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
 	/**
@@ -245,63 +101,14 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 	public function analyseCmd()
 	{
-		$path = $this->file_helper->getScanPath();
-		$files_found = false;
-		$already_locked = false;
+		$scan_process = new ilScanAssessmentScanProcess($this->file_helper, $this->test->getId());
+		$value = $scan_process->analyse();
 
-		try
-		{
-			if($this->acquireScanLock())
-			{
-				$this->log->info('Created lock file: ' . $this->getScanLockFilePath() . '.');
-
-				if ($handle = opendir($path))
-				{
-					while (false !== ($entry = readdir($handle)))
-					{
-						if(is_dir($path .'/'. $entry) === false)
-						{
-							if($entry !== 'scan_assessment.lock')
-							{
-								$files_found = true;
-								$this->analyseImage($path, $entry);
-							}
-						}
-					}
-					closedir($handle);
-				}
-			}
-			else
-			{
-				$already_locked = true;
-			}
-		}
-		catch(Exception $e)
-		{
-			$this->log->crit($e->getMessage());
-		}
-
-		try
-		{
-			if($this->releaseScanLock())
-			{
-				$this->log->info('Removed lock file: ' . $this->getScanLockFilePath() . '.');
-			}
-			else
-			{
-				$this->log->debug('No lock to remove: ' . $this->getScanLockFilePath() . '.');
-			}
-		}
-		catch(ilException $e)
-		{
-			$this->log->crit($e->getMessage());
-		}
-
-		if($files_found)
+		if($value == $scan_process::FOUND)
 		{
 			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'));
 		}
-		else if ($already_locked)
+		else if ($value == $scan_process::LOCKED)
 		{
 			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
 		}
@@ -464,77 +271,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	public function getDefaultClassAndCommand()
 	{
 		return 'ilScanAssessmentScanController.default';
-	}
-
-	/**
-	 * @param $path
-	 * @return bool
-	 */
-	protected function readQrCode($path)
-	{
-		$qr_code = new QrReader($path);
-		$txt = $qr_code->text();
-		if($txt != '')
-		{
-			$this->log->debug(sprintf('Found id %s in qr code.', $txt));
-			return $txt;
-		}
-		return false;
-	}
-	
-	/**
-	 * @return bool
-	 */
-	public function acquireScanLock()
-	{
-		if(! $this->isScanLocked())
-		{
-			if(!@file_put_contents($this->getScanLockFilePath(), getmypid(), LOCK_EX))
-			{
-				return false;
-			}
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getScanLockFilePath()
-	{
-		return $this->file_helper->getScanPath() . 'scan_assessment.lock';
-	}
-
-	/**
-	 * @return boolean
-	 */
-	public function isScanLocked()
-	{
-		if(file_exists($this->getScanLockFilePath()))
-		{
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function releaseScanLock()
-	{
-		if(file_exists($this->getScanLockFilePath()))
-		{
-			if(@unlink($this->getScanLockFilePath()))
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-		return true;
 	}
 
 }
