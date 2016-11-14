@@ -103,3 +103,4 @@ scas_confirm#:#Bestätigen
 scas_cancel#:#Abbrechen
 scas_download_pdf#:#PDFs herunterladen
 scas_cron_found_and_active#:#ScanAssessment Cronjob Plugin gefunden und aktiv
+scas_lock_file_found#:#Lock Datei gefunden.

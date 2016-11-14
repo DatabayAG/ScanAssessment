@@ -7,6 +7,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
 
 
 /**
@@ -104,7 +105,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
 
-		$data = new ilScanAssessmentPdfMetaData($this->test, 'DEMO');
+		$identification	= new ilScanAssessmentIdentification();
+		$identification->init($this->test->getId(), 0, 0);
+		$data = new ilScanAssessmentPdfMetaData($this->test, $identification);
 		$pdf_h	= $this->createPdf($data);
 		$filename = $this->path_for_pdfs . $this->test->getId() . '_demo' . self::FILE_TYPE;
 		$pdf_h->writeFile($filename);
@@ -166,8 +169,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$counter = 0;
 		foreach($participants as $usr_id => $user)
 		{
-			$data		= new ilScanAssessmentPdfMetaData($this->test, $usr_id);
-			$usr_obj	= new ilObjUser($usr_id);
+			$identification	= new ilScanAssessmentIdentification();
+			$identification->init($this->test->getId(), 0, $usr_id);
+			$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
+			$usr_obj		= new ilObjUser($usr_id);
 
 			$pdf_h	= $this->createPdf($data);
 			$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $counter . self::FILE_TYPE;
@@ -178,6 +183,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 				$data->setStudentName($usr_obj->getFullname());
 				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $user['lastname'] . '_' . $user['firstname'] . self::FILE_TYPE;
 			}
+
 			$file_names[] = $filename;
 			$pdf_h->writeFile($filename);
 			$utils = new ilScanAssessmentPdfUtils();
@@ -201,10 +207,13 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 			for($i = 1; $i <= $number; $i++)
 			{
-				$data = new ilScanAssessmentPdfMetaData($this->test, $i);
-				
+
+				$identification	= new ilScanAssessmentIdentification();
+				$identification->init($this->test->getId(), 0, $i);
+				$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
+
 				$pdf_h	= $this->createPdf($data);
-				$filename = $this->path_for_pdfs . $i . self::FILE_TYPE;
+				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $i . self::FILE_TYPE;
 				$file_names[] = $filename;
 				$pdf_h->writeFile($filename);
 				$utils = new ilScanAssessmentPdfUtils();
@@ -222,9 +231,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	protected function addQrCodeToPage($pdf_h)
 	{
-		$pdf_h->pdf->getPage();
 		$pdf_h->pdf->setQRCodeOnThisPage(true);
-		$pdf_h->createQRCode('DemoCode');
+		$pdf_h->createQRCode($pdf_h->pdf->getMetadata()->getIdentification());
 	}
 
 	/**

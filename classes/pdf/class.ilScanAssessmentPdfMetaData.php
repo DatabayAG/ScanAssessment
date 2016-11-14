@@ -38,9 +38,9 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	/**
 	 * ilScanAssessmentPdfMetaData constructor.
 	 * @param ilObjTest	$test
-	 * @param string	$identification
+	 * @param ilScanAssessmentIdentification $identification
 	 */
-	public function __construct($test, $identification)
+	public function __construct($test, ilScanAssessmentIdentification $identification)
 	{
 		parent::__construct($test->getId());
 
@@ -101,6 +101,14 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	 * @return string
 	 */
 	public function getIdentification()
+	{
+		return $this->identification->getIdentificationString();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getIdentificationObject()
 	{
 		return $this->identification;
 	}

@@ -205,11 +205,13 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	{
 		$path = $this->file_helper->getScanPath();
 		$files_found = false;
+		$already_locked = false;
+
 		try
 		{
-			if($this->file_helper->acquireLock())
+			if($this->acquireScanLock())
 			{
-				$this->log->info('Created lock file: ' . $this->file_helper->getLockFilePath() . '.');
+				$this->log->info('Created lock file: ' . $this->getScanLockFilePath() . '.');
 
 				if ($handle = opendir($path))
 				{
@@ -228,6 +230,10 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 					closedir($handle);
 				}
 			}
+			else
+			{
+				$already_locked = true;
+			}
 		}
 		catch(Exception $e)
 		{
@@ -236,23 +242,27 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 
 		try
 		{
-			if($this->file_helper->releaseLock())
+			if($this->releaseScanLock())
 			{
-				$this->log->info('Removed lock file: ' . $this->file_helper->getLockFilePath() . '.');
+				$this->log->info('Removed lock file: ' . $this->getScanLockFilePath() . '.');
 			}
 			else
 			{
-				$this->log->debug('No lock to remove: ' . $this->file_helper->getLockFilePath() . '.');
+				$this->log->debug('No lock to remove: ' . $this->getScanLockFilePath() . '.');
 			}
 		}
 		catch(ilException $e)
 		{
 			$this->log->crit($e->getMessage());
 		}
-		
+
 		if($files_found)
 		{
 			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'));
+		}
+		else if ($already_locked)
+		{
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
 		}
 		else
 		{
@@ -317,13 +327,16 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 		$tpl->setCurrentBlock('detail_table');
+
 		$tbl = $this->displayUnprocessedFiles();
 		$tpl->setVariable('CONTENT', $tbl->getHTML());
 		$tpl->parseCurrentBlock();
 		$tpl->setCurrentBlock('detail_table');
+
 		$tbl = $this->displayProcessedFiles();
 		$tpl->setVariable('CONTENT', $tbl->getHTML());
 		$tpl->parseCurrentBlock();
+
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 
@@ -336,7 +349,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function displayUnprocessedFiles()
 	{
 		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableUnprocessedGUI.php');
-		$tbl = new ilScanAssessmentScanTableUnprocessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
+		$tbl = new ilScanAssessmentScanTableUnprocessedGUI(new ilScanAssessmentUIHookGUI(), 'default');
 		$tbl->setData($this->getUnprocessedFilesData());
 		return $tbl;
 	}
@@ -347,7 +360,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	protected function displayProcessedFiles()
 	{
 		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableProcessedGUI.php');
-		$tbl = new ilScanAssessmentScanTableProcessedGUI(new ilScanAssessmentUIHookGUI(), 'editComments');
+		$tbl = new ilScanAssessmentScanTableProcessedGUI(new ilScanAssessmentUIHookGUI(), 'default');
 		$tbl->setData($this->getProcessedFilesData());
 		return $tbl;
 	}
@@ -410,6 +423,61 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 	public function getDefaultClassAndCommand()
 	{
 		return 'ilScanAssessmentScanController.default';
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function acquireScanLock()
+	{
+		if(! $this->isScanLocked())
+		{
+			if(!@file_put_contents($this->getScanLockFilePath(), getmypid(), LOCK_EX))
+			{
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getScanLockFilePath()
+	{
+		return $this->file_helper->getScanPath() . 'scan_assessment.lock';
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isScanLocked()
+	{
+		if(file_exists($this->getScanLockFilePath()))
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function releaseScanLock()
+	{
+		if(file_exists($this->getScanLockFilePath()))
+		{
+			if(@unlink($this->getScanLockFilePath()))
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
 	}
 
 }
