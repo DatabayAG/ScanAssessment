@@ -64,8 +64,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 	/**
 	 * @param ilScanAssessmentPdfHelper $pdf_h
 	 * @param ilScanAssessmentPdfAssessmentQuestionBuilder $question_builder
-	 * @param $question
-	 * @param $counter
+	 * @param assQuestion $question
+	 * @param int $counter
 	 * @return array
 	 */
 	protected function addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter)

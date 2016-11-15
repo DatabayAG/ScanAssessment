@@ -210,7 +210,9 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$found			= false;
 		$subDX			= 0;
 		$beginD			= -1;
+		/** @var ilScanAssessmentPoint $found_start */
 		$found_start	= null;
+		/** @var ilScanAssessmentPoint $found_end */
 		$found_end		= null;
 		$max_width		= $width / 4 * 3;
 

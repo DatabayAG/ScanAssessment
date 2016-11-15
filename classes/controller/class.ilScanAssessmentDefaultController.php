@@ -130,6 +130,7 @@ class ilScanAssessmentDefaultController extends ilScanAssessmentController
 			$this->bindModelToForm($form);
 		}
 
+		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
