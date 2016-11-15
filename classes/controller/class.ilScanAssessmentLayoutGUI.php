@@ -4,10 +4,10 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 
 /**
- * Class ilScanAssessmentLayoutController
+ * Class ilScanAssessmentLayoutGUI
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentLayoutController extends ilScanAssessmentController
+class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 {
 	const TITLE_AND_POINTS		= 0;
 	const ONLY_TITLE			= 1;
@@ -40,7 +40,7 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		if(! $activated->isFulfilled())
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentDefaultController.default');
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentDefaultGUI.default');
 		}
 	}
 	

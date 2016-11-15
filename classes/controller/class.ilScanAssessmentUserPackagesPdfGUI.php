@@ -1,15 +1,15 @@
 <?php
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentUserPackagesController.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentUserPackagesGUI.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfUtils.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 
 /**
- * Class ilScanAssessmentUserPackagesControllerPdf
+ * Class ilScanAssessmentUserPackagesPdfGUI
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPackagesController
+class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 {
 	const FLAG = 0;
 	const ZIP = 1;
@@ -229,6 +229,6 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 
 	public function getDefaultClassAndCommand()
 	{
-		return 'ilScanAssessmentUserPackagesControllerPdf.default';
+		return 'ilScanAssessmentUserPackagesPdfGUI.default';
 	}
 }

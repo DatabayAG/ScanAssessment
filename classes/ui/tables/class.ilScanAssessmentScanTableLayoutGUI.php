@@ -48,7 +48,7 @@ class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 		
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'), 'actions', '10%');
 
-		$link = 'ilScanAssessmentLayoutController.areYouSureDeleteEntries';
+		$link = 'ilScanAssessmentLayoutGUI.areYouSureDeleteEntries';
 		$this->addMultiCommand($link, ilScanAssessmentPlugin::getInstance()->txt('scas_delete'));
 
 	}
@@ -66,7 +66,7 @@ class ilScanAssessmentScanTableLayoutGUI extends ilTable2GUI
 			}
 			else if($key == 'file_name')
 			{
-				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentLayoutController' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
+				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentLayoutGUI' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
 				$this->tpl->setVariable('VAL_LINK', $link);
 			}
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);

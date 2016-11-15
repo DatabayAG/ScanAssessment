@@ -11,7 +11,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAsse
 
 
 /**
- * Class ilScanAssessmentLayoutController
+ * Class ilScanAssessmentLayoutGUI
  * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfAssessmentBuilder

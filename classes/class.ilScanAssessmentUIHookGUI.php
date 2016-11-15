@@ -15,23 +15,23 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	 * @var array
 	 */
 	protected $tabs = array(
-		'ilScanAssessmentDefaultController.default'			=> 'settings',
-		'ilScanAssessmentLayoutController.default'			=> 'layout',
-		'ilScanAssessmentUserPackagesController.default'	=> 'user_packages',
-		'ilScanAssessmentScanController.default'			=> 'scan',
-		'ilScanAssessmentReturnDataController.default'		=> 'return',
+		'ilScanAssessmentDefaultGUI.default'			=> 'settings',
+		'ilScanAssessmentLayoutGUI.default'			=> 'layout',
+		'ilScanAssessmentUserPackagesGUI.default'	=> 'user_packages',
+		'ilScanAssessmentScanGUI.default'			=> 'scan',
+		'ilScanAssessmentReturnDataGUI.default'		=> 'return',
 	);
 
 	/**
 	 * @var array
 	 */
 	protected $tabs_mapping = array(
-		'ilScanAssessmentDefaultController'			=> 'settings',
-		'ilScanAssessmentLayoutController'			=> 'layout',
-		'ilScanAssessmentUserPackagesController'	=> 'user_packages',
-		'ilScanAssessmentUserPackagesControllerPdf'	=> 'user_packages',
-		'ilScanAssessmentScanController'			=> 'scan',
-		'ilScanAssessmentReturnDataController'		=> 'return',
+		'ilScanAssessmentDefaultGUI'			=> 'settings',
+		'ilScanAssessmentLayoutGUI'			=> 'layout',
+		'ilScanAssessmentUserPackagesGUI'	=> 'user_packages',
+		'ilScanAssessmentUserPackagesPdfGUI'	=> 'user_packages',
+		'ilScanAssessmentScanGUI'			=> 'scan',
+		'ilScanAssessmentReturnDataGUI'		=> 'return',
 	);
 
 	/**
@@ -77,7 +77,7 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 						'scan_assessment',
 						$this->plugin_object->txt('scan_assessment'),
 						$this->plugin_object->getLinkTarget(
-							'ilScanAssessmentDefaultController.default',
+							'ilScanAssessmentDefaultGUI.default',
 							array(
 								'ref_id' => (int)$_GET['ref_id']
 							)

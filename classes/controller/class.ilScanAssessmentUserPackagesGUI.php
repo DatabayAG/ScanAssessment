@@ -6,10 +6,10 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
- * Class ilScanAssessmentUserPackagesController
+ * Class ilScanAssessmentUserPackagesGUI
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
+class ilScanAssessmentUserPackagesGUI extends ilScanAssessmentController
 {
 	/**
 	 * @var ilObjTest
@@ -51,7 +51,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 
 		if(!$activated->isFulfilled() || !$layout->isFulfilled())
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentLayoutController.default');
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentLayoutGUI.default');
 		}
 	}
 
@@ -60,7 +60,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$pluginObject = $this->getCoreController()->getPluginObject();
 		$this->tabs->setTabActive('user_packages');
 		$this->tabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), $this->getLink());
-		$this->tabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesControllerPdf'));
+		$this->tabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), $this->getLink('ilScanAssessmentUserPackagesPdfGUI'));
 		$this->tabs->setSubTabActive($active_sub);
 	}
 	
@@ -151,7 +151,7 @@ class ilScanAssessmentUserPackagesController extends ilScanAssessmentController
 		$demo->createDemoPdf();
 	}
 
-	protected function getLink($ctrl = 'ilScanAssessmentUserPackagesController')
+	protected function getLink($ctrl = 'ilScanAssessmentUserPackagesGUI')
 	{
 		return $this->getCoreController()->getPluginObject()->getLinkTarget($ctrl . '.default',	array('ref_id' => (int)$_GET['ref_id']));
 	}

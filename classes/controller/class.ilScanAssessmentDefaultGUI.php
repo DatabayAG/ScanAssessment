@@ -4,10 +4,10 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 
 /**
- * Class ilScanAssessmentDefaultController
+ * Class ilScanAssessmentDefaultGUI
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilScanAssessmentDefaultController extends ilScanAssessmentController
+class ilScanAssessmentDefaultGUI extends ilScanAssessmentController
 {
 	/**
 	 * @var ilObjTest

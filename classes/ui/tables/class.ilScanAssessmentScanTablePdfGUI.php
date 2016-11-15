@@ -71,7 +71,7 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 			}
 			else if($key == 'file_name')
 			{
-				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentUserPackagesControllerPdf' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
+				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentUserPackagesPdfGUI' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
 				$this->tpl->setVariable('VAL_LINK', $link);
 			}
 			
