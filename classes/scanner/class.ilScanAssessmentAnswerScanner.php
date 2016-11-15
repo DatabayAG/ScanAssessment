@@ -3,6 +3,10 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentCheckBoxElement.php');
 
+/**
+ * Class ilScanAssessmentAnswerScanner
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 {
 

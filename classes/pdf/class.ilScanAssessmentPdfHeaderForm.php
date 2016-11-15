@@ -1,7 +1,8 @@
 <?php
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 /**
- * Class ilScanAssessmentPdfMatriculationForm
+ * Class ilScanAssessmentPdfHeaderForm
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfHeaderForm
 {

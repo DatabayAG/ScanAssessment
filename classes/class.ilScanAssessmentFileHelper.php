@@ -2,6 +2,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 /**
  * Class ilScanAssessmentFileHelper
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentFileHelper
 {

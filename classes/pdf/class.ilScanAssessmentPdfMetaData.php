@@ -2,6 +2,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentUserPackagesConfiguration.php');
 /**
  * Class ilScanAssessmentPdfMetaData
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfiguration
 {

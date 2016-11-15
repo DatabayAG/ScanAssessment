@@ -2,6 +2,10 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 
+/**
+ * Class ilScanAssessmentScanConfiguration
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguration
 {
 	/**

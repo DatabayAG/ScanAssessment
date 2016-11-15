@@ -6,6 +6,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilSc
 
 /**
  * Class ilPDFAppendMarker
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilPDFAppendMarker extends TCPDF{
 

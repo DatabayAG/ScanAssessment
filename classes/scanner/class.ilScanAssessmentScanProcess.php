@@ -5,6 +5,10 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('../libs/php-qrcode-detector-decoder/lib/QrReader.php');
 
+/**
+ * Class ilScanAssessmentScanProcess
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentScanProcess
 {
 	const FOUND		= 0;

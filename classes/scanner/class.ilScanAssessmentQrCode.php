@@ -4,7 +4,10 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentVector.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentPoint.php');
 
-
+/**
+ * Class ilScanAssessmentQrCode
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 {
 

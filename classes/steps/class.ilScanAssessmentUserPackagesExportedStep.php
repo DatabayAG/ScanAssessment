@@ -5,7 +5,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmen
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfAssessmentBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 /**
- * Class class.ilScanAssessmentUserPackagesExportedStep.php
+ * Class ilScanAssessmentUserPackagesExportedStep
  * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentUserPackagesExportedStep extends ilScanAssessmentStepsBase

@@ -8,6 +8,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentL
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLoggingSettings.php');
 /**
  * Class ilScanAssessmentLogFileWriter
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentLogFileWriter extends ilScanAssessmentBaseLogWriter
 {

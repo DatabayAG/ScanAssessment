@@ -2,6 +2,7 @@
 
 /**
  * Interface ilScanAssessmentQuestion
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 interface ilScanAssessmentQuestion
 {

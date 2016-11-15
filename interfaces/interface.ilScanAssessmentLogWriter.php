@@ -3,6 +3,7 @@
 
 /**
  * Interface ilScanAssessmentLogWriter
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 interface ilScanAssessmentLogWriter
 {

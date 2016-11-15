@@ -4,6 +4,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilSc
 
 /**
  * Class ilScanAssessmentCheckBoxElement
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentCheckBoxElement
 {

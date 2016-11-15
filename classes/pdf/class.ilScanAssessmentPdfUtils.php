@@ -3,6 +3,7 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 
 /**
  * Class ilScanAssessmentPdfUtils
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfUtils extends FPDI
 {

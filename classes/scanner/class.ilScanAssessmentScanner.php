@@ -7,6 +7,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilSc
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 /**
  * Class ilScanAssessmentScanner
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentScanner
 {

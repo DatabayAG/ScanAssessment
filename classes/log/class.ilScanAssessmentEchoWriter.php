@@ -4,6 +4,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentBaseLogWriter.php');
 /**
  * Class ilScanAssessmentEchoWriter
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentEchoWriter extends ilScanAssessmentBaseLogWriter
 {

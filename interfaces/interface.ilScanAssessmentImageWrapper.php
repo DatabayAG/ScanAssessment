@@ -3,6 +3,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentPoint.php');
 /**
  * Interface ilScanAssessmentImageWrapper
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 interface ilScanAssessmentImageWrapper
 {

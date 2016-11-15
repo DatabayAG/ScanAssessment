@@ -4,7 +4,8 @@ require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assMultipleChoice.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assKprimChoice.php');
 /**
- * Class ilScanAssessmentPdfQuestionBuilder
+ * Class ilScanAssessmentPdfAssessmentQuestionBuilder
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfAssessmentQuestionBuilder
 {

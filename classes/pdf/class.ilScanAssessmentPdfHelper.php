@@ -7,6 +7,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentP
 
 /**
  * Class ilScanAssessmentPdfHelper
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentPdfHelper
 {

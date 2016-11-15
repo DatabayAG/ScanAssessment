@@ -1,5 +1,8 @@
 <?php
-
+/**
+ * Class ilScanAssessmentIdentification
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentIdentification
 {
 	/** @var  int */

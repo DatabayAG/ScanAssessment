@@ -7,6 +7,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileH
 
 /**
  * Class ilScanAssessmentUserPackagesControllerPdf
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPackagesController
 {

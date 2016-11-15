@@ -5,6 +5,7 @@ require_once 'Services/User/classes/class.ilUserUtil.php';
 
 /**
  * Class ilScanAssessmentScanTablePdfGUI
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 {

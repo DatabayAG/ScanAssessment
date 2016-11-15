@@ -4,6 +4,7 @@ require_once 'Services/Logging/classes/extensions/class.ilTraceProcessor.php';
 
 /**
  * Class ilScanAssessmentLogTraceProcessor
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentLogTraceProcessor extends ilTraceProcessor
 {

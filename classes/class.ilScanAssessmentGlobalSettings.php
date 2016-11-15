@@ -2,6 +2,7 @@
 
 /**
  * Class ilScanAssessmentGlobalSettings
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentGlobalSettings
 {

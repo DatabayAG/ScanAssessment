@@ -6,6 +6,7 @@ include_once './Services/Logging/interfaces/interface.ilLoggingSettings.php';
 
 /**
  * Class ilScanAssessmentLoggingSettings
+ * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentLoggingSettings implements ilLoggingSettings
 {

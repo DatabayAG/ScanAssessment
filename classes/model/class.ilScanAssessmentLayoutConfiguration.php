@@ -3,6 +3,10 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentTestConfiguration.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 
+/**
+ * Class ilScanAssessmentLayoutConfiguration
+ * @author Guido Vollbach <gvollbach@databay.de>
+ */
 class ilScanAssessmentLayoutConfiguration extends ilScanAssessmentTestConfiguration
 {
 	protected $uploaded_file;
