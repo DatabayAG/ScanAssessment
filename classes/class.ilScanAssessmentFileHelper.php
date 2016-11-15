@@ -180,7 +180,7 @@ class ilScanAssessmentFileHelper
 				$date = date('d. F Y H:i:s', $filename->getMtime());
 				$files[] = array('file_id' => $filename->getPathName(), 
 								 'splfileinfo' => $filename, 
-								 'file_name' => basename($filename->getPath()) . '/' . $filename->getBaseName(), 
+								 'file_name' => basename(dirname($filename->getPath())) .'/' .basename($filename->getPath()) . '/' . $filename->getBaseName(), 
 								 'file_size' => $size . 'K', 
 								 'file_date' => $date);
 			}

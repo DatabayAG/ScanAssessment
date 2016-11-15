@@ -44,7 +44,7 @@ class ilScanAssessmentScanProcess
 	}
 
 	/**
-	 * @param $scanner
+	 * @param ilScanAssessmentMarkerDetection $scanner
 	 * @param ilScanAssessmentLog $log
 	 * @return array
 	 */
@@ -149,6 +149,7 @@ class ilScanAssessmentScanProcess
 		{
 			$identification = new ilScanAssessmentIdentification();
 			$identification->parseIdentificationString($code);
+			$this->getAnalysingFolder($identification->getSavePathName());
 			if($identification->getTestId() != $this->test->getId())
 			{
 				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
@@ -161,7 +162,6 @@ class ilScanAssessmentScanProcess
 			return false;
 		}
 
-		$this->getAnalysingFolder($code);
 		$this->file_helper->moveFile($path, $this->path_to_done . '/qr.jpg');
 		return $identification;
 	}

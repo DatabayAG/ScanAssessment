@@ -163,7 +163,6 @@ class ilScanAssessmentPdfAssessmentBuilder
 	public function createFixedParticipantsPdf()
 	{
 		$participants	= $this->test->getInvitedUsers();
-		$file_names		= array();
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 		$counter = 0;
@@ -181,14 +180,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 			{
 				$data->setStudentMatriculation($usr_obj->getMatriculation());
 				$data->setStudentName($usr_obj->getFullname());
-				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $user['lastname'] . '_' . $user['firstname'] . self::FILE_TYPE;
+				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $usr_obj->getLastname() . '_' . $usr_obj->getFirstname() . self::FILE_TYPE;
 			}
 
-			$file_names[] = $filename;
-			$pdf_h->writeFile($filename);
-			$utils = new ilScanAssessmentPdfUtils();
-			$utils->concat($this->getConfiguredFilesToPrepend($filename));
-			$utils->writePdfFile($filename);
+			$this->writePdfFile($pdf_h, $filename);
 			$counter++;
 		}
 		$end_time = microtime(TRUE);
@@ -202,29 +197,34 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		if($number > 0)
 		{
-			$file_names		= array();
 			$start_time = microtime(TRUE);
 			$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 			for($i = 1; $i <= $number; $i++)
 			{
-
 				$identification	= new ilScanAssessmentIdentification();
 				$identification->init($this->test->getId(), 0, $i);
 				$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
 
 				$pdf_h	= $this->createPdf($data);
 				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $i . self::FILE_TYPE;
-				$file_names[] = $filename;
-				$pdf_h->writeFile($filename);
-				$utils = new ilScanAssessmentPdfUtils();
-				$utils->concat($this->getConfiguredFilesToPrepend($filename));
-				$utils->writePdfFile($filename);
+				$this->writePdfFile($pdf_h, $filename);
 			}
 			$end_time = microtime(TRUE);
 			$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, $number));
 		}
 	}
 
+	/**
+	 * @param ilScanAssessmentPdfHelper $pdf_h
+	 * @param string $filename
+	 */
+	protected function writePdfFile($pdf_h, $filename)
+	{
+		$pdf_h->writeFile($filename);
+		$utils = new ilScanAssessmentPdfUtils();
+		$utils->concat($this->getConfiguredFilesToPrepend($filename));
+		$utils->writePdfFile($filename);
+	}
 
 	/**
 	 * @param ilScanAssessmentPdfHelper $pdf_h

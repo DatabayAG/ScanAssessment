@@ -87,6 +87,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$matriculation = array();
 		foreach($this->getMatriculationPosition() as $key => $col)
 		{
+			/** @var ilScanAssessmentVector $vector */
 			foreach($col as $row => $vector)
 			{
 				$answer_x = ($vector->getPosition()->getX()) * ($corrected->getX());

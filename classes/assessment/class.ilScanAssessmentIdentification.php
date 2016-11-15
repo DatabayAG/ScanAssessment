@@ -80,6 +80,14 @@ class ilScanAssessmentIdentification
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getSavePathName()
+	{
+		return $this->getTestId() . '_' . $this->getSessionId() . '/' . $this->getPageNumber();
+	}
+
+	/**
 	 * @param $string
 	 */
 	public function parseIdentificationString($string)
