@@ -62,12 +62,7 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$ilTabs->setTabActive('scan');
 		$form = new ilPropertyFormGUI();
 
-		if($this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists())
-		{
-			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_cron_found_and_active'));
-		}
-
-		if( ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan())
+		if(! $this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan())
 		{
 			$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
 		}
