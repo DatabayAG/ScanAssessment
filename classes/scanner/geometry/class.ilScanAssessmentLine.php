@@ -61,7 +61,7 @@ class ilScanAssessmentLine
 	}
 
 	/**
-	 * @return mixed
+	 * @return int
 	 */
 	public function getLength()
 	{

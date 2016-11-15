@@ -13,6 +13,10 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	 */
 	protected $image;
 
+	/**
+	 * ilScanAssessmentImagemagickWrapper constructor.
+	 * @param string $fn
+	 */
 	public function __construct($fn)
 	{
 		$img = new Imagick(realpath($fn));
@@ -57,6 +61,9 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 		return $grey;
 	}
 
+	/**
+	 * @return Imagick
+	 */
 	public function removeBlackBorder() 
 	{
 		$img2 = $this->getImage();
@@ -187,41 +194,66 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 		return $size['width'];
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getWhite()
 	{
 		return '#FFFFFF';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBlack()
 	{
 		return '#000000';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRed()
 	{
 		return '#FF0000';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getGreen()
 	{
 		return '#00FF00';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getPink()
 	{
 		return '#FF00FF';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getYellow()
 	{
 		return '#FFFF00';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBlue()
 	{
 		return '#0000FF';
 	}
 
+	/**
+	 * @param $image
+	 * @param $rect
+	 */
 	function imageCrop($image, $rect)
 	{
 		// TODO: Implement imageCrop() method.

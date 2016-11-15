@@ -93,7 +93,8 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 			$form = $this->getConfigurationForm();
 			$form->setValuesByArray(array(
 				'institution' => ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
-				'matriculation_style' => ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle()
+				'matriculation_style' => ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
+				'disable_manual_scan' => ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -119,6 +120,14 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$matriculation->setInfo($this->getPluginObject()->txt('scas_matriculation_style_info'));
 		$form->addItem($matriculation);
 
+		$disable_manual_scan = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_disable_manual_scan'), 'disable_manual_scan');
+		$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_info'));
+		if(!$this->getPluginObject()->checkIfScanAssessmentCronExists())
+		{
+			$disable_manual_scan->setDisabled(true);
+		}
+		$form->addItem($disable_manual_scan);
+		
 		$form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
 
 		return $form;
@@ -135,6 +144,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 			{
 				ilScanAssessmentGlobalSettings::getInstance()->setInstitution($form->getInput('institution'));
 				ilScanAssessmentGlobalSettings::getInstance()->setMatriculationStyle($form->getInput('matriculation_style'));
+				ilScanAssessmentGlobalSettings::getInstance()->setDisableManualScan($form->getInput('disable_manual_scan'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}

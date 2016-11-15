@@ -17,14 +17,19 @@ class ilScanAssessmentGlobalSettings
 	protected $settings;
 
 	/**
-	 * @var
+	 * @var string
 	 */
 	protected $institution;
 
 	/**
-	 * @var
+	 * @var string
 	 */
 	protected $matriculation_style;
+
+	/**
+	 * @var boolean
+	 */
+	protected $disable_manual_scan;
 
 	/**
 	 *
@@ -57,6 +62,7 @@ class ilScanAssessmentGlobalSettings
 	{
 		$institution = $this->settings->get('institution');
 		$matriculation_format = $this->settings->get('matriculation_format');
+		$disable_manual_scan = $this->settings->get('disable_manual_scan');
 
 		if(strlen($institution))
 		{
@@ -66,6 +72,7 @@ class ilScanAssessmentGlobalSettings
 		{
 			$this->setMatriculationStyle($matriculation_format);
 		}
+		$this->setDisableManualScan($disable_manual_scan);
 	}
 
 	/**
@@ -91,6 +98,7 @@ class ilScanAssessmentGlobalSettings
 	{
 		$this->settings->set('institution', $this->getInstitution());
 		$this->settings->set('matriculation_format', $this->getMatriculationStyle());
+		$this->settings->set('disable_manual_scan', $this->isDisableManualScan());
 	}
 
 	/**
@@ -123,7 +131,7 @@ class ilScanAssessmentGlobalSettings
 	}
 
 	/**
-	 * @param mixed $institution
+	 * @param string $institution
 	 */
 	public function setInstitution($institution)
 	{
@@ -131,7 +139,7 @@ class ilScanAssessmentGlobalSettings
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getMatriculationStyle()
 	{
@@ -139,11 +147,27 @@ class ilScanAssessmentGlobalSettings
 	}
 
 	/**
-	 * @param mixed $matriculation_style
+	 * @param string $matriculation_style
 	 */
 	public function setMatriculationStyle($matriculation_style)
 	{
 		$this->matriculation_style = $matriculation_style;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	public function isDisableManualScan()
+	{
+		return $this->disable_manual_scan;
+	}
+
+	/**
+	 * @param boolean $disable_manual_scan
+	 */
+	public function setDisableManualScan($disable_manual_scan)
+	{
+		$this->disable_manual_scan = $disable_manual_scan;
 	}
 
 

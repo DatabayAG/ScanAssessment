@@ -104,3 +104,6 @@ scas_cancel#:#Abbrechen
 scas_download_pdf#:#PDFs herunterladen
 scas_cron_found_and_active#:#ScanAssessment Cronjob Plugin gefunden und aktiv
 scas_lock_file_found#:#Lock Datei gefunden.
+scas_disable_manual_scan#:#Manuelles scannen deaktivieren
+scas_disable_manual_scan_info#:#Wenn diese Option aktiviert ist, wird das manuelle scannen deaktiviert und es ist nur noch möglich mit dem Cron Job Plugin zu scannen.
+scas_manual_scan_disabled#:#Manuelles scannen ist deaktiviert.

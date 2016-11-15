@@ -66,6 +66,9 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		return $grey;
 	}
 
+	/**
+	 * @return resource
+	 */
 	public function removeBlackBorder() 
 	{
 		$img = $this->getImage();
@@ -183,36 +186,57 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		imagejpeg($img, $fn);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getWhite()
 	{
 		return '0xffffff';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBlack()
 	{
 		return '0x000000';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRed()
 	{
 		return '0xff0000';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getGreen()
 	{
 		return '0x00ff00';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getPink()
 	{
 		return '0xff00ff';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getYellow()
 	{
 		return '0xffff00';
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getBlue()
 	{
 		return '0x0000ff';

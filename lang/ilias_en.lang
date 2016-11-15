@@ -105,3 +105,6 @@ scas_cancel#:#Cancel
 scas_download_pdf#:#Download PDFs
 scas_cron_found_and_active#:#ScanAssessment cronjob plugin found and active
 scas_lock_file_found#:#Lock file found.
+scas_disable_manual_scan#:#Disable manual scan
+scas_disable_manual_scan_info#:#If this option is checked it is only possible to scan with the cron job.
+scas_manual_scan_disabled#:#Manual scan is disabled.

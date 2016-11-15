@@ -91,6 +91,24 @@ class ilScanAssessmentPlugin extends ilUserInterfaceHookPlugin
 	/**
 	 * @return bool
 	 */
+	public function checkIfScanAssessmentCronExists()
+	{
+		$cron_plugin_path = 'Customizing/global/plugins/Services/Cron/CronHook/ScanAssessmentCron/classes/class.ilScanAssessmentCronPlugin.php';
+		if(file_exists($cron_plugin_path))
+		{
+			require_once $cron_plugin_path;
+			$cron_plugin = new ilScanAssessmentCronPlugin();
+			if($cron_plugin->isActive())
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function isPluginRequest()
 	{
 		return isset($_GET[self::PLUGIN_CMD_DETECTION_PARAMETER]) && strlen($_GET[self::PLUGIN_CMD_DETECTION_PARAMETER]);

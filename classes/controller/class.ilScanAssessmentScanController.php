@@ -3,6 +3,7 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanProcess.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
  * Class ilScanAssessmentScanController
@@ -61,12 +62,19 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$ilTabs->setTabActive('scan');
 		$form = new ilPropertyFormGUI();
 
-		if($this->checkIfScanAssessmentCronExists())
+		if($this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists())
 		{
 			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_cron_found_and_active'));
 		}
 
-		$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+		if( ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan())
+		{
+			$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+		}
+		else
+		{
+			ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_manual_scan_disabled'));
+		}
 
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_scan'));
@@ -79,24 +87,6 @@ class ilScanAssessmentScanController extends ilScanAssessmentController
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 
 		return $form;
-	}
-
-	/**
-	 * @return bool
-	 */
-	protected function checkIfScanAssessmentCronExists()
-	{
-		$cron_plugin_path = 'Customizing/global/plugins/Services/Cron/CronHook/ScanAssessmentCron/classes/class.ilScanAssessmentCronPlugin.php';
-		if(file_exists($cron_plugin_path))
-		{
-			require_once $cron_plugin_path;
-			$cron_plugin = new ilScanAssessmentCronPlugin();
-			if($cron_plugin->isActive())
-			{
-				return true;
-			}
-		}
-		return false;
 	}
 
 	/**

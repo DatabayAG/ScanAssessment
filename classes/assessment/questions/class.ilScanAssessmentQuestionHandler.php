@@ -34,7 +34,6 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	 * @param ilScanAssessmentPdfHelper $pdf_helper
 	 * @param                           $circleStyle
 	 */
-
 	public function __construct(ilScanAssessmentPdfHelper $pdf_helper, $circleStyle)
 	{
 		/** @var $lng ilLanguage */
@@ -46,6 +45,9 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 		$this->circleStyle	= $circleStyle;
 	}
 
+	/**
+	 * @param assQuestion $question
+	 */
 	public function writeQuestionToPdf($question)
 	{
 		$this->writeQuestionTextToPdf($question);

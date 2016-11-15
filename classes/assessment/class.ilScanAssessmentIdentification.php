@@ -17,7 +17,9 @@ class ilScanAssessmentIdentification
 	/** @var int */
 	protected $session_id;
 
-
+	/**
+	 * ilScanAssessmentIdentification constructor.
+	 */
 	public function __construct(){}
 
 	/**
