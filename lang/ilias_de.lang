@@ -107,3 +107,4 @@ scas_lock_file_found#:#Lock Datei gefunden.
 scas_disable_manual_scan#:#Manuelles scannen deaktivieren
 scas_disable_manual_scan_info#:#Wenn diese Option aktiviert ist, wird das manuelle scannen deaktiviert und es ist nur noch möglich mit dem Cron Job Plugin zu scannen.
 scas_manual_scan_disabled#:#Manuelles scannen ist deaktiviert.
+scas_disable_manual_scan_no_cron_info#:#Der Cronjob ist nicht installiert oder eingerichtet.

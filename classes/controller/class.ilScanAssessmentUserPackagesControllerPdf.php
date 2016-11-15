@@ -68,7 +68,7 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getPdfPath()))
 		{
 			$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
-			$form->addCommandButton(__CLASS__ . '.removingTheExistingPdfs', $pluginObject->txt('scas_remove_all'));
+			$form->addCommandButton(__CLASS__ . '.deleteQuestion', $pluginObject->txt('scas_remove_all'));
 		}
 		else
 		{
@@ -80,6 +80,37 @@ class ilScanAssessmentUserPackagesControllerPdf extends ilScanAssessmentUserPack
 		return $form;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function deleteQuestionCmd()
+	{
+		require_once 'Services/Utilities/classes/class.ilConfirmationGUI.php';
+		$pluginObject = $this->getCoreController()->getPluginObject();
+		$this->tabs->setTabActive('user_packages');
+		$this->tabs->addSubTab('user_packages_settings', $pluginObject->txt('scas_settings'), '');
+		$this->tabs->addSubTab('user_packages_pdf', $pluginObject->txt('scas_pdf'), '');
+
+		$this->tabs->setSubTabActive('user_packages_pdf');
+		$confirm = new ilConfirmationGUI();
+		$confirm->setFormAction($pluginObject->getFormAction(__CLASS__ . '.deleteFiles'));
+		$confirm->setHeaderText($pluginObject->txt('scas_sure_delete_file'));
+		$confirm->setConfirm($pluginObject->txt('scas_confirm'), __CLASS__ . '.removingTheExistingPdfs');
+		$confirm->setCancel($pluginObject->txt('scas_cancel'), __CLASS__ . '.cancel');
+		return $confirm->getHTML();
+	}
+
+	/**
+	 * @return string
+	 */
+	public function cancelCmd()
+	{
+		return $this->defaultCmd();
+	}
+
+	/**
+	 * @param string $active_sub
+	 */
 	protected function addTabs($active_sub = 'user_packages_settings')
 	{
 		parent::addTabs();

@@ -11,6 +11,10 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 {
 
+	/**
+	 * ilScanAssessmentMarkerDetection constructor.
+	 * @param $fn
+	 */
 	public function __construct($fn)
 	{
 		parent::__construct($fn);
@@ -110,7 +114,11 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		#echo $a->getX() . ' ' . $a->getY(); exit();
 		#$b = 0;
 	}
-	
+
+	/**
+	 * @param ilScanAssessmentPoint $near
+	 * @return ilScanAssessmentPoint
+	 */
 	protected function findTopLeftMarker(ilScanAssessmentPoint $near)
 	{
 		$first = new ilScanAssessmentPoint($near->getX() - 200, $near->getY() - 100);

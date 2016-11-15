@@ -20,6 +20,9 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 		parent::__construct($fn);
 	}
 
+	/**
+	 * @return bool|ilScanAssessmentVector
+	 */
 	public function getQRPosition() 
 	{
 		$im = $this->getImage();
@@ -33,6 +36,11 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 		return $res;
 	}
 
+	/**
+	 * @param      $im
+	 * @param bool $rotate
+	 * @return bool|ilScanAssessmentVector
+	 */
 	protected function findQR(&$im, $rotate = false) {
 
 		$threshold = $this->getThreshold();

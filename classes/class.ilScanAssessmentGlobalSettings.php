@@ -123,7 +123,7 @@ class ilScanAssessmentGlobalSettings
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getInstitution()
 	{

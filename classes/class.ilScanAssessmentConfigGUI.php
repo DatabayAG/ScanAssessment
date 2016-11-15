@@ -121,10 +121,14 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$form->addItem($matriculation);
 
 		$disable_manual_scan = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_disable_manual_scan'), 'disable_manual_scan');
-		$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_info'));
 		if(!$this->getPluginObject()->checkIfScanAssessmentCronExists())
 		{
 			$disable_manual_scan->setDisabled(true);
+			$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_no_cron_info'));
+		}
+		else
+		{
+			$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_info'));
 		}
 		$form->addItem($disable_manual_scan);
 		

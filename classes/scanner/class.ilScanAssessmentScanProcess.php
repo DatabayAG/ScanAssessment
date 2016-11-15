@@ -63,9 +63,10 @@ class ilScanAssessmentScanProcess
 
 		return $marker;
 	}
+
 	/**
 	 * @param ilScanAssessmentLog $log
-	 * @return array
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function detectQrCode($log)
 	{
@@ -113,23 +114,26 @@ class ilScanAssessmentScanProcess
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 		$marker = $this->detectMarker($scanner, $log);
 
-		/** @var ilScanAssessmentVector $qr_pos */
 		$qr_pos = $this->detectQrCode($log);
-		$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
-		if ($im2 !== FALSE)
+		if($qr_pos !== false)
 		{
-			$path = $this->file_helper->getScanTempPath() . '/qr.jpg';
-			$scanner->image_helper->drawTempImage($im2, $path);
-			if(! $this->processQrCode($path, $org))
+			$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
+			if($im2 !== false)
 			{
-				return false;
+				$path = $this->file_helper->getScanTempPath() . '/qr.jpg';
+				$scanner->image_helper->drawTempImage($im2, $path);
+				if(! $this->processQrCode($path, $org))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				$this->log->warn('No QR Code found!');
+				$this->getAnalysingFolder();
 			}
 		}
-		else
-		{
-			$this->log->warn('No QR Code found!');
-			$this->getAnalysingFolder();
-		}
+
 		$done = $this->path_to_done . '/' . $entry;
 
 		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');

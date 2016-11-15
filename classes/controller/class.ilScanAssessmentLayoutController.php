@@ -221,17 +221,25 @@ class ilScanAssessmentLayoutController extends ilScanAssessmentController
 		return $tbl;
 	}
 
+	/**
+	 * @param $path
+	 * @return array
+	 */
 	public function getFolderFiles($path)
 	{
 		$files	= array();
-		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		if ($handle = opendir($path))
 		{
-			if($filename->getFilename() != '.' && $filename->getFilename() != '..')
+			while (false !== ($entry = readdir($handle)))
 			{
-				$size = (int) ($filename->getSize() / 1024);
-				$date = date('d. F Y H:i:s', $filename->getMtime());
-				$files[] = array('file_id' => $filename, 'file_name' => $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
+				if(is_dir($path .'/'. $entry) === false)
+				{
+					$size = (int) (filesize($path . '/' .$entry) / 1024);
+					$date = date('d. F Y H:i:s', filemtime($path . '/' .$entry));
+					$files[] = array('file_id' => $entry, 'file_name' => $entry, 'file_size' => $size . 'K', 'file_date' => $date);
+				}
 			}
+			closedir($handle);
 		}
 		return $files;
 	}
