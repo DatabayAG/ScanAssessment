@@ -128,6 +128,10 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		return $tbl;
 	}
 
+	/**
+	 * @param $path
+	 * @return array
+	 */
 	protected function getFolderFiles($path)
 	{
 		$files = array();
@@ -227,6 +231,9 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		$this->file_helper->createZipAndDeliverFromFiles($preview->getPathForZip(), $files, 'complete.zip');
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDefaultClassAndCommand()
 	{
 		return 'ilScanAssessmentUserPackagesPdfGUI.default';

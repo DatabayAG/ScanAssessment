@@ -34,6 +34,9 @@ class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 		$this->isPreconditionFulfilled();
 	}
 
+	/**
+	 * 
+	 */
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
@@ -124,7 +127,7 @@ class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 		{
 			$form  = $this->getForm();
 		}
-
+		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
 
@@ -145,7 +148,10 @@ class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 		global $ilTabs;
 		$ilTabs->setTabActive('layout');
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	public function areYouSureDeleteEntriesCmd()
 	{
 
@@ -176,11 +182,17 @@ class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 
 	}
 
+	/**
+	 * @return string
+	 */
 	public function cancelCmd()
 	{
 		return $this->defaultCmd();
 	}
 
+	/**
+	 * @return string
+	 */
 	public function deleteFilesCmd()
 	{
 		if(array_key_exists('files', $_POST))

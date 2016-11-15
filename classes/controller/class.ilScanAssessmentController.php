@@ -115,7 +115,11 @@ abstract class ilScanAssessmentController
 		ilUtil::sendInfo($txt, true);
 		$this->redirect($this->getDefaultClassAndCommand());
 	}
-	
+
+	/**
+	 * @param $file_path
+	 * @param $file_name
+	 */
 	protected function download($file_path, $file_name)
 	{
 		if(file_exists($file_path))
@@ -139,6 +143,9 @@ abstract class ilScanAssessmentController
 		$this->redirect($class_and_command);
 	}
 
+	/**
+	 * @param $class_and_command
+	 */
 	protected function redirect($class_and_command)
 	{
 		ilUtil::redirect($this->getCoreController()->getPluginObject()->getLinkTarget(
@@ -149,6 +156,9 @@ abstract class ilScanAssessmentController
 		));
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getDefaultClassAndCommand()
 	{
 		return 'ilScanAssessmentController.default';
