@@ -16,10 +16,10 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	 */
 	protected $tabs = array(
 		'ilScanAssessmentDefaultGUI.default'			=> 'settings',
-		'ilScanAssessmentLayoutGUI.default'			=> 'layout',
-		'ilScanAssessmentUserPackagesGUI.default'	=> 'user_packages',
-		'ilScanAssessmentScanGUI.default'			=> 'scan',
-		'ilScanAssessmentReturnDataGUI.default'		=> 'return',
+		'ilScanAssessmentLayoutGUI.default'				=> 'layout',
+		'ilScanAssessmentUserPackagesGUI.default'		=> 'user_packages',
+		'ilScanAssessmentScanGUI.default'				=> 'scan',
+		'ilScanAssessmentReturnDataGUI.default'			=> 'return',
 	);
 
 	/**
@@ -27,11 +27,11 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	 */
 	protected $tabs_mapping = array(
 		'ilScanAssessmentDefaultGUI'			=> 'settings',
-		'ilScanAssessmentLayoutGUI'			=> 'layout',
-		'ilScanAssessmentUserPackagesGUI'	=> 'user_packages',
+		'ilScanAssessmentLayoutGUI'				=> 'layout',
+		'ilScanAssessmentUserPackagesGUI'		=> 'user_packages',
 		'ilScanAssessmentUserPackagesPdfGUI'	=> 'user_packages',
-		'ilScanAssessmentScanGUI'			=> 'scan',
-		'ilScanAssessmentReturnDataGUI'		=> 'return',
+		'ilScanAssessmentScanGUI'				=> 'scan',
+		'ilScanAssessmentReturnDataGUI'			=> 'return',
 	);
 
 	/**
@@ -106,9 +106,18 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 	 */
 	protected function addStepsTabs()
 	{
-		foreach($this->tabs as $key => $value)
+		$test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
+		$configuration = new ilScanAssessmentTestConfiguration($test->getId());
+		if($configuration->getActive() == 1)
 		{
-			$this->appendStepTab($value, 'scas_' . $value, $key);
+			foreach($this->tabs as $key => $value)
+			{
+				$this->appendStepTab($value, 'scas_' . $value, $key);
+			}
+		}
+		else
+		{
+			$this->appendStepTab('settings', 'scas_settings', 'ilScanAssessmentDefaultGUI.default');
 		}
 	}
 

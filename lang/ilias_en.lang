@@ -12,7 +12,7 @@ scas_app_settings#:#Scan Assessment Settings
 scas_cat#:#Category
 scas_cat_info#:#Please choose the category this test should be listed in.
 scas_active#:#Active
-scas_active_info#:#If all other preconditions are fulfilled and this option is set, the test is listed in the app.
+scas_active_info#:#If all other preconditions are fulfilled and this option is set, the test the other steps get activated.
 scas_preconditions#:#Preconditions
 scas_pc_is_active#:#Test Online? 
 scas_pc_is_active_info#:#Please set this test to 'online'.

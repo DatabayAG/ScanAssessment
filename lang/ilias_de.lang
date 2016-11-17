@@ -12,7 +12,7 @@ scas_app_settings#:#Scanklausur Einstellungen
 scas_cat#:#Kategorie
 scas_cat_info#:#Wählen Sie hier jene Kategorie, unter der dieser Test in der Scanklausur gelistet werden soll.
 scas_active#:#Aktivieren
-scas_active_info#:#Wenn alle anderen Voraussetzungen erfüllt sind und Sie dieses Häkchen setzen, wird der Test in der App gelistet. 
+scas_active_info#:#Wenn alle anderen Voraussetzungen erfüllt sind und Sie dieses Häkchen setzen, werden die weiteren Optionen freigeschaltet. 
 scas_preconditions#:#Voraussetzungen 
 scas_pc_is_active#:#Test Online? 
 scas_pc_is_active_info#:#Bitte schalten Sie den Test 'online'.
