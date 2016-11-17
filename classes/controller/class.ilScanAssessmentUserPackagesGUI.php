@@ -69,47 +69,51 @@ class ilScanAssessmentUserPackagesGUI extends ilScanAssessmentController
 	 */
 	protected function getForm()
 	{
+
 		$pluginObject = $this->getCoreController()->getPluginObject();
 
 		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 		$form = new ilPropertyFormGUI();
 		$form->setShowTopButtons(false);
 
-		$this->addTabs();
-
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
-		if($this->test->getFixedParticipants() === 1)
+		$personalised = new ilCheckboxInputGUI($pluginObject->txt('scas_creation_non_personalised'), 'personalised');
+		$personalised->setInfo($pluginObject->txt('scas_creation_info'));
+		$personalised->setValue(1);
+		if($this->test->getFixedParticipants() == 0)
+		{
+			$personalised->setChecked(true);
+			$personalised->setDisabled(true);
+			$info = new ilNonEditableValueGUI();
+			$info->setValue($pluginObject->txt('scas_non_fixed_participants'));
+			$info->setTitle($pluginObject->txt('scas_tst_settings'));
+			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
+			$form->addItem($info);
+		}
+		else
 		{
 			$info = new ilNonEditableValueGUI();
 			$info->setValue($pluginObject->txt('scas_fixed_participants'));
 			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
 			$info->setTitle($pluginObject->txt('scas_tst_settings'));
 			$form->addItem($info);
-			$personalised = new ilSelectInputGUI($pluginObject->txt('scas_creation'), 'personalised');
-			$personalised->setInfo($pluginObject->txt('scas_creation_info'));
-			$personalised_options = array(
-				0 => $pluginObject->txt('scas_creation_personalised'),
-				1 => $pluginObject->txt('scas_creation_non_personalised')
-			);
-			$personalised->setOptions($personalised_options);
-			$personalised->setValue($this->configuration->isNotPersonalised());
-			$form->addItem($personalised);
+			if($this->configuration->isNotPersonalised() == 1)
+			{
+				$personalised->setChecked(true);
+			}
 		}
-		else
+
+		$no_names = new ilCheckboxInputGUI($pluginObject->txt('scas_no_name_field'), 'no_name_field');
+		$no_names->setInfo($pluginObject->txt('scas_no_name_field_info'));
+		$no_names->setValue(1);
+
+		if($this->configuration->isNoNameField() == 1)
 		{
-			$info = new ilNonEditableValueGUI();
-			$info->setValue($pluginObject->txt('scas_non_fixed_participants'));
-			$info->setTitle($pluginObject->txt('scas_tst_settings'));
-			$info->setInfo($pluginObject->txt('scas_tst_settings_info'));
-			$form->addItem($info);
-			$count_pdfs = new ilNumberInputGUI($pluginObject->txt('scas_count_pdfs'), 'count_pdfs');
-			$count_pdfs->setValue($this->configuration->getCountDocuments());
-			$count_pdfs->setInfo($pluginObject->txt('scas_count_pdfs_info'));
-			$count_pdfs->setMinValue(1);
-			$form->addItem($count_pdfs);
+			$no_names->setChecked(true);
 		}
+		$personalised->addSubItem($no_names);
 
 		$matriculation_number = new ilCheckboxInputGUI($pluginObject->txt('scas_matriculation'), 'matriculation');
 		$matriculation_number->setInfo($pluginObject->txt('scas_matriculation_style') . ' ' . $this->global_settings->getMatriculationStyle());
@@ -125,26 +129,28 @@ class ilScanAssessmentUserPackagesGUI extends ilScanAssessmentController
 		$mat_sub_form->setOptions($mat_sub_item);
 		$mat_sub_form->setValue($this->configuration->getMatriculationStyle());
 		$matriculation_number->addSubItem($mat_sub_form);
-		$form->addItem($matriculation_number);
-
-		$no_names = new ilCheckboxInputGUI($pluginObject->txt('scas_no_name_field'), 'no_name_field');
-		$no_names->setInfo($pluginObject->txt('scas_no_name_field_info'));
-		$no_names->setValue(1);
-		if($this->configuration->isNoNameField() == 1)
-		{
-			$no_names->setChecked(true);
-		}
-		$form->addItem($no_names);
-
-		$date_box = new ilDateTimeInputGUI($pluginObject->txt('scas_assessment_date'), 'assessment_date');
-		$date_box->setInfo($pluginObject->txt('scas_assessment_date_info'));
-		$date_box->setDate(new ilDateTime($this->configuration->getAssessmentDate(), IL_CAL_UNIX));
-		$form->addItem($date_box);
-
-		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
-
-		return $form;
+		$personalised->addSubItem($matriculation_number);
+		$form->addItem($personalised);
+	
+	if($this->test->getFixedParticipants() === 0)
+	{
+		$count_pdfs = new ilNumberInputGUI($pluginObject->txt('scas_count_pdfs'), 'count_pdfs');
+		$count_pdfs->setValue($this->configuration->getCountDocuments());
+		$count_pdfs->setInfo($pluginObject->txt('scas_count_pdfs_info'));
+		$count_pdfs->setMinValue(1);
+		$form->addItem($count_pdfs);
 	}
+
+	$date_box = new ilDateTimeInputGUI($pluginObject->txt('scas_assessment_date'), 'assessment_date');
+	$date_box->setInfo($pluginObject->txt('scas_assessment_date_info'));
+	$date_box->setDate(new ilDateTime($this->configuration->getAssessmentDate(), IL_CAL_UNIX));
+	$form->addItem($date_box);
+
+	$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
+
+	return $form;
+	}
+
 	public function createDemoPdfCmd()
 	{
 		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
@@ -169,15 +175,13 @@ class ilScanAssessmentUserPackagesGUI extends ilScanAssessmentController
 				$this->configuration->setValuesFromPost();
 				$this->configuration->save();
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
+				$form = $this->getForm();
 			}
 			catch(ilException $e)
 			{
 				ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt($e->getMessage()));
 			}
 		}
-
-		$form->setValuesByPost();
-
 		return $this->defaultCmd($form);
 	}
 
@@ -187,7 +191,7 @@ class ilScanAssessmentUserPackagesGUI extends ilScanAssessmentController
 	 */
 	public function defaultCmd(ilPropertyFormGUI $form = null)
 	{
-
+		$this->addTabs();
 		if(!($form instanceof ilPropertyFormGUI))
 		{
 			$form  = $this->getForm();

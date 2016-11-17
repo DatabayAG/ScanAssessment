@@ -156,22 +156,31 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 
 	public function createPdfDocumentsCmd()
 	{
-		$demo = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		if($this->test->getFixedParticipants() === self::ZIP)
+		$pdf_builder = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+		if($this->test->getFixedParticipants() === 1)
 		{
-			$demo->createFixedParticipantsPdf();
+			$participants = $this->test->getInvitedUsers();
+			if(sizeof($participants) > 0)
+			{
+				$pdf_builder->createFixedParticipantsPdf($participants);
+				$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
+			}
+			else
+			{
+				$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_least_one_participant'));
+			}
 		}
 		else
 		{
-			$demo->createNonPersonalisedPdf($this->configuration->getCountDocuments());
+			$pdf_builder->createNonPersonalisedPdf($this->configuration->getCountDocuments());
+			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 		}
-		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 
 	public function createDemoPdfAndCutToImagesCmd()
 	{
 		$pdf = new ilScanAssessmentPdfAssessmentBuilder($this->test);
-		if($this->test->getFixedParticipants() === self::ZIP)
+		if($this->test->getFixedParticipants() === 1)
 		{
 			$pdf->createFixedParticipantsPdf();
 		}

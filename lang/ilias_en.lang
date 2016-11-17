@@ -109,3 +109,4 @@ scas_disable_manual_scan#:#Disable manual scan
 scas_disable_manual_scan_info#:#If this option is checked it is only possible to scan with the cron job.
 scas_manual_scan_disabled#:#Manual scan is disabled.
 scas_disable_manual_scan_no_cron_info#:#The cron is not installed or activated.
+scas_least_one_participant#:#At least one participant is needed.

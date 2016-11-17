@@ -120,7 +120,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating demo pdf finished for test %s which took %s seconds.', $this->test->getId(), $end_time - $start_time));
 	}
-	
+
+	/**
+	 * @param $org_file
+	 * @return array
+	 */
 	protected function getConfiguredFilesToPrepend($org_file)
 	{
 		$path = $this->file_helper->getLayoutPath();
@@ -158,11 +162,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 	}
 
 	/**
-	 *
+	 * @param $participants
 	 */
-	public function createFixedParticipantsPdf()
+	public function createFixedParticipantsPdf($participants)
 	{
-		$participants	= $this->test->getInvitedUsers();
 		$start_time = microtime(TRUE);
 		$this->log->info(sprintf('Starting to create pdfs for test %s ...', $this->test->getId()));
 		$counter = 0;
@@ -173,7 +176,6 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
 			$usr_obj		= new ilObjUser($usr_id);
 
-			$pdf_h	= $this->createPdf($data);
 			$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $counter . self::FILE_TYPE;
 
 			if(! $data->isNotPersonalised())
@@ -182,7 +184,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 				$data->setStudentName($usr_obj->getFullname());
 				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $usr_obj->getLastname() . '_' . $usr_obj->getFirstname() . self::FILE_TYPE;
 			}
-
+			$pdf_h	= $this->createPdf($data);
 			$this->writePdfFile($pdf_h, $filename);
 			$counter++;
 		}
