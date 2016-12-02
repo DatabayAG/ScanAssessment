@@ -115,7 +115,7 @@ class ilScanAssessmentIdentification
 		if(is_array($string) && sizeof($string) == 2)
 		{
 			$this->session_id	= (int) $string[0];
-			$this->page_number	= (int) $string[1];
+			$this->page_number	= (int) $string[1] - 1;
 		}
 	}
 }

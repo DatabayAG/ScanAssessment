@@ -195,9 +195,33 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 	public function removingTheExistingPdfsCmd()
 	{
 		$path    = $this->file_helper->getPdfPath();
+		$this->removePdfDataFromDatabase();
 		ilUtil::delDir($path, true);
 		$this->log->debug(sprintf('Removed pdfs for test %s by user with id %s.', $this->test->getId(), $this->user->getId()));
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_deleted'));
+	}
+
+	protected function removePdfDataFromDatabase()
+	{
+		global $ilDB;
+
+		$pdf_ids = array();
+		$test_id = $this->test->getId();
+
+		$res = $ilDB->queryF(
+			'SELECT pdf_id FROM pl_scas_pdf_data
+			WHERE obj_id = %s ',
+			array('integer'),
+			array($test_id)
+		);
+
+		while($row = $ilDB->fetchAssoc($res))
+		{
+			$pdf_ids[$row['pdf_id']] = $row['pdf_id'];
+		}
+
+		$ilDB->manipulate('DELETE FROM pl_scas_pdf_data_qpl WHERE ' . $ilDB->in('pdf_id', $pdf_ids, false, 'integer'));
+		$ilDB->manipulate('DELETE FROM pl_scas_pdf_data WHERE ' . $ilDB->in('obj_id', array($test_id), false, 'integer'));
 	}
 
 	public function downloadPdfCmd()

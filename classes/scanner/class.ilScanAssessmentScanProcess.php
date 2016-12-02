@@ -84,12 +84,13 @@ class ilScanAssessmentScanProcess
 	 * @param $marker
 	 * @param $qr_pos
 	 * @param ilScanAssessmentLog $log
+	 * @param $qr_ident
 	 * @return ilScanAssessmentAnswerScanner
 	 */
-	protected function detectAnswers($marker, $qr_pos, $log)
+	protected function detectAnswers($marker, $qr_pos, $log, $qr_ident)
 	{
 		$time_start = microtime(true);
-		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file.jpg', $this->path_to_done);
+		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file.jpg', $this->path_to_done, $qr_ident);
 		$val = $ans->scanImage($marker, $qr_pos);
 		#$log->debug($val);
 		$time_end = microtime(true);
@@ -120,9 +121,10 @@ class ilScanAssessmentScanProcess
 			$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
 			if($im2 !== false)
 			{
-				$path = $this->file_helper->getScanTempPath() . '/qr.jpg';
+				$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
 				$scanner->image_helper->drawTempImage($im2, $path);
-				if(! $this->processQrCode($path, $org))
+				$qr_code = $this->processQrCode($path, $org);
+				if(! $qr_code)
 				{
 					return false;
 				}
@@ -138,7 +140,7 @@ class ilScanAssessmentScanProcess
 
 		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
 
-		$this->detectAnswers($marker, $qr_pos, $log);
+		$this->detectAnswers($marker, $qr_pos, $log, $qr_code);
 
 		$log->debug('Coping file: ' . $org . ' to ' .$done );
 		$this->file_helper->moveFile($org, $done);
@@ -158,7 +160,8 @@ class ilScanAssessmentScanProcess
 			$identification = new ilScanAssessmentIdentification();
 			$identification->parseIdentificationString($code);
 			$this->getAnalysingFolder($identification->getSavePathName());
-			if($identification->getTestId() != $this->test->getId())
+			//Todo: move this
+			if(false && $identification->getTestId() != $this->test->getId())
 			{
 				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
 				return false;

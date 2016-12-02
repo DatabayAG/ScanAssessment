@@ -19,10 +19,9 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$this->pdf_helper->writeHTML($answer->getAnswertext());
-
 			$x = $this->pdf_helper->pdf->GetX() + 34;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+			$this->pdf_helper->writeHTML($answer->getAnswertext());
 			$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s]', $question->getId(), $answer->getOrder(),  $answer->getAnswertext(), $x , $y));
 			$answer_positions[] = array('qid' => $question->getId() , 
 										'aid' => $answer->getOrder() ,

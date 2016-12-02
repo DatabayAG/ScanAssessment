@@ -2,6 +2,7 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentCheckBoxElement.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
 
 /**
  * Class ilScanAssessmentAnswerScanner
@@ -11,7 +12,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 {
 
 	const I_STILL_DO_NOT_KNOW_WHY_1 = 15; 
-	const I_STILL_DO_NOT_KNOW_WHY_2 = 3.5;
+	const I_STILL_DO_NOT_KNOW_WHY_2 = -1;
 
 	protected $translate_mark	= array(
 				0 => 'untouched',
@@ -24,15 +25,18 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	protected $checkbox_container = array();
 
 	protected $path_to_save;
-	
+
+	protected $qr_ident;
 	/**
 	 * ilScanAssessmentAnswerScanner constructor.
-	 * @param $fn
-	 * @param $path_to_save
+	 * @param null $fn
+	 * @param      $path_to_save
+	 * @param      $qr_ident
 	 */
-	public function __construct($fn = null, $path_to_save)
+	public function __construct($fn = null, $path_to_save, $qr_ident)
 	{
 		$this->path_to_save = $path_to_save;
+		$this->qr_ident	= $qr_ident;
 		parent::__construct($fn);
 	}
 
@@ -59,19 +63,24 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 		$im2 = $im;
 		$this->log->debug(sprintf('Starting to scan checkboxes...'));
-		foreach($this->getAnswerPositions() as $key => $value)
+		$answers = $this->getAnswerPositions();
+		foreach($answers as $qid => $answer)
 		{
-			$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
-			$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+			foreach($answer['answers'] as $id => $value)
+			{
+				$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
+				$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
 
-			$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
-			$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
+				$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
+				$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
 
-			$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
-			$marked = $checkbox->isMarked($im, true);
-			#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+				$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+				$marked = $checkbox->isMarked($im, true);
+				$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 
-			$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked);
+				$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked);
+			}
+
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
@@ -118,28 +127,23 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	
 	private function getAnswerPositions()
 	{
-		return [
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Der Würfel ist gefallen.', 'x' => 49, 'y' => '117.175'],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Die Entscheidung ist getroffen.', 'x' => 49, 'y' => '121.64375'],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'Das ist mein Urteil.', 'x' => 49, 'y' => '126.1125'],
-			['qid' => 450, 'aid' => -1, 'a_text' => 'So soll es sein.', 'x' => 49, 'y' => '130.58125'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Picasso', 'x' => 49, 'y' => '151.51875'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'van Gogh', 'x' => 49, 'y' => '155.9875'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Monet', 'x' => 49, 'y' => '160.45625'],
-			['qid' => 452, 'aid' => -1, 'a_text' => 'Leonardo da Vinci', 'x' => 49, 'y' => '164.925'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Geschäft mit beschränkter Haftung', 'x' => 49, 'y' => '185.8625'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit bekannter Haftung', 'x' => 49, 'y' => '190.33125'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschafter mit beschränkter Haftung', 'x' => 49, 'y' => '194.8'],
-			['qid' => 454, 'aid' => -1, 'a_text' => 'Gesellschaft mit beschränkter Haftung', 'x' => 49, 'y' => '199.26875'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankfurt / Oder', 'x' => 49, 'y' => '220.20625'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Fridingen am Fluß', 'x' => 49, 'y' => '224.675'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Flensburg', 'x' => 49, 'y' => '229.14375'],
-			['qid' => 456, 'aid' => -1, 'a_text' => 'Frankenberg', 'x' => 49, 'y' => '233.6125'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Neu-Delhi', 'x' => 49, 'y' => '254.55'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Mumbai', 'x' => 49, 'y' => '259.01875'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Bangkok', 'x' => 49, 'y' => '263.4875'],
-			['qid' => 458, 'aid' => -1, 'a_text' => 'Peking', 'x' => 49, 'y' => '267.95625']
-		];
+		if($this->qr_ident)
+		{
+			global $ilDB;
+			$answers = array();
+			$res = $ilDB->queryF(
+				'SELECT qpl_data FROM pl_scas_pdf_data_qpl
+			WHERE pdf_id = %s AND page = %s',
+				array('integer', 'integer'),
+				array($this->qr_ident->getSessionId(), $this->qr_ident->getPageNumber())
+			);
+
+			while($row = $ilDB->fetchAssoc($res))
+			{
+				$answers = json_decode($row['qpl_data'], true);
+			}
+		return $answers;
+		}
 	}
 
 	private function getMatriculationPosition()
