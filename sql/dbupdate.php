@@ -81,3 +81,119 @@ if(!$ilDB->tableColumnExists('pl_scas_user_packages', 'assessment_date'))
 	);
 }
 ?>
+<#5>
+<?php
+$fields = array(
+	'pdf_id'      => array(
+		'notnull' => '1',
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'obj_id'     => array(
+		'notnull'=> '1',
+		'type'   => 'integer',
+		'length' => '4'
+	),
+	'usr_id'	 => array(
+		'type'   => 'integer',
+		'length' => '4'
+	),
+	'qst_data' => array(
+		'type' => 'text',
+		'length' => '255'
+	)
+);
+if(!$ilDB->tableExists('pl_scas_pdf_data'))
+{
+	$ilDB->createTable('pl_scas_pdf_data', $fields);
+	$ilDB->addPrimaryKey('pl_scas_pdf_data', array('pdf_id'));
+	$ilDB->createSequence('pl_scas_pdf_data');
+}
+?>
+<#6>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'personalised'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'personalised',
+		array(
+			'type'    => 'integer',
+			'length'  => '1'
+		)
+	);
+}
+if($ilDB->tableColumnExists('pl_scas_pdf_data', 'qst_data'))
+{
+	$ilDB->dropTableColumn('pl_scas_pdf_data','qst_data');
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'qst_data',
+		array(
+			'type'    => 'text',
+			'length'  => '4000',
+			'notnull' => false,
+			'default' => null
+		)
+	);
+}
+?>
+<#7>
+<?php
+if($ilDB->tableColumnExists('pl_scas_pdf_data', 'qst_data'))
+{
+	$ilDB->dropTableColumn('pl_scas_pdf_data','qst_data');
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'qst_data',
+		array(
+			'type'    => 'clob',
+			'notnull' => false,
+			'default' => null
+		)
+	);
+}
+?>
+<#8>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'page'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'page',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '4'
+		)
+	);
+}
+?>
+<#9>
+<?php
+if($ilDB->tableColumnExists('pl_scas_pdf_data', 'page'))
+{
+	$ilDB->dropTableColumn('pl_scas_pdf_data','page');
+}
+if($ilDB->tableColumnExists('pl_scas_pdf_data', 'qst_data'))
+{
+	$ilDB->dropTableColumn('pl_scas_pdf_data','qst_data');
+}
+?>
+<#10>
+<?php
+$fields = array(
+	'pdf_id'      => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'page'      => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'qpl_data' => array(
+		'type'    => 'clob',
+		'notnull' => false,
+		'default' => null
+	)
+);
+if(!$ilDB->tableExists('pl_scas_pdf_data_qpl'))
+{
+	$ilDB->createTable('pl_scas_pdf_data_qpl', $fields);
+	$ilDB->addPrimaryKey('pl_scas_pdf_data_qpl', array('pdf_id', 'page'));
+}
+?>

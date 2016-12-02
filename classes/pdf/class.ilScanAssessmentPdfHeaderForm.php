@@ -50,6 +50,14 @@ class ilScanAssessmentPdfHeaderForm
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getMatriculationPositions()
+	{
+		return $this->matriculation_positions;
+	}
+
+	/**
 	 * @param $columns
 	 * @return array
 	 */

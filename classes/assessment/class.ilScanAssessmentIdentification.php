@@ -30,10 +30,23 @@ class ilScanAssessmentIdentification
 	 */
 	public function init($test_id, $page_number, $session_id, $personalised = false)
 	{
+		global $ilDB;
 		$this->test_id      = $test_id;
 		$this->page_number  = $page_number;
-		$this->session_id   = $session_id;
+		$this->session_id   = $ilDB->nextId('pl_scas_pdf_data');
 		$this->personalised = $personalised;
+		$this->save();
+	}
+
+	protected function save()
+	{
+		global $ilDB;
+		$ilDB->insert('pl_scas_pdf_data',
+			array(
+				'pdf_id'		=> array('integer', $this->getSessionId()),
+				'obj_id'		=> array('integer', $this->getTestId()),
+				'personalised'	=> array('integer', $this->isPersonalised()),
+			));
 	}
 
 	/**
@@ -81,7 +94,8 @@ class ilScanAssessmentIdentification
 	 */
 	public function getIdentificationString()
 	{
-		return $this->getTestId() . '_' . $this->getSessionId() . '_' . $this->getPageNumber() . '_' . (int) $this->isPersonalised();
+		//max size for qr '0000000000000000000000000000000000';
+		return $this->getSessionId() . '_' . $this->getPageNumber();
 	}
 
 	/**
@@ -89,7 +103,7 @@ class ilScanAssessmentIdentification
 	 */
 	public function getSavePathName()
 	{
-		return $this->getTestId() . '_' . $this->getSessionId() . '/' . $this->getPageNumber();
+		return $this->getSessionId() . '/' . $this->getPageNumber();
 	}
 
 	/**
@@ -98,12 +112,10 @@ class ilScanAssessmentIdentification
 	public function parseIdentificationString($string)
 	{
 		$string = preg_split('/_/', $string);
-		if(is_array($string) && sizeof($string) == 4)
+		if(is_array($string) && sizeof($string) == 2)
 		{
-			$this->test_id		= (int) $string[0];
-			$this->session_id	= (int) $string[1];
-			$this->page_number	= (int) $string[2];
-			$this->personalised	= (boolean) $string[4];
+			$this->session_id	= (int) $string[0];
+			$this->page_number	= (int) $string[1];
 		}
 	}
 }

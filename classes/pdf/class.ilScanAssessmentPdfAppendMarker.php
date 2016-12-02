@@ -140,6 +140,7 @@ class ilPDFAppendMarker extends TCPDF{
 			$this->Ln();
 			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata);
 			$header_form->insertIdentification();
+			$a = $header_form->getMatriculationPositions();
 		}
 		$this->Ln(5);
 		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);

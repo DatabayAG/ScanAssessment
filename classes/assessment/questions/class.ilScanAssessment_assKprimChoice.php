@@ -15,7 +15,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 
 		$false_label = '-';
 		$true_label = '+';
-
+		$answer_positions = array();
 		$this->pdf_helper->pdf->setCellMargins(20.5, PDF_CHECKBOX_MARGIN);
 		$this->pdf_helper->pdf->Cell(2, 0,$true_label , 0, 0, 'R');
 		$this->pdf_helper->pdf->setCellMargins(1, PDF_CHECKBOX_MARGIN);
@@ -34,7 +34,9 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x2 = $this->pdf_helper->pdf->GetX() + 39;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
 			$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getOrder(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
+			//TODO: Return answer positions
 		}
+		return $answer_positions;
 	}
 }
 

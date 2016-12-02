@@ -4,6 +4,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHelper.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMetaData.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfMap.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentPdfAssessmentQuestionBuilder.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('log/class.ilScanAssessmentLog.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
@@ -49,6 +50,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	protected $file_helper;
 
 	/**
+	 * @var ilScanAssessmentPdfMap
+	 */
+	protected $map;
+
+	/**
 	 * ilPdfPreviewBuilder constructor.
 	 * @param ilObjTest $test
 	 */
@@ -59,6 +65,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->file_helper		= new ilScanAssessmentFileHelper($this->test->getId());
 		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
 		$this->path_for_zip		= $this->file_helper->getPdfZipPath();
+		$this->map				= new ilScanAssessmentPdfMap();
 	}
 
 	/**
@@ -66,7 +73,6 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 * @param ilScanAssessmentPdfAssessmentQuestionBuilder $question_builder
 	 * @param assQuestion $question
 	 * @param int $counter
-	 * @return array
 	 */
 	protected function addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter)
 	{
@@ -94,7 +100,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$pdf->commitTransaction();
 			$this->log->debug(sprintf('Transaction worked for page %s commit.', $pdf->getPage()));
 		}
-		return array('page' => $pdf->getPage(), 'question' => $question->getId() ,'answers' => $answers);
+		$this->map->setQuestionPositions($pdf->getPage(), array('question' => $question->getId() ,'answers' => $answers));
 	}
 
 	/**
@@ -117,6 +123,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$utils->writePdfFile($filename);
 		$utils->getPdfInline($filename);
 
+		$this->saveQuestionData($data);
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating demo pdf finished for test %s which took %s seconds.', $this->test->getId(), $end_time - $start_time));
 	}
@@ -149,15 +156,15 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
 		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
-		$this->document_information = array();
 
 		$this->addPageWithQrCode($pdf_h);
 		$counter = 1;
 		foreach($questions as $question)
 		{
-			$this->document_information[] = $this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
+			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
+		$this->log->info('Document Information:' . json_encode($data->getIdentification()) . json_encode($this->document_information));
 		return $pdf_h;
 	}
 
@@ -186,6 +193,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 			}
 			$pdf_h	= $this->createPdf($data);
 			$this->writePdfFile($pdf_h, $filename);
+			$this->saveQuestionData($data);
 			$counter++;
 		}
 		$end_time = microtime(TRUE);
@@ -210,6 +218,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 				$pdf_h	= $this->createPdf($data);
 				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $i . self::FILE_TYPE;
 				$this->writePdfFile($pdf_h, $filename);
+				$this->saveQuestionData($data);
 			}
 			$end_time = microtime(TRUE);
 			$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, $number));
@@ -247,12 +256,31 @@ class ilScanAssessmentPdfAssessmentBuilder
 	}
 
 	/**
-	 * @return mixed
+	 * @return string
 	 */
 	public function getPathForZip()
 	{
 		return $this->path_for_zip;
 	}
 
+	/**
+	 * @param ilScanAssessmentPdfMetaData $data
+	 */
+	protected function saveQuestionData($data)
+	{
+		$ident = new ilScanAssessmentIdentification();
+		$ident->parseIdentificationString($data->getIdentification());
+
+		global $ilDB;
+		foreach($this->map->getQuestionPositions() as $key => $value)
+		{
+			$ilDB->insert('pl_scas_pdf_data_qpl',
+				array(
+					'pdf_id'	=> array('integer', $ident->getSessionId()),
+					'page'		=> array('integer', $key),
+					'qpl_data'	=> array('text', json_encode($value)),
+				));
+		}
+	}
 
 }

@@ -36,7 +36,7 @@ class ilScanAssessmentPdfUtils extends FPDI
 	public function getPdfInline($name)
 	{
 		$this->Output($name, 'I');
-		unlink($name);
+		//unlink($name);
 	}
 
 	/**

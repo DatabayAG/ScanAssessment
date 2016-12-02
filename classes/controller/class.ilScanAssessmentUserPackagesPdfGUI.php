@@ -182,7 +182,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		$pdf = new ilScanAssessmentPdfAssessmentBuilder($this->test);
 		if($this->test->getFixedParticipants() === 1)
 		{
-			$pdf->createFixedParticipantsPdf();
+			$pdf->createFixedParticipantsPdf($this->test->getInvitedUsers());
 		}
 		else
 		{
