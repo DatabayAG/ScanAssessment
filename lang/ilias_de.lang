@@ -109,3 +109,5 @@ scas_disable_manual_scan_info#:#Wenn diese Option aktiviert ist, wird das manuel
 scas_manual_scan_disabled#:#Manuelles scannen ist deaktiviert.
 scas_disable_manual_scan_no_cron_info#:#Der Cronjob ist nicht installiert oder eingerichtet.
 scas_least_one_participant#:#Es muss mindestens ein Teilnehmer eingetragen sein.
+scas_scan#:#Scan
+scas_scan_revision#:#Revision

@@ -49,6 +49,28 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	}
 
 	/**
+	 * @param string $active_sub
+	 */
+	protected function addTabs($active_sub = 'scan_scanner')
+	{
+		$pluginObject = $this->getCoreController()->getPluginObject();
+		$this->tabs->setTabActive('scan');
+		$this->tabs->addSubTab('scan_scanner', $pluginObject->txt('scas_scan'), $this->getLink());
+		$this->tabs->addSubTab('scan_revision', $pluginObject->txt('scas_scan_revision'), $this->getLink('ilScanAssessmentScanRevisionGUI'));
+		$this->tabs->setSubTabActive($active_sub);
+	}
+
+	/**
+	 * @param string $ctrl
+	 * @return string
+	 */
+	protected function getLink($ctrl = 'ilScanAssessmentScanGUI')
+	{
+		$link = $this->getCoreController()->getPluginObject()->getLinkTarget($ctrl . '.default',	array('ref_id' => (int)$_GET['ref_id']));
+		return $link;
+	}
+
+	/**
 	 * @return ilPropertyFormGUI
 	 */
 	protected function getForm()
@@ -159,6 +181,8 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 			$this->bindModelToForm($form);
 		}
 
+		$this->addTabs();
+		
 		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
 		$tpl->setVariable('FORM', $form->getHTML());
