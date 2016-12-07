@@ -116,6 +116,14 @@ class ilScanAssessmentIdentification
 		{
 			$this->session_id	= (int) $string[0];
 			$this->page_number	= (int) $string[1] - 1;
+			
+			global $ilDB;
+			$res = $ilDB->queryF('SELECT obj_id FROM pl_scas_pdf_data WHERE pdf_id = %s',
+				array('integer'), array($this->session_id));
+			while($row = $ilDB->fetchAssoc($res))
+			{
+				$this->test_id = $row['obj_id'];
+			}
 		}
 	}
 }

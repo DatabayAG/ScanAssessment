@@ -160,8 +160,7 @@ class ilScanAssessmentScanProcess
 			$identification = new ilScanAssessmentIdentification();
 			$identification->parseIdentificationString($code);
 			$this->getAnalysingFolder($identification->getSavePathName());
-			//Todo: move this
-			if(false && $identification->getTestId() != $this->test->getId())
+			if($identification->getTestId() != $this->test->getId())
 			{
 				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
 				return false;
@@ -222,19 +221,18 @@ class ilScanAssessmentScanProcess
 				}
 				closedir($handle);
 			}
+			if($this->releaseScanLock())
+			{
+				$this->log->info(sprintf('Removed lock file: %s' , $this->getScanLockFilePath()));
+			}
+			else
+			{
+				$this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
+			}
 		}
 		else
 		{
 			$return_value = self::LOCKED;
-		}
-
-		if($this->releaseScanLock())
-		{
-			$this->log->info(sprintf('Removed lock file: %s' , $this->getScanLockFilePath()));
-		}
-		else
-		{
-			$this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
 		}
 
 		return $return_value;
