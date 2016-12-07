@@ -15,7 +15,7 @@ class ilScanAssessmentIdentification
 	protected $page_number;
 
 	/** @var int */
-	protected $session_id;
+	protected $pdf_id;
 
 	/**
 	 * ilScanAssessmentIdentification constructor.
@@ -25,15 +25,14 @@ class ilScanAssessmentIdentification
 	/**
 	 * @param int  $test_id
 	 * @param int  $page_number
-	 * @param int  $session_id
 	 * @param bool $personalised
 	 */
-	public function init($test_id, $page_number, $session_id, $personalised = false)
+	public function init($test_id, $page_number, $personalised = false)
 	{
 		global $ilDB;
 		$this->test_id      = $test_id;
 		$this->page_number  = $page_number;
-		$this->session_id   = $ilDB->nextId('pl_scas_pdf_data');
+		$this->pdf_id       = $ilDB->nextId('pl_scas_pdf_data');
 		$this->personalised = $personalised;
 		$this->save();
 	}
@@ -43,7 +42,7 @@ class ilScanAssessmentIdentification
 		global $ilDB;
 		$ilDB->insert('pl_scas_pdf_data',
 			array(
-				'pdf_id'		=> array('integer', $this->getSessionId()),
+				'pdf_id'		=> array('integer', $this->getPdfId()),
 				'obj_id'		=> array('integer', $this->getTestId()),
 				'personalised'	=> array('integer', $this->isPersonalised()),
 			));
@@ -84,9 +83,9 @@ class ilScanAssessmentIdentification
 	/**
 	 * @return int
 	 */
-	public function getSessionId()
+	public function getPdfId()
 	{
-		return $this->session_id;
+		return $this->pdf_id;
 	}
 
 	/**
@@ -95,7 +94,7 @@ class ilScanAssessmentIdentification
 	public function getIdentificationString()
 	{
 		//max size for qr '0000000000000000000000000000000000';
-		return $this->getSessionId() . '_' . $this->getPageNumber();
+		return $this->getPdfId() . '_' . $this->getPageNumber();
 	}
 
 	/**
@@ -103,7 +102,7 @@ class ilScanAssessmentIdentification
 	 */
 	public function getSavePathName()
 	{
-		return $this->getSessionId() . '/' . $this->getPageNumber();
+		return $this->getPdfId() . '/' . $this->getPageNumber();
 	}
 
 	/**
@@ -114,12 +113,12 @@ class ilScanAssessmentIdentification
 		$string = preg_split('/_/', $string);
 		if(is_array($string) && sizeof($string) == 2)
 		{
-			$this->session_id	= (int) $string[0];
+			$this->pdf_id = (int)$string[0];
 			$this->page_number	= (int) $string[1] - 1;
-			
+
 			global $ilDB;
 			$res = $ilDB->queryF('SELECT obj_id FROM pl_scas_pdf_data WHERE pdf_id = %s',
-				array('integer'), array($this->session_id));
+				array('integer'), array($this->pdf_id));
 			while($row = $ilDB->fetchAssoc($res))
 			{
 				$this->test_id = $row['obj_id'];

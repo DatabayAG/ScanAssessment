@@ -112,7 +112,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->log->info(sprintf('Starting to create demo pdf for test %s ...', $this->test->getId()));
 
 		$identification	= new ilScanAssessmentIdentification();
-		$identification->init($this->test->getId(), 0, 0);
+		$identification->init($this->test->getId(), 0);
 		$data = new ilScanAssessmentPdfMetaData($this->test, $identification);
 		$pdf_h	= $this->createPdf($data);
 		$filename = $this->path_for_pdfs . $this->test->getId() . '_demo' . self::FILE_TYPE;
@@ -179,7 +179,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		foreach($participants as $usr_id => $user)
 		{
 			$identification	= new ilScanAssessmentIdentification();
-			$identification->init($this->test->getId(), 0, $usr_id);
+			$identification->init($this->test->getId(), 0);
 			$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
 			$usr_obj		= new ilObjUser($usr_id);
 
@@ -212,7 +212,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 			for($i = 1; $i <= $number; $i++)
 			{
 				$identification	= new ilScanAssessmentIdentification();
-				$identification->init($this->test->getId(), 0, $i);
+				$identification->init($this->test->getId(), 0);
 				$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
 
 				$pdf_h	= $this->createPdf($data);
@@ -276,7 +276,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		{
 			$ilDB->insert('pl_scas_pdf_data_qpl',
 				array(
-					'pdf_id'	=> array('integer', $ident->getSessionId()),
+					'pdf_id'	=> array('integer', $ident->getPdfId()),
 					'page'		=> array('integer', $key),
 					'qpl_data'	=> array('text', json_encode($value)),
 				));

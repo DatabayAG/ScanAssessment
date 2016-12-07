@@ -149,7 +149,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				'SELECT qpl_data FROM pl_scas_pdf_data_qpl
 					WHERE pdf_id = %s AND page = %s',
 				array('integer', 'integer'),
-				array($this->qr_identification->getSessionId(), $this->qr_identification->getPageNumber())
+				array($this->qr_identification->getPdfId(), $this->qr_identification->getPageNumber())
 			);
 
 			while($row = $ilDB->fetchAssoc($res))

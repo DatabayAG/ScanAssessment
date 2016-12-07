@@ -8,6 +8,27 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 {
 
 	/**
+	 * @param $question
+	 * @param $answer
+	 * @param $x
+	 * @param $y
+	 * @return array
+	 */
+	protected function appendAnswer($question, $answer, $x, $y)
+	{
+		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer->getOrder(), $answer->getAnswertext(), $x, $y, __CLASS__));
+
+		return array(
+			'qid'  => $question->getId(),
+			'aid'  => $answer->getOrder(),
+			//'a_text' => $answer->getAnswertext(), 
+			'x'    => $x,
+			'y'    => $y,
+			'type' => __CLASS__
+		);
+	}
+
+	/**
 	 * @param assSingleChoice | assMultipleChoice $question
 	 * @return array
 	 */
@@ -22,21 +43,8 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			$x = $this->pdf_helper->pdf->GetX() + 34;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
 			$this->pdf_helper->writeHTML($answer->getAnswertext());
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s]', $question->getId(), $answer->getOrder(),  $answer->getAnswertext(), $x , $y));
-			$answer_positions[] = array('qid' => $question->getId() , 
-										'aid' => $answer->getOrder() ,
-										//'a_text' => $answer->getAnswertext(), 
-										'x' => $x ,
-										'y' => $y);
+			$answer_positions[] = $this->appendAnswer($question, $answer, $x, $y);
 		}
 		return $answer_positions;
 	}
 }
-
-/*$this->answer_export[] =		'qid' 		.' '. $question->getId()		.' '.
-	'aid'		.' '. $answer->getId()			.' '.
-	'a_text'	.' '. $answer->getAnswerText()	.' '.
-	'x'			.' '. $x						.' '.
-	'y'			.' '. $y;
-$this->answer_positions[] = array('qid' => $question->getId() , 'aid' => $answer->getId() , 'a_text' => $answer->getAnswerText(), 'x' => $x , 'y' => $y);
-*/
