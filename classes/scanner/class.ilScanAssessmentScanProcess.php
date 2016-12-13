@@ -140,11 +140,62 @@ class ilScanAssessmentScanProcess
 
 		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
 
-		$this->detectAnswers($marker, $qr_pos, $log, $qr_code);
-
+		$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
+		$this->processAnswers($scan_answer_object, $qr_code, $scanner);
 		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		$this->file_helper->moveFile($org, $done);
+		//TODO: uncomment this again
+		#$this->file_helper->moveFile($org, $done);
 		return true;
+	}
+
+	/**
+	 * @param ilScanAssessmentAnswerScanner $answers
+	 * @param ilScanAssessmentIdentification $qr_code
+	 * @param $scanner
+	 */
+	protected function processAnswers($answers, $qr_code, $scanner)
+	{
+		global $ilDB;
+
+		$this->removeOldPdfData($qr_code);
+
+		foreach($answers->getCheckBoxContainer() as $key => $value)
+		{
+			if($value['marked'] != 0)
+			{
+				if($value['marked'] == 2)
+				{
+					$id	= $ilDB->nextId('pl_scas_scan_data');
+					$ilDB->insert('pl_scas_scan_data',
+						array(
+							'answer_id'		=> array('integer', $id),
+							'pdf_id'		=> array('integer', $qr_code->getPdfId()),
+							'test_id'		=> array('integer', $qr_code->getTestId()),
+							'page'			=> array('integer', $qr_code->getPageNumber()),
+							'qid'			=> array('integer', $value['qid']),
+							'value1'		=> array('text', ilUtil::stripSlashes($value['aid'])),
+							'value2'		=> array('text', ilUtil::stripSlashes($value['value2']))
+						));
+				}
+
+				$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
+				$path = $this->path_to_done . '/' . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
+				$scanner->image_helper->drawTempImage($temp, $path);
+			}
+		}
+	}
+
+	/**
+	 * @param ilScanAssessmentIdentification $qr_code
+	 */
+	protected function removeOldPdfData($qr_code)
+	{
+		global $ilDB;
+		$ilDB->manipulate('
+		DELETE FROM pl_scas_scan_data 
+		WHERE 	' 	. $ilDB->in('pdf_id', array($qr_code->getPdfId()), false, 'integer') .
+		' AND ' 	. $ilDB->in('test_id', array($qr_code->getTestId()), false, 'integer') .
+		' AND ' 	. $ilDB->in('page', array($qr_code->getPageNumber()), false, 'integer'));
 	}
 
 	/**

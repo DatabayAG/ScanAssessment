@@ -92,9 +92,9 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		{
 			$form = $this->getConfigurationForm();
 			$form->setValuesByArray(array(
-				'institution' => ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
-				'matriculation_style' => ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
-				'disable_manual_scan' => ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan()
+				'institution'			=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
+				'matriculation_style'	=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
+				'disable_manual_scan'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());

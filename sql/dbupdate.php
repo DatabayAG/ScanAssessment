@@ -197,3 +197,49 @@ if(!$ilDB->tableExists('pl_scas_pdf_data_qpl'))
 	$ilDB->addPrimaryKey('pl_scas_pdf_data_qpl', array('pdf_id', 'page'));
 }
 ?>
+<#11>
+<?php
+$fields = array(
+	'answer_id'   => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'pdf_id'      => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'page'      => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'test_id' => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'qid' => array(
+		'notnull' => true,
+		'type'    => 'integer',
+		'length'  => '4'
+	),
+	'value1' => array(
+		'type'    => 'text',
+		'default' => null,
+		'length'  => '4000'
+	),
+	'value2' => array(
+		'type'    => 'text',
+		'default' => null,
+		'length'  => '4000'
+	)
+);
+if(!$ilDB->tableExists('pl_scas_scan_data'))
+{
+	$ilDB->createTable('pl_scas_scan_data', $fields);
+	$ilDB->addPrimaryKey('pl_scas_scan_data', array('answer_id'));
+	$ilDB->createSequence('pl_scas_scan_data');
+}
+?>

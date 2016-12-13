@@ -88,8 +88,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 				$marked = $checkbox->isMarked($im, true);
 				$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
-
-				$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid);
+				$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid, 'value2' => null, 'vector' => new ilScanAssessmentVector($first_point, (2.5 * $corrected->getY())));
 			}
 
 		}
@@ -166,5 +165,13 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	private function getMatriculationPosition()
 	{
 		return array();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getCheckBoxContainer()
+	{
+		return $this->checkbox_container;
 	}
 }

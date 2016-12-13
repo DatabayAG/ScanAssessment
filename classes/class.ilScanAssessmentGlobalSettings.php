@@ -60,9 +60,9 @@ class ilScanAssessmentGlobalSettings
 	 */
 	protected function read()
 	{
-		$institution = $this->settings->get('institution');
-		$matriculation_format = $this->settings->get('matriculation_format');
-		$disable_manual_scan = $this->settings->get('disable_manual_scan');
+		$institution			= $this->settings->get('institution');
+		$matriculation_format	= $this->settings->get('matriculation_format');
+		$disable_manual_scan	= $this->settings->get('disable_manual_scan');
 
 		if(strlen($institution))
 		{
@@ -96,9 +96,9 @@ class ilScanAssessmentGlobalSettings
 	 */
 	public function save()
 	{
-		$this->settings->set('institution', $this->getInstitution());
-		$this->settings->set('matriculation_format', $this->getMatriculationStyle());
-		$this->settings->set('disable_manual_scan', $this->isDisableManualScan());
+		$this->settings->set('institution',				$this->getInstitution());
+		$this->settings->set('matriculation_format',	$this->getMatriculationStyle());
+		$this->settings->set('disable_manual_scan',		$this->isDisableManualScan());
 	}
 
 	/**
