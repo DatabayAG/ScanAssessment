@@ -106,6 +106,16 @@ class ilScanAssessmentFileHelper
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getRevisionPath()
+	{
+		$path = ilUtil::getWebspaceDir() . self::SCAN_ASSESSMENT . 'tst_' . $this->test_id;
+		$this->ensurePathExists($path);
+		return $path;
+	}
+
+	/**
 	 * @param $path
 	 */
 	public function ensurePathExists($path)

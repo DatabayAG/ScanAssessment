@@ -158,30 +158,27 @@ class ilScanAssessmentScanProcess
 		global $ilDB;
 
 		$this->removeOldPdfData($qr_code);
-
+		$path = $this->file_helper->getRevisionPath() . '/qpl/' . $qr_code->getPdfId() . '/';
+		$this->file_helper->ensurePathExists($path);
 		foreach($answers->getCheckBoxContainer() as $key => $value)
 		{
-			if($value['marked'] != 0)
+			if($value['marked'] == 2)
 			{
-				if($value['marked'] == 2)
-				{
-					$id	= $ilDB->nextId('pl_scas_scan_data');
-					$ilDB->insert('pl_scas_scan_data',
-						array(
-							'answer_id'		=> array('integer', $id),
-							'pdf_id'		=> array('integer', $qr_code->getPdfId()),
-							'test_id'		=> array('integer', $qr_code->getTestId()),
-							'page'			=> array('integer', $qr_code->getPageNumber()),
-							'qid'			=> array('integer', $value['qid']),
-							'value1'		=> array('text', ilUtil::stripSlashes($value['aid'])),
-							'value2'		=> array('text', ilUtil::stripSlashes($value['value2']))
-						));
-				}
-
-				$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-				$path = $this->path_to_done . '/' . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
-				$scanner->image_helper->drawTempImage($temp, $path);
+				$id	= $ilDB->nextId('pl_scas_scan_data');
+				$ilDB->insert('pl_scas_scan_data',
+					array(
+						'answer_id'		=> array('integer', $id),
+						'pdf_id'		=> array('integer', $qr_code->getPdfId()),
+						'test_id'		=> array('integer', $qr_code->getTestId()),
+						'page'			=> array('integer', $qr_code->getPageNumber()),
+						'qid'			=> array('integer', $value['qid']),
+						'value1'		=> array('text', ilUtil::stripSlashes($value['aid'])),
+						'value2'		=> array('text', ilUtil::stripSlashes($value['value2']))
+					));
 			}
+			$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
+			$file_path = $path . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
+			$scanner->image_helper->drawTempImage($temp, $file_path);
 		}
 	}
 
@@ -196,6 +193,35 @@ class ilScanAssessmentScanProcess
 		WHERE 	' 	. $ilDB->in('pdf_id', array($qr_code->getPdfId()), false, 'integer') .
 		' AND ' 	. $ilDB->in('test_id', array($qr_code->getTestId()), false, 'integer') .
 		' AND ' 	. $ilDB->in('page', array($qr_code->getPageNumber()), false, 'integer'));
+	}
+
+	/**
+	 * @param $test_id
+	 * @return array
+	 */
+	public static function getAnswerDataForTest($test_id)
+	{
+		/**
+		 * @vas $ilDB ilDB
+		 */
+		global $ilDB;
+
+		$res = $ilDB->queryF(
+			'SELECT *
+			FROM pl_scas_scan_data
+			WHERE test_id = %s',
+			array('integer'),
+			array((int) $test_id)
+		);
+
+		$answer_data = array();
+		while($row = $ilDB->fetchAssoc($res))
+		{
+			$key = $row['pdf_id'] . '_' . $row['qid'] . '_' . $row['value1'];
+			$answer_data[$key] = true;
+		}
+
+		return $answer_data;
 	}
 
 	/**
