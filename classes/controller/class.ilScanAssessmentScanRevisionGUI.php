@@ -9,7 +9,6 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
  */
 class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 {
-
 	/**
 	 * @param ilPropertyFormGUI|null $form
 	 * @return string
@@ -24,40 +23,66 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 
 		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
-		$tpl->setVariable('FORM', $form->getHTML());
 
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
 
 		$images = $this->getAnswerImages();
-		sort($images);
 		require_once 'Services/Accordion/classes/class.ilAccordionGUI.php';
 		$accordion = new ilAccordionGUI(); 
 		$accordion->setBehaviour('FirstOpen');
 		$pdf_id = '';
-		$answers = ilScanAssessmentScanProcess::getAnswerDataForTest($this->test->getId());
 		foreach($images as $key => $folder)
 		{
 			/** @var ilTemplate $template */
 			$template = $this->getCoreController()->getPluginObject()->getTemplate('default/tpl.revision.html', true, true);
-			foreach($folder as $img)
+			$counter = 0;
+			if(array_key_exists('checked', $folder))
 			{
-				$pdf_id = $img['pdf_id'];
-				if(array_key_exists($img['id'], $answers))
+				foreach($folder['checked'] as $img)
 				{
-					$template->touchBlock('checked');
+					$pdf_id = $this->addImageToTemplate($img, $template, true);
+					$counter++;
 				}
-				$template->setCurrentBlock('checkbox');
-				$template->setVariable('IMAGE', $img['relative_path']);
-				$template->setVariable('CHECKBOX', $img['file_name']);
-				$template->parseCurrentBlock();
 			}
-			$accordion->addItem('PDF ' . $pdf_id, $template->get());
+			if(array_key_exists('unchecked', $folder))
+			{
+				foreach($folder['unchecked'] as $img)
+				{
+					$pdf_id = $this->addImageToTemplate($img, $template);
+					$counter++;
+				}
+			}
+			$accordion->addItem('PDF ' . $pdf_id . ', ' . $this->getCoreController()->getPluginObject()->txt('scas_found_elements') . ' (' . $counter . ')', $template->get());
 		}
-		
-		$tpl->setVariable('FORM', $accordion->getHTML());
+		$test = new ilCustomInputGUI($this->getCoreController()->getPluginObject()->txt('scas_checkbox_revision'), '');
+		$test->setHTML( $accordion->getHTML());
+		$form->addItem($test);
+		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
+		$tpl->setVariable('FORM', $form->getHTML());
 		$this->addTabs();
+
 		return $tpl->get();
+	}
+
+	/**
+	 * @param      $img
+	 * @param ilTemplate $template
+	 * @param bool $checked
+	 * @return int
+	 */
+	protected function addImageToTemplate($img, $template, $checked = false)
+	{
+		$pdf_id = $img['pdf_id'];
+		if($checked == true)
+		{
+			$template->touchBlock('checked');
+		}
+		$template->setCurrentBlock('checkbox');
+		$template->setVariable('IMAGE', $img['relative_path']);
+		$template->setVariable('CHECKBOX', 'revision['.$img['id'].']');
+		$template->parseCurrentBlock();
+		return $pdf_id;
 	}
 
 	/**
@@ -70,6 +95,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 
 		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 		$form = new ilPropertyFormGUI();
+		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 
 		return $form;
 	}
@@ -98,6 +124,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 	{
 		$dirs = $this->scanAnalysedDir();
 		$files	= array();
+		$answers = ilScanAssessmentScanProcess::getAnswerDataForTest($this->test->getId());
 		foreach($dirs as $path)
 		{
 			$dir = basename($path);
@@ -107,18 +134,31 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 				{
 					if(basename(dirname(dirname($filename->getPathName()))) == 'qpl')
 					{
-						$pdf_id = basename(dirname($filename->getPathName()));
-						$parts = preg_split('/_/', $filename->getFilename());
-						$files[$pdf_id][] = array(	'file_name'		=> $filename->getFilename(),
-												'relative_path'	=> $this->file_helper->getRevisionPath() . '/' . $dir . '/' .$pdf_id. '/'. $filename->getFilename(),
-												'pdf_id'		=> $pdf_id,
-												'id'			=> $pdf_id . '_' . $parts[0] . '_' . $parts[1]   
-						);
+						$pdf_id		= basename(dirname($filename->getPathName()));
+						$parts		= preg_split('/_/', $filename->getFilename());
+						$answer_id	= $pdf_id . '_' . $parts[0] . '_' . $parts[1] . '_' . $parts[2];
+
+						$element = array(	'file_name'			=> $filename->getFilename(),
+											'relative_path'		=> $this->file_helper->getRevisionPath() . '/' . $dir . '/' .$pdf_id. '/'. $filename->getFilename(),
+											'pdf_id'			=> $pdf_id,
+											'id'				=> $answer_id
+										);
+
+						if(array_key_exists($answer_id, $answers))
+						{
+							$files[$pdf_id]['checked'][] = $element;
+						}
+						else
+						{
+							$files[$pdf_id]['unchecked'][] = $element;
+						}
+						
 					}
 
 				}
 			}
 		}
+		ksort($files);
 		return $files;
 	}
 
@@ -141,5 +181,30 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 			closedir($handle);
 		}
 		return $dirs;
+	}
+	/**
+	 * @return string
+	 */
+	public function saveFormCmd()
+	{
+		$form = $this->getForm();
+		if($form->checkInput())
+		{
+			try
+			{
+				if(array_key_exists('revision', $_POST))
+				{
+					$answers = ilUtil::stripSlashesRecursive($_POST['revision']);
+					ilScanAssessmentScanProcess::addAnswers($this->test->getId(), $answers);
+				}
+				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
+				$form = $this->getForm();
+			}
+			catch(ilException $e)
+			{
+				ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt($e->getMessage()));
+			}
+		}
+		return $this->defaultCmd($form);
 	}
 }

@@ -177,9 +177,70 @@ class ilScanAssessmentScanProcess
 					));
 			}
 			$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-			$file_path = $path . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
+			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
 			$scanner->image_helper->drawTempImage($temp, $file_path);
 		}
+	}
+
+	/**
+	 * @param $test_id
+	 * @param $answers
+	 */
+	public static function addAnswers($test_id, $answers)
+	{
+		global $ilDB;
+
+		$storage	= array();
+		$remove		= array();
+		foreach($answers as $key => $value)
+		{
+			$parts	= preg_split('/_/', $key);
+			if(is_array($parts))
+			{
+				$pdf_id	= (int) $parts[0];
+				$page	= (int) $parts[1];
+				$qid	= (int) $parts[2];
+				$aid	= (int) $parts[3];
+				$storage[$pdf_id][] = array('page' => $page, 'qid' => $qid, 'aid' => $aid);
+				$remove[$pdf_id] = $page;
+			}
+		}
+
+		foreach($remove as $pdf_id => $page)
+		{
+			self::removeRevisionData($pdf_id, $test_id);
+		}
+
+		foreach($storage as $pdf_id => $element)
+		{
+			foreach($element as $value)
+			{
+				$id	= $ilDB->nextId('pl_scas_scan_data');
+				$ilDB->insert('pl_scas_scan_data',
+					array(
+						'answer_id'		=> array('integer', $id),
+						'pdf_id'		=> array('integer', $pdf_id),
+						'test_id'		=> array('integer', $test_id),
+						'page'			=> array('integer', $value['page']),
+						'qid'			=> array('integer', $value['qid']),
+						'value1'		=> array('text', $value['aid']),
+					));
+			}
+		
+		}
+	}
+
+	/**
+	 * @param $pdf_id
+	 * @param $test_id
+	 */
+	protected static function removeRevisionData($pdf_id, $test_id)
+	{
+		global $ilDB;
+		$ilDB->manipulate('
+		DELETE FROM pl_scas_scan_data 
+		WHERE 	' 	. $ilDB->in('pdf_id', array($pdf_id), false, 'integer') .
+			' AND ' 	. $ilDB->in('test_id', array($test_id), false, 'integer'));
 	}
 
 	/**
@@ -217,7 +278,7 @@ class ilScanAssessmentScanProcess
 		$answer_data = array();
 		while($row = $ilDB->fetchAssoc($res))
 		{
-			$key = $row['pdf_id'] . '_' . $row['qid'] . '_' . $row['value1'];
+			$key = $row['pdf_id'] . '_' . $row['page'] . '_' . $row['qid'] . '_' . $row['value1'];
 			$answer_data[$key] = true;
 		}
 

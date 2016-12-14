@@ -112,3 +112,5 @@ scas_disable_manual_scan_no_cron_info#:#The cron is not installed or activated.
 scas_least_one_participant#:#At least one participant is needed.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
+scas_checkbox_revision#:#Checkbox Revision
+scas_found_elements#:#Found Elements

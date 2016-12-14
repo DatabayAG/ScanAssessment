@@ -111,3 +111,5 @@ scas_disable_manual_scan_no_cron_info#:#Der Cronjob ist nicht installiert oder e
 scas_least_one_participant#:#Es muss mindestens ein Teilnehmer eingetragen sein.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
+scas_checkbox_revision#:#Checkbox Revision
+scas_found_elements#:#Gefundene Elemente
