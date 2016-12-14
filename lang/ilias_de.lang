@@ -113,3 +113,5 @@ scas_scan#:#Scan
 scas_scan_revision#:#Revision
 scas_checkbox_revision#:#Checkbox Revision
 scas_found_elements#:#Gefundene Elemente
+scas_revision_done#:#Revision abgeschlossen
+scas_revision_done_spf#:#Revision für PDF %s abgeschlossen

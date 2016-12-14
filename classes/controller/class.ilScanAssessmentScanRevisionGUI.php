@@ -2,6 +2,8 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentScanGUI.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentRevision.php');
+require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 
 /**
  * Class ilScanAssessmentUserPackagesPdfGUI
@@ -26,6 +28,8 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
+
+		$revision_state = ilScanAssessmentRevision::getRevisionState($this->test->getId());
 
 		$images = $this->getAnswerImages();
 		require_once 'Services/Accordion/classes/class.ilAccordionGUI.php';
@@ -53,11 +57,27 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 					$counter++;
 				}
 			}
-			$accordion->addItem('PDF ' . $pdf_id . ', ' . $this->getCoreController()->getPluginObject()->txt('scas_found_elements') . ' (' . $counter . ')', $template->get());
+			$header_string = 'PDF ' . $pdf_id . ', ' . $this->getCoreController()->getPluginObject()->txt('scas_found_elements') . ' (' . $counter . ')';
+			if($revision_state[$pdf_id] == 1)
+			{
+				$template->touchBlock('checked');
+				$header_string .= ', ' . $this->getCoreController()->getPluginObject()->txt('scas_revision_done');
+			}
+			$template->setCurrentBlock('form');
+			$template->setVariable('REVISION_DONE', sprintf($this->getCoreController()->getPluginObject()->txt('scas_revision_done_spf'), $pdf_id));
+			$template->setVariable('REVISION_CHECK', 'revision_done['.$pdf_id.']');
+			$template->parseCurrentBlock();
+			$template->setCurrentBlock('hidden');
+			$template->setVariable('PDF', $pdf_id);
+			$template->parseCurrentBlock();
+			$hidden = new ilHiddenInputGUI('pdf_id');
+			$hidden->setValue($pdf_id);
+			$accordion->addItem($header_string, $template->get());
 		}
-		$test = new ilCustomInputGUI($this->getCoreController()->getPluginObject()->txt('scas_checkbox_revision'), '');
-		$test->setHTML( $accordion->getHTML());
-		$form->addItem($test);
+		
+		$custom = new ilCustomInputGUI($this->getCoreController()->getPluginObject()->txt('scas_checkbox_revision'), '');
+		$custom->setHTML($accordion->getHTML());
+		$form->addItem($custom);
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 		$tpl->setVariable('FORM', $form->getHTML());
 		$this->addTabs();
@@ -93,7 +113,6 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 
 		$pluginObject = $this->getCoreController()->getPluginObject();
 
-		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 
@@ -124,7 +143,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 	{
 		$dirs = $this->scanAnalysedDir();
 		$files	= array();
-		$answers = ilScanAssessmentScanProcess::getAnswerDataForTest($this->test->getId());
+		$answers = ilScanAssessmentRevision::getAnswerDataForTest($this->test->getId());
 		foreach($dirs as $path)
 		{
 			$dir = basename($path);
@@ -192,10 +211,25 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 		{
 			try
 			{
+				if(array_key_exists('pdf_id', $_POST))
+				{
+					foreach($_POST['pdf_id'] as $pdf_id)
+					{
+						$pdf_id = (int) $pdf_id;
+						$state = 0;
+						if(array_key_exists('revision_done', $_POST) && array_key_exists($pdf_id, $_POST['revision_done']))
+						{
+							$state = 1;
+						}
+						ilScanAssessmentRevision::saveRevisionDoneState($pdf_id, $state);
+						ilScanAssessmentRevision::removeRevisionData($pdf_id, $this->test->getId());
+					}
+				}
+
 				if(array_key_exists('revision', $_POST))
 				{
 					$answers = ilUtil::stripSlashesRecursive($_POST['revision']);
-					ilScanAssessmentScanProcess::addAnswers($this->test->getId(), $answers);
+					ilScanAssessmentRevision::addAnswers($this->test->getId(), $answers);
 				}
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
 				$form = $this->getForm();

@@ -243,3 +243,17 @@ if(!$ilDB->tableExists('pl_scas_scan_data'))
 	$ilDB->createSequence('pl_scas_scan_data');
 }
 ?>
+<#12>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'revision_done'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'revision_done',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '1',
+			'default' => 0
+		)
+	);
+}
+?>

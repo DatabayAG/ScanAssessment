@@ -37,6 +37,7 @@ class ilScanAssessmentScanTableProcessedGUI extends ilTable2GUI
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('filename');
 		$this->setShowRowsSelector(false);
+		$this->setLimit(99999999);
 		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_processed_files'));
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
