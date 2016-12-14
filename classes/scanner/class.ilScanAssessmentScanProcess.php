@@ -3,6 +3,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAsse
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentMarkerDetection.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentQrCode.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentAnswerScanner.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentRevision.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('../libs/php-qrcode-detector-decoder/lib/QrReader.php');
 
 /**
@@ -157,7 +158,7 @@ class ilScanAssessmentScanProcess
 	{
 		global $ilDB;
 
-		$this->removeOldPdfData($qr_code);
+		ilScanAssessmentRevision::removeOldPdfData($qr_code);
 		$path = $this->file_helper->getRevisionPath() . '/qpl/' . $qr_code->getPdfId() . '/';
 		$this->file_helper->ensurePathExists($path);
 		foreach($answers->getCheckBoxContainer() as $key => $value)

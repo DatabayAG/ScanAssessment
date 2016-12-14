@@ -66,22 +66,6 @@ class ilScanAssessmentRevision
 
 	/**
 	 * @param $pdf_id
-	 * @param $test_id
-	 */
-	public static function removeRevisionData($pdf_id, $test_id)
-	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
-		$ilDB->manipulate('DELETE FROM '. self::scan_data_table .'
-						  WHERE 	' 		. $ilDB->in('pdf_id', array($pdf_id), false, 'integer') .
-						' AND ' 	. $ilDB->in('test_id', array($test_id), false, 'integer'));
-		ilScanAssessmentLog::getInstance()->debug(sprintf('Cleared old revision data for pdf %s and test %s.', $pdf_id, $test_id));
-	}
-
-	/**
-	 * @param $pdf_id
 	 * @param $state
 	 */
 	public static function saveRevisionDoneState($pdf_id, $state)
@@ -132,16 +116,33 @@ class ilScanAssessmentRevision
 	/**
 	 * @param ilScanAssessmentIdentification $qr_code
 	 */
-	protected function removeOldPdfData($qr_code)
+	public static function removeOldPdfData($qr_code)
+	{
+		self::removeRevisionData($qr_code->getPdfId(), $qr_code->getTestId(), $qr_code->getPageNumber());
+	}
+
+	/**
+	 * @param     $pdf_id
+	 * @param     $test_id
+	 * @param int $page_id
+	 */
+	public static function removeRevisionData($pdf_id, $test_id, $page_id = -1)
 	{
 		/**
 		 * @var $ilDB ilDB
 		 */
 		global $ilDB;
-		$ilDB->manipulate('DELETE FROM '. self::scan_data_table .' 
-			WHERE 	' 	. $ilDB->in('pdf_id', array($qr_code->getPdfId()), false, 'integer') .
-			' AND ' 	. $ilDB->in('test_id', array($qr_code->getTestId()), false, 'integer') .
-			' AND ' 	. $ilDB->in('page', array($qr_code->getPageNumber()), false, 'integer'));
+		$page = '';
+		if($page_id != -1)
+		{
+			$page =' AND ' 	. $ilDB->in('page', array($page_id), false, 'integer');
+		}
+
+		$ilDB->manipulate('DELETE FROM '. self::scan_data_table .'
+						  WHERE 	' 		. $ilDB->in('pdf_id', array($pdf_id), false, 'integer') .
+			' AND ' 	. $ilDB->in('test_id', array($test_id), false, 'integer') .
+			$page);
+		ilScanAssessmentLog::getInstance()->debug(sprintf('Cleared old revision data for pdf %s and test %s.', $pdf_id, $test_id));
 	}
 
 	/**
