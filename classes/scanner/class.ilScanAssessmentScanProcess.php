@@ -93,7 +93,7 @@ class ilScanAssessmentScanProcess
 		$time_start = microtime(true);
 		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file.jpg', $this->path_to_done, $qr_ident);
 		$val = $ans->scanImage($marker, $qr_pos);
-		$log->debug($val);
+		#$log->debug($val);
 		$time_end = microtime(true);
 		$time     = $time_end - $time_start;
 		$log->debug('Answer Calculation duration:  ' . $time);
@@ -317,7 +317,7 @@ class ilScanAssessmentScanProcess
 	/**
 	 * @return boolean
 	 */
-	protected function isScanLocked()
+	public function isScanLocked()
 	{
 		if(file_exists($this->getScanLockFilePath()))
 		{
