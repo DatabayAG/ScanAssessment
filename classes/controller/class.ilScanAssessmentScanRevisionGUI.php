@@ -11,20 +11,24 @@ require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
  */
 class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 {
+	const NEUTRAL	= 2;
+	const DONE		= 1;
+	const UNDONE	= 0;
+
 	/**
 	 * @param ilPropertyFormGUI|null $form
 	 * @return string
 	 */
 	public function defaultCmd(ilPropertyFormGUI $form = null)
 	{
-
+		$pluginObject = $this->getCoreController()->getPluginObject();
 		if(!($form instanceof ilPropertyFormGUI))
 		{
 			$form = $this->getForm();
 		}
 
 		/** @var ilTemplate $tpl */
-		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
+		$tpl = $pluginObject->getTemplate('tpl.test_configuration.html', true, true);
 
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);
@@ -36,10 +40,11 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 		$accordion = new ilAccordionGUI(); 
 		$accordion->setBehaviour('FirstOpen');
 		$pdf_id = '';
+		$files = $this->getProcessedFilesData();
 		foreach($images as $key => $folder)
 		{
 			/** @var ilTemplate $template */
-			$template = $this->getCoreController()->getPluginObject()->getTemplate('default/tpl.revision.html', true, true);
+			$template = $pluginObject->getTemplate('default/tpl.revision.html', true, true);
 			$counter = 0;
 			if(array_key_exists('checked', $folder))
 			{
@@ -57,14 +62,34 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 					$counter++;
 				}
 			}
-			$header_string = 'PDF ' . $pdf_id . ', ' . $this->getCoreController()->getPluginObject()->txt('scas_found_elements') . ' (' . $counter . ')';
-			if($revision_state[$pdf_id] == 1)
+			if(array_key_exists($pdf_id, $files))
+			{
+				ksort($files[$pdf_id]);
+				foreach($files[$pdf_id] as $page => $element)
+				{
+					foreach($element as $file)
+					{
+						$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentScanRevisionGUI' . '.downloadProcessedImage', array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $file['file_name']));
+						$template->setCurrentBlock('link');
+						$template->setVariable('VAL_LINK', $link);
+						$template->setVariable('VAL_FILE_NAME', $file['file_name']);
+						$template->parseCurrentBlock();
+					}
+					$template->setCurrentBlock('link_list');
+					$template->setVariable('PAGE',  $pluginObject->txt('scas_page') . ' ' . $page);
+					$template->parseCurrentBlock();
+				}
+			}
+
+			$header_string = 'PDF ' . $pdf_id . ', ' . $pluginObject->txt('scas_found_elements') . ' (' . $counter . ')';
+			if($revision_state[$pdf_id] == self::DONE)
 			{
 				$template->touchBlock('checked');
-				$header_string .= ', ' . $this->getCoreController()->getPluginObject()->txt('scas_revision_done');
+				$header_string .= ', ' . $pluginObject->txt('scas_revision_done');
 			}
+
 			$template->setCurrentBlock('form');
-			$template->setVariable('REVISION_DONE', sprintf($this->getCoreController()->getPluginObject()->txt('scas_revision_done_spf'), $pdf_id));
+			$template->setVariable('REVISION_DONE', sprintf($pluginObject->txt('scas_revision_done_spf'), $pdf_id));
 			$template->setVariable('REVISION_CHECK', 'revision_done['.$pdf_id.']');
 			$template->parseCurrentBlock();
 			$template->setCurrentBlock('hidden');
@@ -74,19 +99,48 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 			$hidden->setValue($pdf_id);
 			$accordion->addItem($header_string, $template->get());
 		}
-		
-		$custom = new ilCustomInputGUI($this->getCoreController()->getPluginObject()->txt('scas_checkbox_revision'), '');
+
+		$custom = new ilCustomInputGUI($pluginObject->txt('scas_checkbox_revision'), '');
 		$custom->setHTML($accordion->getHTML());
 		$form->addItem($custom);
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
+		$select = new ilSelectInputGUI($pluginObject->txt('scas_revision_state'), 'all_revision_state');
+		$options = $shuffle_modes = array(self::NEUTRAL => '',
+										  self::DONE    => $pluginObject->txt('scas_revsion_all_done'),
+										  self::UNDONE  => $pluginObject->txt('scas_revsion_all_undone')
+		);
+
+		$select->setOptions($options);
+		$form->addItem($select);
 		$tpl->setVariable('FORM', $form->getHTML());
 		$this->addTabs();
 
 		return $tpl->get();
 	}
 
+	public function downloadProcessedImageCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = $this->file_helper->getAnalysedPath() . $file_name;
+		$this->download($file_path, $file_name);
+	}
+
 	/**
-	 * @param      $img
+	 * @return array
+	 */
+	protected function getProcessedFilesData()
+	{
+		$files = parent::getProcessedFilesData();
+		$resort_files = array();
+		foreach($files as $file)
+		{
+			$resort_files[$file['pdf_id']][$file['page']][] = $file;
+		}
+		return $resort_files;
+	}
+
+	/**
+	 * @param $img
 	 * @param ilTemplate $template
 	 * @param bool $checked
 	 * @return int
@@ -216,10 +270,14 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 					foreach($_POST['pdf_id'] as $pdf_id)
 					{
 						$pdf_id = (int) $pdf_id;
-						$state = 0;
+						$state = self::UNDONE;
 						if(array_key_exists('revision_done', $_POST) && array_key_exists($pdf_id, $_POST['revision_done']))
 						{
-							$state = 1;
+							$state = self::DONE;
+						}
+						if(array_key_exists('all_revision_state', $_POST) && strlen($_POST['all_revision_state']) != 0 && $_POST['all_revision_state'] != self::NEUTRAL)
+						{
+							$state = (int) $_POST['all_revision_state'];
 						}
 						ilScanAssessmentRevision::saveRevisionDoneState($pdf_id, $state);
 						ilScanAssessmentRevision::removeRevisionData($pdf_id, $this->test->getId());

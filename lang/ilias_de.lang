@@ -114,4 +114,11 @@ scas_scan_revision#:#Revision
 scas_checkbox_revision#:#Checkbox Revision
 scas_found_elements#:#Gefundene Elemente
 scas_revision_done#:#Revision abgeschlossen
-scas_revision_done_spf#:#Revision für PDF %s abgeschlossen
+scas_revsion_all_done#:#Revision für alle PDF abgeschlossen
+scas_revsion_all_undone#:#Revision für PDF wieder aufheben
+scas_revision_state#:#Revisionsstatus für alle PDF
+scas_page#:#Seite
+scan_user_mapping#:#Benutzerzuweisung
+scas_user#:#PDF
+scas_user_info#:#Revision abgeschlossen für PDF
+scas_user_revision_info#:#Revision noch nicht abgeschlossen für PDF

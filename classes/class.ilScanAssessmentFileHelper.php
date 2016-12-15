@@ -193,7 +193,9 @@ class ilScanAssessmentFileHelper
 								 'splfileinfo' => $filename, 
 								 'file_name' => basename(dirname($filename->getPath())) .'/' .basename($filename->getPath()) . '/' . $filename->getBaseName(), 
 								 'file_size' => $size . 'K', 
-								 'file_date' => $date);
+								 'file_date' => $date,
+								 'pdf_id'	=>  basename(dirname($filename->getPath())),
+								 'page' => basename($filename->getPath()));
 			}
 		}
 		return $files;

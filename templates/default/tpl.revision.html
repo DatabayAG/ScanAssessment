@@ -1,11 +1,23 @@
 <!-- BEGIN checkbox -->
 	<div class="col-xs-1" style="padding:2px"><img src="{IMAGE}" style="padding:2px"/><input type="checkbox" name="{CHECKBOX}" <!-- BEGIN checked -->checked="checked"<!-- END checked -->/></div>
 <!-- END checkbox -->
-
+<!-- BEGIN link_list -->
+<div class="col-xs-12">
+	<ul>
+		<li>{PAGE}
+		<ul>
+			<!-- BEGIN link -->
+			<li><a href="{VAL_LINK}">{VAL_FILE_NAME}</a></li>
+			<!-- END link -->
+		</ul>
+		</li>
+		
+	</ul>
+</div>
+<!-- END link_list -->
 <!-- BEGIN form -->
 <div class="col-xs-12"><hr/><span style="padding:2px">{REVISION_DONE}</span><input type="checkbox" name="{REVISION_CHECK}" <!-- BEGIN checked -->checked="checked"<!-- END checked -->/><hr/></div>
 <!-- END form -->
-
 <!-- BEGIN hidden -->
 <input type="hidden" name="pdf_id[]" value="{PDF}"/>
 <!-- END hidden -->

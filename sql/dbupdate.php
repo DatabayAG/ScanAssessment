@@ -257,3 +257,17 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'revision_done'))
 	);
 }
 ?>
+<#13>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'usr_id'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'usr_id',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '4',
+			'default' => 0
+		)
+	);
+}
+?>

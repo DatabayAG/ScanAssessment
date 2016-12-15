@@ -115,3 +115,11 @@ scas_scan_revision#:#Revision
 scas_checkbox_revision#:#Checkbox Revision
 scas_found_elements#:#Found Elements
 scas_revision_done#:#Revision for PDF %s done
+scas_revsion_all_done#:#Revision done for all
+scas_revsion_all_undone#:#Revision not done for all
+scas_revision_state#:#Revisionsstatus for all PDF
+scas_page#:#Page
+scan_user_mapping#:#User Mapping
+scas_user#:#PDF
+scas_user_info#:#User
+scas_user_revision_info#:#Revision not finshed for PDF
