@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentStepsBase.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentStepsBase.php');
 
 /**
  * Class ilScanAssessmentScanStep
@@ -30,6 +31,7 @@ class ilScanAssessmentScanStep extends ilScanAssessmentStepsBase
 	 */
 	public function isFulfilled()
 	{
-		return true;
+		$scanner = new ilScanAssessmentScanGUI($this->plugin->getUIClassInstance());
+		return $scanner->doProcessedFilesExist();
 	}
 }

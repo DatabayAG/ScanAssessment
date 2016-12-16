@@ -81,6 +81,10 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 				$user->setDisabled(true);
 				$user->setInfo($pluginObject->txt('scas_user_revision_info'));
 			}
+			if($values['double'])
+			{
+				$user->setAlert($pluginObject->txt('scas_user_already_assigned'));
+			}
 			$form->addItem($user);
 
 		}
@@ -114,6 +118,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 	 */
 	public static function getMappings($test_id)
 	{
+		$already_assigned = array();
 		/**
 		 * @var $ilDB ilDB
 		 */
@@ -129,7 +134,17 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 		$mappings = array();
 		while($row = $ilDB->fetchAssoc($res))
 		{
-			$mappings[$row['pdf_id']] = array('revision' => $row['revision_done'], 'usr_id' => $row['usr_id']);
+			$usr_id	= (int) $row['usr_id'];
+			$state	= true;
+			if(! array_key_exists($usr_id, $already_assigned))
+			{
+				if($usr_id != 0)
+				{
+					$already_assigned[$usr_id] = true;
+				}
+				$state	= false;
+			}
+			$mappings[$row['pdf_id']] = array('revision' => $row['revision_done'], 'usr_id' => $usr_id, 'double' => $state);
 		}
 		ksort($mappings);
 		return $mappings;
@@ -139,8 +154,9 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 	{
 		/**
 		 * @var $ilDB ilDB
+		 * @var $ilUser ilObjUser
 		 */
-		global $ilDB;
+		global $ilDB, $ilUser;
 		$user_mapping = ilUtil::stripSlashesRecursive($_POST['user']);
 		foreach($user_mapping as $pdf_id => $username)
 		{
@@ -156,6 +172,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 						'pdf_id' => array('integer', $pdf_id)
 					)
 				);
+				ilScanAssessmentLog::getInstance()->debug(sprintf('User with the id (%s) set mapping for pdf (%s) to user %s', $ilUser->getId(), $pdf_id, $usr_id));
 			}
 		}
 	}

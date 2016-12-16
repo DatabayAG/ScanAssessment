@@ -260,6 +260,19 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function doProcessedFilesExist()
+	{
+		$files = $this->getProcessedFilesData();
+		if(sizeof($files) > 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	/**
 	 * @return string
 	 */
 	protected function renderSteps()

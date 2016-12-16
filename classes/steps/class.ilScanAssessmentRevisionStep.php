@@ -36,15 +36,15 @@ class ilScanAssessmentRevisionStep extends ilScanAssessmentStepsBase
 		global $ilDB;
 		$res = $ilDB->queryF('SELECT *
 				FROM '.self::pdf_data_table.'
-				WHERE obj_id = %s AND (revision_done = %s OR revision_done IS NULL)',
+				WHERE obj_id = %s AND revision_done = %s',
 			array('integer', 'integer'),
-			array((int) $this->test->getId(), 0)
+			array((int) $this->test->getId(), 1)
 		);
 
-		$value = true;
+		$value = false;
 		while($row = $ilDB->fetchAssoc($res))
 		{
-			$value = false;
+			$value = true;
 			continue;
 		}
 		return $value;

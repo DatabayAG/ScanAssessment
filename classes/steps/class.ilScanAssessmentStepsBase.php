@@ -2,6 +2,7 @@
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilScanAssessmentStatusBarItem.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentScanGUI.php');
 /**
  * Class ilScanAssessmentStepsBase
  * @author Guido Vollbach <gvollbach@databay.de>

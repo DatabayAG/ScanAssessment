@@ -38,15 +38,15 @@ class ilScanAssessmentUserMappingStep extends ilScanAssessmentStepsBase
 		global $ilDB;
 		$res = $ilDB->queryF('SELECT *
 				FROM '.self::pdf_data_table.'
-				WHERE obj_id = %s AND usr_id IS NULL',
+				WHERE obj_id = %s AND usr_id IS NOT NULL',
 			array('integer'),
 			array((int) $this->test->getId())
 		);
 
-		$value = true;
+		$value = false;
 		while($row = $ilDB->fetchAssoc($res))
 		{
-			$value = false;
+			$value = true;
 			continue;
 		}
 		return $value;

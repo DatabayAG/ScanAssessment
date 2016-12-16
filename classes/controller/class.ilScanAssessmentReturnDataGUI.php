@@ -19,9 +19,6 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 	 */
 	protected $configuration;
 
-	/**
-	 * 
-	 */
 	protected function init()
 	{
 		$this->test = ilObjectFactory::getInstanceByRefId((int) $_GET['ref_id']);
@@ -36,11 +33,22 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
+		$revision		= new ilScanAssessmentRevisionStep($this->getCoreController()->getPluginObject(), $this->test);
 		$user_mapping	= new ilScanAssessmentUserMappingStep($this->getCoreController()->getPluginObject(), $this->test);
 
-		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$user_mapping->isFulfilled())
+		$revision_state	= $revision->isFulfilled();
+		$user_mapping_state = $user_mapping->isFulfilled();
+		
+		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$user_mapping_state || !$revision_state)
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanUserMappingGUI.default');
+			if(!$revision_state)
+			{
+				$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanRevisionGUI.default');
+			}
+			else
+			{
+				$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanUserMappingGUI.default');
+			}
 		}
 	}
 	

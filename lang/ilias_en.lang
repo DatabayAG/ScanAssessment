@@ -127,3 +127,4 @@ scas_user_mapping_completed#:#User Mapping finished
 scas_user_mapping_completed_info#:#The user mapping must be finished before the data can be inserted into the test.
 scas_revision_completed#:#Revision finished
 scas_revision_completed_info#:#The revision must be finished before you can make the user mapping.
+scas_user_already_assigned#:#User is already assigned to another PDF.

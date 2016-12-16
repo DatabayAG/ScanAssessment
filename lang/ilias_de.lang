@@ -64,7 +64,7 @@ scas_scan_completed#:#Scannen abgeschlossen
 scas_scan_completed_info#:#Scannen abgeschlossen
 scas_results_returned#:#Ergebnisse an Test übergeben
 scas_results_returned_info#:#Ergebnisse an Test übergeben
-scas_previous_step_unfulfilled#:#Dieser Schritt noch nicht abgeschlossen.
+scas_previous_step_unfulfilled#:#Dieser Schritt ist noch nicht abgeschlossen.
 scas_create#:#PDFs generieren
 scas_remove_all#:#Alle PDFs löschen
 scas_fixed_participants#:#Die Einstellung "Nur ausgewählte Teilnehmer" ist aktiviert
@@ -115,7 +115,7 @@ scas_checkbox_revision#:#Checkbox Revision
 scas_found_elements#:#Gefundene Elemente
 scas_revision_done#:#Revision abgeschlossen
 scas_revsion_all_done#:#Revision für alle PDF abgeschlossen
-scas_revsion_all_undone#:#Revision für PDF wieder aufheben
+scas_revsion_all_undone#:#Revision für alle PDF wieder aufheben
 scas_revision_state#:#Revisionsstatus für alle PDF
 scas_page#:#Seite
 scan_user_mapping#:#Benutzerzuweisung
@@ -126,3 +126,5 @@ scas_user_mapping_completed#:#Benutzerzuweisung abgeschlossen
 scas_user_mapping_completed_info#:#Die Benutzerzuweisung muss abgeschlossen sein, bevor die Daten in den Test zurückgeführt werden können.
 scas_revision_completed#:#Revision abgeschlossen
 scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
+scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
+scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugrwiesen.
