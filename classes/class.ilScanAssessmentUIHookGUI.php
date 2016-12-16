@@ -31,6 +31,8 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 		'ilScanAssessmentUserPackagesGUI'		=> 'user_packages',
 		'ilScanAssessmentUserPackagesPdfGUI'	=> 'user_packages',
 		'ilScanAssessmentScanGUI'				=> 'scan',
+		'ilScanAssessmentScanRevisionGUI'		=> 'scan',
+		'ilScanAssessmentScanUserMappingGUI'	=> 'scan',
 		'ilScanAssessmentReturnDataGUI'			=> 'return',
 	);
 

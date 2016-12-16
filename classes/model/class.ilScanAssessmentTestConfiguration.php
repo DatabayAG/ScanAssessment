@@ -152,11 +152,15 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentUserPackagesExportedStep.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentScanStep.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentReturnResultsStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentRevisionStep.php');
+		ilScanAssessmentPlugin::getInstance()->includeClass('steps/class.ilScanAssessmentUserMappingStep.php');
 
 		$this->steps[] = new ilScanAssessmentIsActivatedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentLayoutStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentUserPackagesExportedStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentScanStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentRevisionStep(ilScanAssessmentPlugin::getInstance(), $this->test);
+		$this->steps[] = new ilScanAssessmentUserMappingStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->steps[] = new ilScanAssessmentReturnResultsStep(ilScanAssessmentPlugin::getInstance(), $this->test);
 	}
 

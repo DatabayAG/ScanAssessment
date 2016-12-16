@@ -36,11 +36,11 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
-		$scan			= new ilScanAssessmentScanStep($this->getCoreController()->getPluginObject(), $this->test);
+		$user_mapping	= new ilScanAssessmentUserMappingStep($this->getCoreController()->getPluginObject(), $this->test);
 
-		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$scan->isFulfilled())
+		if(! $activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled() || !$user_mapping->isFulfilled())
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanGUI.default');
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanUserMappingGUI.default');
 		}
 	}
 	

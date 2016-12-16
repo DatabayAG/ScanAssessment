@@ -8,6 +8,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('../interfaces/interface.ilS
  */
 abstract class ilScanAssessmentStepsBase implements ilScanAssessmentStatusBarItem
 {
+	const pdf_data_table = 'pl_scas_pdf_data';
 	/**
 	 * @var ilScanAssessmentPlugin
 	 */
