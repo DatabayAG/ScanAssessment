@@ -125,11 +125,9 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	 */
 	public function initPreconditions()
 	{
-		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsActivePrecondition.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentIsFixedTestPrecondition.php');
 		ilScanAssessmentPlugin::getInstance()->includeClass('preconditions/class.ilScanAssessmentHasValidQuestionsPrecondition.php');
 
-		$this->preconditions[] = new ilScanAssessmentIsActivePrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->preconditions[] = new ilScanAssessmentIsFixedTestPrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 		$this->preconditions[] = new ilScanAssessmentHasValidQuestionsPrecondition(ilScanAssessmentPlugin::getInstance(), $this->test);
 	}

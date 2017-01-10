@@ -2,7 +2,9 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentController.php');
-
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/assessment/class.ilScanAssessmentXMLResultCreator.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentFileHelper.php';
+require_once 'Modules/Test/classes/class.ilTestResultsImportParser.php';
 /**
  * Class ilScanAssessmentReturnDataGUI
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -68,6 +70,18 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_return'));
+
+		$xml = new ilScanAssessmentXMLResultCreator($this->test);
+		$helper = new ilScanAssessmentFileHelper($this->test->getId());
+		$xml_file = $helper->getResultsXmlPath();
+		$xml->xmlDumpFile($xml_file);
+		if(file_exists($xml_file))
+		{
+			$parser = new ilTestResultsImportParser($xml_file, $this->test);
+			$parser->startParsing();
+			$this->test->recalculateScores(true);
+			unlink($xml_file);
+		}
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 

@@ -120,11 +120,11 @@ scas_revision_state#:#Revisionsstatus für alle PDF
 scas_page#:#Seite
 scan_user_mapping#:#Benutzerzuweisung
 scas_user#:#PDF
-scas_user_info#:#Revision abgeschlossen für PDF
-scas_user_revision_info#:#Revision noch nicht abgeschlossen für PDF
+scas_user_info#:#Revision abgeschlossen für das PDF
+scas_user_revision_info#:#Revision noch nicht abgeschlossen für das PDF
 scas_user_mapping_completed#:#Benutzerzuweisung abgeschlossen
 scas_user_mapping_completed_info#:#Die Benutzerzuweisung muss abgeschlossen sein, bevor die Daten in den Test zurückgeführt werden können.
 scas_revision_completed#:#Revision abgeschlossen
 scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
 scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
-scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugrwiesen.
+scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugewiesen.

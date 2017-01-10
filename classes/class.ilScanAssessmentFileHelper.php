@@ -14,6 +14,7 @@ class ilScanAssessmentFileHelper
 	const ANALYSED			= 'analysed/';
 	const ZIP				= 'zip/';
 	const TEMP				= 'tmp/';
+	const RESULTS			= '/results/';
 
 	/**
 	 * @var int
@@ -93,6 +94,17 @@ class ilScanAssessmentFileHelper
 		$path = $this->getPdfPath() . self::ZIP;
 		$this->ensurePathExists($path);
 		return $path;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getResultsXmlPath()
+	{
+		$path = $this->getBasePath() . self::RESULTS;
+		$this->ensurePathExists($path);
+		$file = $path . 'results.xml';
+		return $file;
 	}
 
 	/**

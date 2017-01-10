@@ -190,6 +190,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 				$data->setStudentMatriculation($usr_obj->getMatriculation());
 				$data->setStudentName($usr_obj->getFullname());
 				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $usr_id . '_' . $usr_obj->getLastname() . '_' . $usr_obj->getFirstname() . self::FILE_TYPE;
+				$this->saveUserIdForPdf($identification->getPdfId(), $usr_obj->getId());
 			}
 			$pdf_h	= $this->createPdf($data);
 			$this->writePdfFile($pdf_h, $filename);
@@ -198,6 +199,27 @@ class ilScanAssessmentPdfAssessmentBuilder
 		}
 		$end_time = microtime(TRUE);
 		$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, count($participants)));
+	}
+
+	/**
+	 * @param $pdf_id
+	 * @param $usr_id
+	 */
+	protected function saveUserIdForPdf($pdf_id, $usr_id)
+	{
+		/**
+		 * @var $ilDB ilDB
+		 */
+		global $ilDB;
+		$ilDB->update('pl_scas_pdf_data',
+			array(
+				'usr_id' => array('integer', $usr_id),
+			),
+			array(
+				'pdf_id' => array('integer', $pdf_id)
+			)
+		);
+		$this->log->debug(sprintf('Since this is a fixed test mapping for pdf (%s) to user %s was set.', $pdf_id, $usr_id));
 	}
 	
 	/**
