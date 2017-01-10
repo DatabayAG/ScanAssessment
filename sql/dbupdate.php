@@ -271,3 +271,17 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'usr_id'))
 	);
 }
 ?>
+<#14>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'results_exported'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'results_exported',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '1',
+			'default' => 0
+		)
+	);
+}
+?>

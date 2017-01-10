@@ -14,7 +14,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 
 	/**
 	 * ilScanAssessmentXMLResultCreator constructor.
-	 * @param      $test
+	 * @param ilObjTest $test
 	 * @param bool $anonymized
 	 */
 	function __construct($test, $anonymized = false)
@@ -26,15 +26,16 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	}
 
 	/**
-	 * 
+	 * @return array
 	 */
 	protected function exportActiveIDs()
 	{
-		global $ilDB, $ilSetting;
+		global $ilDB;
 
-		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s',
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 0',
 			array('integer'), array($this->test_id));
 		$pdf_ids = array();
+		$user_ids = array();
 		$assessmentSetting = new ilSetting("assessment");
 		$user_criteria = $assessmentSetting->get("user_criteria");
 		if (strlen($user_criteria) == 0) $user_criteria = 'usr_id';
@@ -57,17 +58,21 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 				'usr_id' => $row['usr_id']
 			);
 			$pdf_ids[$row['pdf_id']] = $row['pdf_id'];
+			$user_ids[$row['usr_id']] = $row['usr_id'];
 			$name = ilObjUser::_lookupName($row['usr_id']);
 			$attrs['fullname'] = trim($name["lastname"] . ", " . $name["firstname"] . " " .  $name["title"]);
 
 			array_push($this->active_ids, $row['pdf_id']);
 			$attrs['user_criteria'] = $user_criteria;
-			$attrs[$user_criteria] = 6;
+			$attrs[$user_criteria] = $row['usr_id'];
 			$this->xmlElement("row", $attrs);
 		}
 		$this->xmlEndTag("tst_active");
+
 		$this->exportPassResult($pdf_ids);
 		$this->exportTestSequence($pdf_ids);
+
+		return $user_ids;
 	}
 
 	/**
@@ -203,18 +208,26 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 		$this->xmlEndTag("tst_test_result");
 	}
 
+	/**
+	 * @return array
+	 */
 	function getXML()
 	{
 		$this->active_ids = array();
 		$this->xmlHeader();
 		$attrs = array("version" => "4.1.0");
 		$this->xmlStartTag("results", $attrs);
-		$this->exportActiveIDs();
+		$val = $this->exportActiveIDs();
 		$this->exportTestQuestions();
 		$this->exportTestSolutions();
 		$this->xmlEndTag("results");
+		return $val;
 	}
 
+	/**
+	 * @param bool $format
+	 * @return string
+	 */
 	function xmlDumpMem($format = TRUE)
 	{
 		$this->getXML();
@@ -223,8 +236,9 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 
 	function xmlDumpFile($file, $format = TRUE)
 	{
-		$this->getXML();
-		return parent::xmlDumpFile($file, $format);
+		$val = $this->getXML();
+		parent::xmlDumpFile($file, $format);
+		return $val;
 	}
 
 }

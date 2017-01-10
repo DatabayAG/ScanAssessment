@@ -5,6 +5,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAsse
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/assessment/class.ilScanAssessmentXMLResultCreator.php';
 require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentFileHelper.php';
 require_once 'Modules/Test/classes/class.ilTestResultsImportParser.php';
+require_once 'Services/Tracking/classes/class.ilLPStatusWrapper.php';
 /**
  * Class ilScanAssessmentReturnDataGUI
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -64,7 +65,7 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		/**
 		 * @var $ilTabs ilTabsGUI
 		 */
-		global $ilTabs;
+		global $ilTabs, $ilDB;
 		$ilTabs->setTabActive('layout');
 
 		$form = new ilPropertyFormGUI();
@@ -74,13 +75,22 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		$xml = new ilScanAssessmentXMLResultCreator($this->test);
 		$helper = new ilScanAssessmentFileHelper($this->test->getId());
 		$xml_file = $helper->getResultsXmlPath();
-		$xml->xmlDumpFile($xml_file);
-		if(file_exists($xml_file))
+		$results = $xml->xmlDumpFile($xml_file);
+		if(sizeof($results) > 0  && file_exists($xml_file))
 		{
 			$parser = new ilTestResultsImportParser($xml_file, $this->test);
 			$parser->startParsing();
 			$this->test->recalculateScores(true);
 			unlink($xml_file);
+			foreach($results as $usr_id)
+			{
+				$ilDB->update('pl_scas_pdf_data',
+					array('results_exported' =>array('integer', 1)
+					),
+					array('usr_id' => array('integer', $usr_id),
+						  'obj_id' =>  array('integer',$this->test->getId())));
+				ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
+			}
 		}
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
