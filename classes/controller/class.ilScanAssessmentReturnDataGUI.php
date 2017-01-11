@@ -54,7 +54,38 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 			}
 		}
 	}
-	
+
+	protected function returnResultsToIliasTest()
+	{
+		/**
+		 * @var $ilDB ilDB
+		 */
+		global $ilDB;
+		$xml      = new ilScanAssessmentXMLResultCreator($this->test);
+		$helper   = new ilScanAssessmentFileHelper($this->test->getId());
+		$xml_file = $helper->getResultsXmlPath();
+		$results  = $xml->xmlDumpFile($xml_file);
+		if(sizeof($results) > 0 && file_exists($xml_file))
+		{
+			$parser = new ilTestResultsImportParser($xml_file, $this->test);
+			$parser->startParsing();
+			$this->test->recalculateScores(true);
+			unlink($xml_file);
+			foreach($results as $usr_id)
+			{
+				$ilDB->update('pl_scas_pdf_data',
+					array(
+						'results_exported' => array('integer', 1)
+					),
+					array(
+						'usr_id' => array('integer', $usr_id),
+						'obj_id' => array('integer', $this->test->getId())
+					));
+				ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
+			}
+		}
+	}
+
 	/**
 	 * @return ilPropertyFormGUI
 	 */
@@ -65,37 +96,68 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		/**
 		 * @var $ilTabs ilTabsGUI
 		 */
-		global $ilTabs, $ilDB;
+		global $ilTabs;
 		$ilTabs->setTabActive('layout');
 
 		$form = new ilPropertyFormGUI();
+	
 		$form->setFormAction($this->getCoreController()->getPluginObject()->getFormAction(__CLASS__ . '.saveForm'));
 		$form->setTitle($this->getCoreController()->getPluginObject()->txt('scas_return'));
-
-		$xml = new ilScanAssessmentXMLResultCreator($this->test);
-		$helper = new ilScanAssessmentFileHelper($this->test->getId());
-		$xml_file = $helper->getResultsXmlPath();
-		$results = $xml->xmlDumpFile($xml_file);
-		if(sizeof($results) > 0  && file_exists($xml_file))
-		{
-			$parser = new ilTestResultsImportParser($xml_file, $this->test);
-			$parser->startParsing();
-			$this->test->recalculateScores(true);
-			unlink($xml_file);
-			foreach($results as $usr_id)
-			{
-				$ilDB->update('pl_scas_pdf_data',
-					array('results_exported' =>array('integer', 1)
-					),
-					array('usr_id' => array('integer', $usr_id),
-						  'obj_id' =>  array('integer',$this->test->getId())));
-				ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
-			}
-		}
-
-		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
-
 		return $form;
+	}
+
+	/**
+	 * @return ilScanAssessmentScanTableReturnResultsGUI
+	 */
+	protected function displayUserTable()
+	{
+		ilScanAssessmentPlugin::getInstance()->includeClass('ui/tables/class.ilScanAssessmentScanTableReturnResultsGUI.php');
+		$tbl = new ilScanAssessmentScanTableReturnResultsGUI(new ilScanAssessmentUIHookGUI(), 'default');
+		$tbl->setData($this->getUserData());
+		return $tbl;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getUserData()
+	{
+		global $ilDB, $ilUser;
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s',
+			array('integer'), array($this->test->getId()));
+
+		$user_data = array();
+
+		while ($row = $ilDB->fetchAssoc($res))
+		{
+			$name = '';
+			if($row['usr_id'] != null)
+			{
+				$name = $ilUser::_lookupFullname($row['usr_id']);
+			}
+			$user_data[] = array(
+							'usr_id'			=> $row['usr_id'],
+							'usr_name'			=> $name,
+							'pdf_id'			=> $row['pdf_id'], 
+							'revision_done'		=> $this->intToYesNo($row['revision_done']), 
+							'results_exported'	=> $this->intToYesNo($row['results_exported']), 
+			);
+		}
+		return $user_data;
+	}
+
+	/**
+	 * @param $value
+	 * @return string
+	 */
+	protected function intToYesNo($value)
+	{
+		global $lng;
+		if($value == 1)
+		{
+			return $lng->txt('yes');
+		}
+		return $lng->txt('no');
 	}
 	
 	/**
@@ -112,6 +174,7 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 			{
 				$this->configuration->bindForm($form);
 				$this->configuration->save();
+				$this->returnResultsToIliasTest();
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
 			}
 			catch(ilException $e)
@@ -152,7 +215,10 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		}
 		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
+		$form->addCommandButton(__CLASS__ . '.saveForm', $this->getCoreController()->getPluginObject()->txt('scas_return_results'));
 		$tpl->setVariable('FORM', $form->getHTML());
+		$tbl = $this->displayUserTable();
+		$tpl->setVariable('CONTENT', $tbl->getHTML());
 		
 		$sidebar = $this->renderSteps();
 		$tpl->setVariable('STATUS', $sidebar);

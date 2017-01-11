@@ -120,6 +120,10 @@ scas_revision_state#:#Revisionsstatus für alle PDF
 scas_page#:#Seite
 scan_user_mapping#:#Benutzerzuweisung
 scas_user#:#PDF
+scas_usr_name#:#Benutzername
+scas_pdf_id#:#Pdf Id
+scas_results_returned#:#Ergebnisse zurückführt
+scas_return_results#:#Ergebnisse zurückführen
 scas_user_info#:#Revision abgeschlossen für das PDF
 scas_user_revision_info#:#Revision noch nicht abgeschlossen für das PDF
 scas_user_mapping_completed#:#Benutzerzuweisung abgeschlossen
