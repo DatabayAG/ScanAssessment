@@ -31,8 +31,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	protected function exportActiveIDs()
 	{
 		global $ilDB;
-																						//TODO INVERT 1 TO ZERO
-		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 1 AND usr_id IS NOT NULL',
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 0 AND usr_id IS NOT NULL',
 			array('integer'), array($this->test_id));
 		$pdf_ids = array();
 		$user_ids = array();
@@ -246,8 +245,11 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	function xmlDumpFile($file, $format = TRUE)
 	{
 		$val = $this->getXML();
-		parent::xmlDumpFile($file, $format);
-		return $val;
+		if(sizeof($val) > 0)
+		{
+			parent::xmlDumpFile($file, $format);
+			return $val;
+		}
 	}
 
 }

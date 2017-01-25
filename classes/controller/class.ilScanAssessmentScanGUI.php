@@ -38,6 +38,8 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	protected function isPreconditionFulfilled()
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentIsActivatedStep.php');
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentLayoutStep.php');
+		$this->getCoreController()->getPluginObject()->includeClass('steps/class.ilScanAssessmentUserPackagesExportedStep.php');
 		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
@@ -99,7 +101,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 
 		$upload = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
 		$upload->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
-		$upload->setDisabled(true);
+		$upload->setSuffixes(array('zip', 'jpg', 'jpeg'));
 		$form->addItem($upload);
 
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
@@ -141,7 +143,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		{
 			try
 			{
-				$this->configuration->bindForm($form);
+				$this->configuration->setValuesFromPost();
 				$this->configuration->save();
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
 			}
@@ -279,9 +281,10 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	{
 		$this->getCoreController()->getPluginObject()->includeClass('ui/statusbar/class.ilScanAssessmentStepsGUI.php');
 		$status_bar = new ilScanAssessmentStepsGUI();
-		foreach($this->configuration->getSteps() as $steps)
+		$steps = new ilScanAssessmentTestConfiguration($this->test->getId());
+		foreach($steps->getSteps() as $step)
 		{
-			$status_bar->addItem($steps);
+			$status_bar->addItem($step);
 		}
 		return $status_bar->getHtml();
 	}

@@ -199,10 +199,12 @@ class ilScanAssessmentPdfHeaderForm
 							if($i === 0)
 							{
 								$this->pdf->Rect($x2 - 0.5, $y2 - 5, PDF_ANSWERBOX_W + 1, PDF_ANSWERBOX_H + 1, 'D');
-								$positions['head_row'][] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2 - 0.5, $y2 - 5), PDF_ANSWERBOX_W + 1);
+								#$positions['head_row'][] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2 - 0.5, $y2 - 5), PDF_ANSWERBOX_W + 1);
+								$positions['head_row'][] = array( 'x' => $x2 - 0.5, 'y' => $y2 - 5, 'w' => PDF_ANSWERBOX_W);
 							}
 							$this->pdf->Rect($x2, $y2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D');
-							$positions['value_rows'][$j][$i] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2, $y2), PDF_ANSWERBOX_W);
+							#$positions['value_rows'][$j][$i] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2, $y2), PDF_ANSWERBOX_W);
+							$positions['value_rows'][$j][$i] = array( 'x' => $x2, 'y' => $y2, 'w' => PDF_ANSWERBOX_W);
 						}
 						if($format[$j] === self::SPACER && $i === 0)
 						{
@@ -212,9 +214,27 @@ class ilScanAssessmentPdfHeaderForm
 				}
 			}
 			$this->matriculation_positions = $positions;
+			$this->saveMatriculationMatrixPositions($positions);
 			$log = ilScanAssessmentLog::getInstance();
 			$log->debug($positions);
 			$this->pdf->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE);
+	}
+
+	/**
+	 * @param $positions
+	 */
+	protected function saveMatriculationMatrixPositions($positions)
+	{
+		global $ilDB;
+
+		$ilDB->update('pl_scas_pdf_data',
+			array(
+				'matriculation_matrix'	=> array('text', json_encode($positions)),
+			),
+			array(
+				'pdf_id' => array('integer', $this->metadata->getIdentificationObject()->getPdfId())
+			));
+		
 	}
 
 	/**

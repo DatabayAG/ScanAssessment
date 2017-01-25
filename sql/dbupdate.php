@@ -299,3 +299,16 @@ if(!$ilDB->tableColumnExists('pl_scas_scan_data', 'correctness'))
 	);
 }
 ?>
+<#16>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'matriculation_matrix'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'matriculation_matrix',
+		array(
+			'type'    => 'clob',
+			'notnull' => false,
+			'default' => null
+		)
+	);
+}
+?>
