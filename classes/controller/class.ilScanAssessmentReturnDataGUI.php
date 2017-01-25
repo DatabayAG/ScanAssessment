@@ -65,7 +65,7 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		$helper   = new ilScanAssessmentFileHelper($this->test->getId());
 		$xml_file = $helper->getResultsXmlPath();
 		$results  = $xml->xmlDumpFile($xml_file);
-		if(sizeof($results) > 0 && file_exists($xml_file))
+		if(file_exists($xml_file))
 		{
 			$parser = new ilTestResultsImportParser($xml_file, $this->test);
 			$parser->startParsing();

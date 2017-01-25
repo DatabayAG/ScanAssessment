@@ -285,3 +285,17 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'results_exported'))
 	);
 }
 ?>
+<#15>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_scan_data', 'correctness'))
+{
+	$ilDB->addTableColumn('pl_scas_scan_data', 'correctness',
+		array(
+			'notnull'=> false,
+			'type'   => 'text',
+			'length' => '25',
+			'default' => 0
+		)
+	);
+}
+?>

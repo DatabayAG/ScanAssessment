@@ -163,6 +163,12 @@ class ilScanAssessmentScanProcess
 		$this->file_helper->ensurePathExists($path);
 		foreach($answers->getCheckBoxContainer() as $key => $value)
 		{
+			$pos = 'l';
+			if(array_key_exists('correctness', $value) && $value['correctness'] == 0)
+			{
+				$pos = 'r';
+			}
+
 			if($value['marked'] == 2)
 			{
 				$id	= $ilDB->nextId('pl_scas_scan_data');
@@ -174,11 +180,13 @@ class ilScanAssessmentScanProcess
 						'page'			=> array('integer', $qr_code->getPageNumber()),
 						'qid'			=> array('integer', $value['qid']),
 						'value1'		=> array('text', ilUtil::stripSlashes($value['aid'])),
-						'value2'		=> array('text', ilUtil::stripSlashes($value['value2']))
+						'value2'		=> array('text', ilUtil::stripSlashes($value['value2'])),
+						'correctness'	=> array('text', ilUtil::stripSlashes($pos)),
 					));
 			}
 			$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $value['marked'] . '.jpg';
+
+			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']  .'.jpg';
 			$scanner->image_helper->drawTempImage($temp, $file_path);
 		}
 	}

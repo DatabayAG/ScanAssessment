@@ -209,7 +209,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 					{
 						$pdf_id		= basename(dirname($filename->getPathName()));
 						$parts		= preg_split('/_/', $filename->getFilename());
-						$answer_id	= $pdf_id . '_' . $parts[0] . '_' . $parts[1] . '_' . $parts[2];
+						$answer_id	= $pdf_id . '_' . $parts[0] . '_' . $parts[1] . '_' . $parts[2] . '_' . $parts[3];
 
 						$element = array(	'file_name'			=> $filename->getFilename(),
 											'relative_path'		=> $this->file_helper->getRevisionPath() . '/' . $dir . '/' .$pdf_id. '/'. $filename->getFilename(),

@@ -79,16 +79,44 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		{
 			foreach($answer['answers'] as $id => $value)
 			{
-				$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
-				$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+				if($value['type'] == 'ilScanAssessment_assSingleChoice' || $value['type'] == 'ilScanAssessment_assMultipleChoice')
+				{
+					$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
+					$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
 
-				$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
-				$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
-				$aid = $value['aid'];
-				$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
-				$marked = $checkbox->isMarked($im, true);
-				$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
-				$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid, 'value2' => null, 'vector' => new ilScanAssessmentVector($first_point, (2.5 * $corrected->getY())));
+					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
+					$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
+					$aid = $value['aid'];
+					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+					$marked = $checkbox->isMarked($im, true);
+					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+					$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid, 'value2' => null, 'vector' => new ilScanAssessmentVector($first_point, (2.5 * $corrected->getY())));
+
+				}
+				else if ($value['type'] == 'ilScanAssessment_assKprimChoice')
+				{
+					$answer_correct_x = ($value['correct']['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
+					$answer_correct_y = ($value['correct']['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+					$answer_wrong_x = ($value['wrong']['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
+					$answer_wrong_y = ($value['wrong']['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+
+					$first_point_correct  = new ilScanAssessmentPoint($answer_correct_x, $answer_correct_y);
+					$second_point_correct = new ilScanAssessmentPoint($answer_correct_x + (2.5 * $corrected->getX()), $answer_correct_y + (2.5 * $corrected->getY()));
+					$aid_correct = $value['correct']['position'];
+					$checkbox = new ilScanAssessmentCheckBoxElement($first_point_correct, $second_point_correct, $this->image_helper);
+					$marked = $checkbox->isMarked($im, true);
+					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point_correct->getX(), $first_point_correct->getY(), $second_point_correct->getX(), $second_point_correct->getY(), $this->translate_mark[$marked]));
+					$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid_correct, 'value2' => null, 'correctness' => $value['correct']['correctness'],  'vector' => new ilScanAssessmentVector($first_point_correct, (2.5 * $corrected->getY())));
+					
+					$first_point_wrong  = new ilScanAssessmentPoint($answer_wrong_x, $answer_wrong_y);
+					$second_point_wrong = new ilScanAssessmentPoint($answer_wrong_x + (2.5 * $corrected->getX()), $answer_wrong_y + (2.5 * $corrected->getY()));
+					$aid_wrong = $value['correct']['position'];
+					$checkbox = new ilScanAssessmentCheckBoxElement($first_point_wrong, $second_point_wrong, $this->image_helper);
+					$marked = $checkbox->isMarked($im, true);
+					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point_wrong->getX(), $first_point_wrong->getY(), $second_point_wrong->getX(), $second_point_wrong->getY(), $this->translate_mark[$marked]));
+					$this->checkbox_container[] = array('element' => $checkbox, 'marked' => $marked, 'qid' => $answer['question'], 'aid' => $aid_wrong, 'value2' => null, 'correctness' => $value['wrong']['correctness'], 'vector' => new ilScanAssessmentVector($first_point_wrong, (2.5 * $corrected->getY())));
+
+				}
 			}
 
 		}

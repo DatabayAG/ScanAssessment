@@ -63,7 +63,7 @@ class ilScanAssessmentScanTableReturnResultsGUI extends ilTable2GUI
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}
 
-		$current_selection_list = new ilAdvancedSelectionListGUI();
+		#$current_selection_list = new ilAdvancedSelectionListGUI();
 		#$current_selection_list->setListTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'));
 		#$current_selection_list->setId('act_' . $a_set['file_id']);
 

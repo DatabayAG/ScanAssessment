@@ -31,9 +31,8 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	protected function exportActiveIDs()
 	{
 		global $ilDB;
-		$res = $ilDB->queryF('SELECT assessment_date FROM pl_scas_user_packages WHERE tst_id = %s',
-			array('integer'), array($this->test_id));
-		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 0 AND usr_id IS NOT NULL',
+																						//TODO INVERT 1 TO ZERO
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 1 AND usr_id IS NOT NULL',
 			array('integer'), array($this->test_id));
 		$pdf_ids = array();
 		$user_ids = array();
@@ -169,6 +168,15 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 		$this->xmlStartTag("tst_solutions", NULL);
 		while ($row = $ilDB->fetchAssoc($res))
 		{
+			$value2 = $row['correctness'];
+			if($value2 == 'l')
+			{
+				$value2 = 1;
+			}
+			else if($value2 == 'r')
+			{
+				$value2 = 0;
+			}
 			$attrs = array(
 				'solution_id' => $row['answer_id'],
 				'active_fi' => $row['pdf_id'],
@@ -176,7 +184,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 				'points' => 0,
 				'pass' => 0,
 				'value1' => $row['value1'],
-				'value2' => $row['value2'],
+				'value2' => $value2,
 				'tstamp' => 0
 			);
 			$test_results[] = array('qfi' =>  $row['qid'], 'aid' => $row['pdf_id']);

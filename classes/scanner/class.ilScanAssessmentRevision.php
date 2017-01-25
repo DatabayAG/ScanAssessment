@@ -34,7 +34,8 @@ class ilScanAssessmentRevision
 				$page	= (int) $parts[1];
 				$qid	= (int) $parts[2];
 				$aid	= (int) $parts[3];
-				$storage[$pdf_id][] = array('page' => $page, 'qid' => $qid, 'aid' => $aid);
+				$side	=  ilUtil::stripSlashes($parts[4]);
+				$storage[$pdf_id][] = array('page' => $page, 'qid' => $qid, 'aid' => $aid, 'correctness' => $side);
 				$remove[$pdf_id] = $page;
 			}
 		}
@@ -57,6 +58,7 @@ class ilScanAssessmentRevision
 						'page'			=> array('integer', $value['page']),
 						'qid'			=> array('integer', $value['qid']),
 						'value1'		=> array('text', $value['aid']),
+						'correctness'	=> array('text', $value['correctness']),
 					));
 				ilScanAssessmentLog::getInstance()->debug(sprintf('User with the id (%s) set the answer for %s state from pdf (%s) to %s', $ilUser->getId(), $value['qid'], $pdf_id, $value['aid']));
 			}
@@ -167,7 +169,7 @@ class ilScanAssessmentRevision
 		$answer_data = array();
 		while($row = $ilDB->fetchAssoc($res))
 		{
-			$key = $row['pdf_id'] . '_' . $row['page'] . '_' . $row['qid'] . '_' . $row['value1'];
+			$key = $row['pdf_id'] . '_' . $row['page'] . '_' . $row['qid'] . '_' . $row['value1'] . '_' . $row['correctness'];
 			$answer_data[$key] = true;
 		}
 
