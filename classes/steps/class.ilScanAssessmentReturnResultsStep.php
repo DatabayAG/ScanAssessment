@@ -30,6 +30,23 @@ class ilScanAssessmentReturnResultsStep extends ilScanAssessmentStepsBase
 	 */
 	public function isFulfilled()
 	{
-		return false;
+		/**
+		 * @var $ilDB ilDB
+		 */
+		global $ilDB;
+		$res = $ilDB->queryF('SELECT *
+				FROM '.self::pdf_data_table.'
+				WHERE obj_id = %s AND results_exported = 0',
+			array('integer'),
+			array((int) $this->test->getId())
+		);
+
+		$value = true;
+		while($row = $ilDB->fetchAssoc($res))
+		{
+			$value = false;
+			continue;
+		}
+		return $value;
 	}
 }
