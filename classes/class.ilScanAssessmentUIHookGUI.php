@@ -166,6 +166,8 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 		}
 
 		$tpl->getStandardTemplate();
+		
+		$tpl->addCss('Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/templates/default/pdf.css');
 
 		$ilLocator->addRepositoryItems((int)$_REQUEST['ref_id']);
 		$tpl->setLocator();

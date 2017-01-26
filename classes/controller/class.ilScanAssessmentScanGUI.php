@@ -59,6 +59,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		$this->tabs->setTabActive('scan');
 		$this->tabs->addSubTab('scan_scanner', $pluginObject->txt('scas_scan'), $this->getLink());
 		$this->tabs->addSubTab('scan_revision', $pluginObject->txt('scas_scan_revision'), $this->getLink('ilScanAssessmentScanRevisionGUI'));
+		$this->tabs->addSubTab('scan_revision_by_answer_row', $pluginObject->txt('scas_revision_answer'), $this->getLink('ilScanAssessmentScanRevisionByAnswerRowGUI'));
 		$this->tabs->addSubTab('scan_user_mapping', $pluginObject->txt('scan_user_mapping'), $this->getLink('ilScanAssessmentScanUserMappingGUI'));
 		$this->tabs->setSubTabActive($active_sub);
 	}

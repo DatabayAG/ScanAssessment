@@ -252,4 +252,36 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		return imagecrop($image, ['x' => $vector->getPosition()->getX(), 'y' => $vector->getPosition()->getY(), 'width' => $vector->getLength(), 'height' => $vector->getLength()]);
 	}
 
+	/**
+	 * @param $image
+	 * @param ilScanAssessmentPoint $point1
+	 * @param ilScanAssessmentPoint $point2
+	 * @return mixed
+	 */
+	function imageCropByPoints($image, $point1, $point2)
+	{
+		if($point1->getX() <= 0)
+		{
+			$point1->setX(1);
+		}
+		if($point1->getY() <= 0 || $point1->getY() > $point2->getY())
+		{
+			$point1->setY(1);
+		}
+
+		$width = $point2->getX() - $point1->getX();
+		$height = $point2->getY() - $point1->getY();
+
+		if($width <= 0)
+		{
+			$width = 1;
+		}
+		if($height <= 0)
+		{
+			$height = 1;
+		}
+
+		return imagecrop($image, ['x' => $point1->getX(), 'y' => $point1->getY(), 'width' => $width, 'height' => $height]);
+	}
+
 }

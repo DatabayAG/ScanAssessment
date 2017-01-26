@@ -144,8 +144,7 @@ class ilScanAssessmentScanProcess
 		$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
 		$this->processAnswers($scan_answer_object, $qr_code, $scanner);
 		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		//TODO: uncomment this again
-		#$this->file_helper->moveFile($org, $done);
+		$this->file_helper->moveFile($org, $done);
 		return true;
 	}
 
@@ -160,7 +159,10 @@ class ilScanAssessmentScanProcess
 
 		ilScanAssessmentRevision::removeOldPdfData($qr_code);
 		$path = $this->file_helper->getRevisionPath() . '/qpl/' . $qr_code->getPdfId() . '/';
+		$whole_path = $path . '/whole/';
 		$this->file_helper->ensurePathExists($path);
+		$this->file_helper->ensurePathExists($whole_path);
+		$qid = 0;
 		foreach($answers->getCheckBoxContainer() as $key => $value)
 		{
 			$pos = 'l';
@@ -184,10 +186,19 @@ class ilScanAssessmentScanProcess
 						'correctness'	=> array('text', ilUtil::stripSlashes($pos)),
 					));
 			}
-			$temp = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-
+			$checkbox = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
+			
+			if($qid != $value['qid'])
+			{
+				$whole_answer = $scanner->image_helper->imageCropByPoints($scanner->image_helper->getImage(), $value['start'], $value['end']);
+				$file_whole_path = $whole_path . $qr_code->getPageNumber() . '_' . $value['qid'] . '.jpg';
+				$scanner->image_helper->drawTempImage($whole_answer, $file_whole_path);
+				$qid = $value['qid'];
+			}
+			
 			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']  .'.jpg';
-			$scanner->image_helper->drawTempImage($temp, $file_path);
+
+			$scanner->image_helper->drawTempImage($checkbox, $file_path);
 		}
 	}
 

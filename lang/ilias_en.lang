@@ -132,3 +132,5 @@ scas_user_mapping_completed_info#:#The user mapping must be finished before the 
 scas_revision_completed#:#Revision finished
 scas_revision_completed_info#:#The revision must be finished before you can make the user mapping.
 scas_user_already_assigned#:#User is already assigned to another PDF.
+scas_not_found#:#No data found.
+scas_revision_answer#:#Revision of answers

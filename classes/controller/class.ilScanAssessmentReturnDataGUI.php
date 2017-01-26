@@ -215,7 +215,13 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		}
 		/** @var ilTemplate $tpl */
 		$tpl = $this->getCoreController()->getPluginObject()->getTemplate('tpl.test_configuration.html', true, true);
-		$form->addCommandButton(__CLASS__ . '.saveForm', $this->getCoreController()->getPluginObject()->txt('scas_return_results'));
+		
+		$check = $user_mapping	= new ilScanAssessmentReturnResultsStep($this->getCoreController()->getPluginObject(), $this->test);
+		if( ! $check->isFulfilled())
+		{
+			$form->addCommandButton(__CLASS__ . '.saveForm', $this->getCoreController()->getPluginObject()->txt('scas_return_results'));
+		}
+
 		$tpl->setVariable('FORM', $form->getHTML());
 		$tbl = $this->displayUserTable();
 		$tpl->setVariable('CONTENT', $tbl->getHTML());

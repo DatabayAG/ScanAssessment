@@ -15,6 +15,7 @@ class ilScanAssessmentFileHelper
 	const ZIP				= 'zip/';
 	const TEMP				= 'tmp/';
 	const RESULTS			= '/results/';
+	const WHOLE_REVISION	= '/whole/';
 
 	/**
 	 * @var int

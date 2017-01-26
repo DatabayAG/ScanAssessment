@@ -80,10 +80,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$pdf = $pdf_h->pdf;
 
 		$pdf->setCellMargins(PDF_CELL_MARGIN);
-
 		$pdf->startTransaction();
 		$this->log->debug(sprintf('Starting transaction for page %s ...', $pdf->getPage()));
-
+		$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 		$start_page = $pdf->getPage();
 		$answers = $question_builder->addQuestionToPdf($question, $counter);
 
@@ -91,8 +90,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
 			$pdf->rollbackTransaction(true);
-
 			$this->addPageWithQrCode($pdf_h);
+			$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 			$answers = $question_builder->addQuestionToPdf($question, $counter);
 		}
 		else
@@ -100,7 +99,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$pdf->commitTransaction();
 			$this->log->debug(sprintf('Transaction worked for page %s commit.', $pdf->getPage()));
 		}
-		$this->map->setQuestionPositions($pdf->getPage(), array('question' => $question->getId() ,'answers' => $answers));
+		$question_end = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
+		$this->map->setQuestionPositions($pdf->getPage(), array('question' => $question->getId() ,'answers' => $answers, 'start_x' => $question_start->getX(), 'start_y' => $question_start->getY(), 'end_x' => $question_end->getX(), 'end_y' => $question_end->getY()));
 	}
 
 	/**
@@ -154,6 +154,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	public function createPdf($data)
 	{
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
+		$this->map = new ilScanAssessmentPdfMap();
 		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions();
 

@@ -132,3 +132,5 @@ scas_revision_completed#:#Revision abgeschlossen
 scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
 scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die Benutzerzuweisung durchgeführt werden kann.
 scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugewiesen.
+scas_not_found#:#Keine Daten vorhanden.
+scas_revision_answer#:#Revision der Fragen
