@@ -1,5 +1,8 @@
-# ILIAS ScanAssessment Plugin
+# ILIAS ScanAssessment Plugin (Development Version)
 * For ILIAS versions: 5.1.0 - 5.1.999
+
+##Important notice
+Since this is still in development, do **NOT** use this for real assessments at the moment!
 
 ## Installation Instructions
 1. Clone this repository to <ILIAS_DIRECTORY>/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment
