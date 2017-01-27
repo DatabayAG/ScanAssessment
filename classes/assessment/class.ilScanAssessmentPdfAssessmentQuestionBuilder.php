@@ -81,11 +81,19 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	}
 
 	/**
+	 * @param $shuffle
 	 * @return array|assQuestion[]
 	 */
-	public function instantiateQuestions()
+	public function instantiateQuestions($shuffle)
 	{
-		foreach($this->test->getQuestions() as $key => $value)
+
+		$questions = $this->test->getQuestions();
+		if($shuffle)
+		{
+			shuffle($questions);
+		}
+
+		foreach($questions as $key => $value)
 		{
 			$question = assQuestion::_instantiateQuestion($value);
 			if(in_array($question->getQuestionType(), $this->supported_assessment_question_types))

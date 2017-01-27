@@ -33,6 +33,61 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	protected $active = 0;
 
 	/**
+	 * @var int
+	 *
+	 * @con_is_primary  false
+	 * @con_is_unique   false
+	 * @con_has_field   true
+	 * @con_fieldtype   integer
+	 * @con_length      1
+	 */
+	protected $shuffle;
+
+	/**
+	 * @var int
+	 *
+	 * @con_is_primary  false
+	 * @con_is_unique   false
+	 * @con_has_field   true
+	 * @con_fieldtype   integer
+	 * @con_length      1
+	 */
+	protected $pdf_mode;
+
+	/**
+	 * @return int
+	 */
+	public function getShuffle()
+	{
+		return $this->shuffle;
+	}
+
+	/**
+	 * @param $shuffle
+	 */
+	public function setShuffle($shuffle)
+	{
+		$this->shuffle = $shuffle;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPdfMode()
+	{
+		return $this->pdf_mode;
+	}
+
+	/**
+	 * @param mixed $pdf_mode
+	 */
+	public function setPdfMode($pdf_mode)
+	{
+		$this->pdf_mode = $pdf_mode;
+	}
+
+
+	/**
 	 * @return int
 	 */
 	public function getActive()
@@ -201,6 +256,8 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	public function bindForm(ilPropertyFormGUI $form)
 	{
 		$this->setActive((int)$form->getInput('active'));
+		$this->setShuffle((int)$form->getInput('shuffle'));
+		$this->setPdfMode((int)$form->getInput('pdf_mode'));
 	}
 
 	/**

@@ -312,3 +312,27 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'matriculation_matrix'))
 	);
 }
 ?>
+<#17>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_test_config', 'shuffle'))
+{
+	$ilDB->addTableColumn('pl_scas_test_config', 'shuffle',
+		array('notnull' => '1',
+			  'type'    => 'integer',
+			  'length'  => '1'
+		)
+	);
+}
+?>
+<#18>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_test_config', 'pdf_mode'))
+{
+	$ilDB->addTableColumn('pl_scas_test_config', 'pdf_mode',
+		array('notnull' => '1',
+			  'type'    => 'integer',
+			  'length'  => '1'
+		)
+	);
+}
+?>

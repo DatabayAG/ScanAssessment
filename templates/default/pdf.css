@@ -2,7 +2,10 @@
 	padding-left: 15px;
 }
 
-.answer_element{
-	padding-right: 10px;
+.answer_block .answer_element{
+	margin-right: 10px;
 }
 
+.kprim_answer{
+	margin-left: 10px;
+}

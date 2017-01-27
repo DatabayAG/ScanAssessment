@@ -134,3 +134,4 @@ scas_revision_completed_info#:#Die Revision muss abgeschlossen sein, bevor die B
 scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugewiesen.
 scas_not_found#:#Keine Daten vorhanden.
 scas_revision_answer#:#Revision der Fragen
+scas_none_shuffle#:#Keine Randomisierung

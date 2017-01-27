@@ -54,21 +54,20 @@ class ilScanAssessmentDefaultGUI extends ilScanAssessmentController
 		$active->setValue(1);
 		$form->addItem($active);
 
-		$select_mode = new ilSelectInputGUI($pluginObject->txt('scas_mode'), 'mode');
+		$select_mode = new ilSelectInputGUI($pluginObject->txt('scas_mode'), 'pdf_mode');
 		$select_mode->setInfo($pluginObject->txt('scas_mode_info'));
-		$modes = array(	'inline' => $pluginObject->txt('scas_mode_inline'),
-						'sheet' => $pluginObject->txt('scas_answer_sheet')
+		$modes = array(	0 => $pluginObject->txt('scas_mode_inline'),
+						1 => $pluginObject->txt('scas_answer_sheet')
 		);
 		$select_mode->setOptions($modes);
 		$select_mode->setDisabled(true);
 		$form->addItem($select_mode);
 
-		$shuffle = new ilSelectInputGUI($pluginObject->txt('scas_shuffling'), 'shuffling');
+		$shuffle = new ilSelectInputGUI($pluginObject->txt('scas_shuffling'), 'shuffle');
 		$shuffle->setInfo($pluginObject->txt('scas_shuffling_info'));
-		$shuffle_modes = array(	'inline' =>$pluginObject->txt('scas_per_assessment'),
-					  			 'sheet' => $pluginObject->txt('scas_per_user')
+		$shuffle_modes = array(	0 =>$pluginObject->txt('scas_none_shuffle'),
+					  			1 => $pluginObject->txt('scas_per_user')
 		);
-		$shuffle->setDisabled(true);
 		$shuffle->setOptions($shuffle_modes);
 		$form->addItem($shuffle);
 

@@ -17,6 +17,8 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAsse
  */
 class ilScanAssessmentPdfAssessmentBuilder
 {
+	
+	const PAGE_SIZE_LEFT = 30;
 
 	const FILE_TYPE = '.pdf';
 	/**
@@ -55,6 +57,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	protected $map;
 
 	/**
+	 * @var int
+	 */
+	protected $shuffle = false;
+
+	/**
 	 * ilPdfPreviewBuilder constructor.
 	 * @param ilObjTest $test
 	 */
@@ -66,6 +73,12 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
 		$this->path_for_zip		= $this->file_helper->getPdfZipPath();
 		$this->map				= new ilScanAssessmentPdfMap();
+		$config  =  new ilScanAssessmentTestConfiguration($this->test->getId());
+		if($config->getShuffle() == 1)
+		{
+			$this->shuffle			= true;
+		}
+
 	}
 
 	/**
@@ -85,8 +98,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 		$start_page = $pdf->getPage();
 		$answers = $question_builder->addQuestionToPdf($question, $counter);
-
-		if($pdf->getPage() != $start_page)
+		$height = $pdf->getPageHeight();
+		$y = $pdf->getY();
+		if($pdf->getPage() != $start_page || $height - $y < self::PAGE_SIZE_LEFT)
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
 			$pdf->rollbackTransaction(true);
@@ -156,7 +170,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$pdf_h	= new ilScanAssessmentPdfHelper($data);
 		$this->map = new ilScanAssessmentPdfMap();
 		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
-		$questions = $question_builder->instantiateQuestions();
+		$questions = $question_builder->instantiateQuestions($this->shuffle);
 
 		$this->addPageWithQrCode($pdf_h);
 		$counter = 1;

@@ -134,3 +134,4 @@ scas_revision_completed_info#:#The revision must be finished before you can make
 scas_user_already_assigned#:#User is already assigned to another PDF.
 scas_not_found#:#No data found.
 scas_revision_answer#:#Revision of answers
+scas_none_shuffle#:#No shuffle
