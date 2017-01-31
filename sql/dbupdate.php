@@ -48,7 +48,8 @@ $fields = array(
 	),
 	'documents_generated' => array(
 		'notnull' => false,
-		'type'    => 'int'
+		'type'    => 'integer',
+		'length'  => '4'
 	),
 );
 if(!$ilDB->tableExists('pl_scas_user_packages'))
