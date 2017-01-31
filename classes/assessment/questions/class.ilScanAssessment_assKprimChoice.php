@@ -8,10 +8,27 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 {
 	/**
-	 * @param assQuestion $question
+	 * @param $question
+	 * @param $answer
+	 * @param $x1
+	 * @param $x2
+	 * @param $y
 	 * @return array
 	 */
-	public function writeAnswersToPdf($question)
+	protected function appendAnswer($question, $answer, $x1, $x2, $y)
+	{
+		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getPosition(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
+
+		return array( 'correct' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x1 , 'y' => $y, 'correctness' => 1),
+					  'wrong' => array('qid' => $question->getId()  , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x2 , 'y' => $y, 'correctness' => 0),
+					  'type' => __CLASS__);
+	}
+
+	/**
+	 * @param assKprimChoice $question
+	 * @return array
+	 */
+	public function writeAnswersWithCheckboxToPdf($question, $counter)
 	{
 
 		$false_label = '-';
@@ -38,10 +55,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x2 = $this->pdf_helper->pdf->GetX() + 39;
 			$y	= $this->pdf_helper->pdf->GetY() - $y_diff;
 
-			$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer->getPosition(), $answer->getAnswertext(), $x1 , $y, $x2 , $y));
-			$answer_positions[] = array( 'correct' => array('qid' => $question->getId() , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x1 , 'y' => $y, 'correctness' => 1),
-										 'wrong' => array('qid' => $question->getId()  , 'position' => $answer->getPosition() , 'a_text' => $answer->getAnswerText(), 'x' => $x2 , 'y' => $y, 'correctness' => 0),
-										 'type' => __CLASS__);
+			$answer_positions[] = $this->appendAnswer($question, $answer, $x1, $x2, $y);
 		}
 		return $answer_positions;
 	}

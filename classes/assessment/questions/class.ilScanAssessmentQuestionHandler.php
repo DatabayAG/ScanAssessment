@@ -47,19 +47,46 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 
 	/**
 	 * @param assQuestion $question
+	 * @param             $counter
 	 */
-	public function writeQuestionToPdf($question)
+	public function writeQuestionToPdf($question, $counter)
 	{
 		$this->writeQuestionTextToPdf($question);
-		$positions = $this->writeAnswersToPdf($question);
+		$positions = $this->writeAnswersWithCheckboxToPdf($question, $counter);
 		$this->writeQuestionEndToPdf();
 		return $positions;
 	}
 
 	/**
+	 * @param assQuestion $question
+	 * @param             $counter
+	 */
+	public function writeQuestionWithoutCheckboxToPdf($question, $counter)
+	{
+		$this->writeQuestionTextToPdf($question);
+		$positions = $this->writeAnswersWithIdentifierToPdf($question, $counter);
+		$this->writeQuestionEndToPdf();
+		return $positions;
+	}
+
+	/**
+	 * @param assQuestion $question
+	 * @param             $counter
+	 */
+	public function writeAnswersWithCheckboxToPdf($question, $counter)
+	{}
+
+	/**
+	 * @param assQuestion $question
+	 * @param             $counter
+	 */
+	public function writeAnswersWithIdentifierToPdf($question, $counter)
+	{}
+
+	/**
 	 * @param $question
 	 */
-	public function writeAnswersToPdf($question)
+	public function writeAnswersCheckboxForIdentifierToPdf($question)
 	{}
 
 	/**
@@ -133,5 +160,15 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 			$points_txt = $this->lng->txt('points');
 		}
 		return ' (' . $points . ' ' . $points_txt . ')';
+	}
+
+	/**
+	 * @param $number
+	 * @return string
+	 */
+	protected function getLetterFromNumber($number)
+	{
+		$alphabet = range('a', 'z');
+		return $alphabet[$number];
 	}
 }

@@ -32,7 +32,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 	 * @param assSingleChoice | assMultipleChoice $question
 	 * @return array
 	 */
-	public function writeAnswersToPdf($question)
+	public function writeAnswersWithCheckboxToPdf($question, $counter)
 	{
 		$answer_positions = array();
 		foreach($question->getAnswers() as $key => $answer)
@@ -47,4 +47,41 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 		}
 		return $answer_positions;
 	}
+
+	/**
+	 * @param assSingleChoice | assMultipleChoice $question
+	 * @return array
+	 */
+	public function writeAnswersWithIdentifierToPdf($question, $counter)
+	{
+		$answers	= array();
+		$answer_counter	= 0;
+		foreach($question->getAnswers() as $key => $answer)
+		{
+			/** @var ASS_AnswerSimple $answer */
+			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
+			#$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
+			#$x = $this->pdf_helper->pdf->GetX() + 34;
+			#$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+			$ident_string = $counter . $this->getLetterFromNumber($answer_counter);
+			$this->pdf_helper->writeHTML('(' . $ident_string . ') ' . $answer->getAnswertext());
+			$answers[] = array('identifier' => $ident_string, 'question' => $question, 'answer' => $answer);
+			$answer_counter++;
+		}
+		return $answers;
+	}
+
+	/**
+	 * @param $question
+	 * @return array
+	 */
+	public function writeAnswersCheckboxForIdentifierToPdf($question)
+	{
+		$answers	= array();
+		$answer_counter	= 0;
+		
+		return $answers;
+	}
+
+
 }
