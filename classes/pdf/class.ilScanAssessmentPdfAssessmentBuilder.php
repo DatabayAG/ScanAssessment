@@ -258,20 +258,24 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$this->addQuestionWithoutCheckboxUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;
 		}
-	}	
+	}
 
 	/**
 	 * @param $pdf_h
+	 * @param $question_builder
 	 */
 	private function addAnswerData($pdf_h, $question_builder)
 	{
 		$this->addPageWithQrCode($pdf_h);
+		$columns = 1;
+
 		foreach($this->map->getQuestionPositions() as $key => $page)
 		{
-			$this->addAnswerCheckboxesUsingTransaction($pdf_h, $question_builder);
+			foreach($page as $position => $question)
+			{
+				$columns = $this->addAnswerCheckboxesUsingTransaction($pdf_h, $question_builder, $question, $columns);
+			}
 		}
-
-		$a = 0;
 	}
 
 
@@ -281,26 +285,41 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 * @param assQuestion $question
 	 * @param int $counter
 	 */
-	protected function addAnswerCheckboxesUsingTransaction($pdf_h, $question_builder)
+	protected function addAnswerCheckboxesUsingTransaction($pdf_h, $question_builder, $question_array, $columns)
 	{
 		/** @var tcpdf $pdf */
 		$pdf = $pdf_h->pdf;
 
-		$pdf->setCellMargins(PDF_CELL_MARGIN);
+		#$pdf->setCellMargins(PDF_CELL_MARGIN);
 		$pdf->startTransaction();
 		$this->log->debug(sprintf('Starting transaction for page %s ...', $pdf->getPage()));
 		$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 		$start_page = $pdf->getPage();
-		$answers = $question_builder->addCheckboxToPdf($question);
+		$question = assQuestion::_instantiateQuestion($question_array['question']);
+		$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
 		$height = $pdf->getPageHeight();
 		$y = $pdf->getY();
+
 		if($pdf->getPage() != $start_page || $height - $y < self::PAGE_SIZE_LEFT)
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
 			$pdf->rollbackTransaction(true);
-			$this->addPageWithQrCode($pdf_h);
-			$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
-			$answers = $question_builder->addCheckboxToPdf($question);
+			if($columns < 4)
+			{
+				$columns++;
+				$pdf->setX($columns * 70);
+				$pdf->setY(35);
+				$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
+				$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
+			}
+			else
+			{
+				$this->addPageWithQrCode($pdf_h);
+				$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
+				$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
+				$columns = 1;
+			}
+
 		}
 		else
 		{
@@ -309,6 +328,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		}
 		$question_end = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 		$this->map->setQuestionPositions($pdf->getPage(), array('question' => $question->getId() ,'answers' => $answers, 'start_x' => $question_start->getX(), 'start_y' => $question_start->getY(), 'end_x' => $question_end->getX(), 'end_y' => $question_end->getY()));
+		return $columns;
 	}
 	
 	/**

@@ -85,8 +85,9 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 
 	/**
 	 * @param $question
+	 * @param $answers
 	 */
-	public function writeAnswersCheckboxForIdentifierToPdf($question)
+	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)
 	{}
 
 	/**

@@ -36,8 +36,8 @@ interface ilScanAssessmentQuestion
 
 	/**
 	 * @param $question
-	 * @param $counter
+	 * @param $answers
 	 * @return 
 	 */
-	public function writeAnswersCheckboxForIdentifierToPdf($question);
+	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns);
 }

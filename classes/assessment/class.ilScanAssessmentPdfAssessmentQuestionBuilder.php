@@ -95,14 +95,16 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	}
 
 	/**
-	 * @param assQuestion $question
+	 * @param $question
+	 * @param $answers
+	 * @param $columns
 	 */
-	public function addCheckboxToPdf($question)
+	public function addCheckboxToPdf($question, $answers, $columns)
 	{
 		$class = 'ilScanAssessment_' . $question->getQuestionType();
 		/** @var ilScanAssessmentQuestionHandler $instance */
 		$instance = new $class($this->pdf_helper, $this->circleStyle);
-		$answers_to_append = $instance->writeAnswersCheckboxForIdentifierToPdf($question);
+		$answers_to_append = $instance->writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns);
 		return $answers_to_append;
 	}
 
