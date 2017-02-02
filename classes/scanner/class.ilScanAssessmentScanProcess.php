@@ -46,6 +46,7 @@ class ilScanAssessmentScanProcess
 		$this->file_helper	= $file_helper;
 		$this->log			= ilScanAssessmentLog::getInstance();
 		$this->test 		= ilObjectFactory::getInstanceByObjId((int) $test_obj_id);
+		$this->rescale		= 0;
 	}
 
 	/**
@@ -56,13 +57,54 @@ class ilScanAssessmentScanProcess
 	protected function detectMarker($scanner, $log)
 	{
 		$time_start	= microtime(true);
-		$marker		= $scanner->getMarkerPosition();
+		$marker		= $scanner->getMarkerPosition($this->file_helper->getScanTempPath());
 		$time_end	= microtime(true);
 		$time		= $time_end - $time_start;
 		$log->debug('Marker Position detection duration: ' . $time);
 		$log->debug($marker);
 
 		return $marker;
+	}
+
+	/**
+	 * @param $scanner
+	 * @param ilScanAssessmentLog $log
+	 * @param $marker
+	 * @return bool
+	 */
+	protected function checkIfMustBeCropped($scanner, $log, $marker)
+	{
+		$corrected = new ilScanAssessmentPoint($scanner->image_helper->getImageSizeX() / 210, $scanner->image_helper->getImageSizeY() / 297);
+		$x1        = $marker[0]->getPosition()->getX();
+		$x2        = $marker[1]->getPosition()->getX();
+		$y1        = $marker[0]->getPosition()->getY();
+		$y2        = $marker[1]->getPosition()->getY();
+		$marker_should_be_at_x = 10 * $corrected->getX();
+		$marker_should_be_at_y = 10 * $corrected->getY();
+
+		$log->debug('Top Marker should be at ' . $marker_should_be_at_x .' ' . $marker_should_be_at_y);
+		$log->debug('Top Marker is at ' . $x1 .' ' . $y1);
+
+		$a =  $scanner->image_helper->getImageSizeY() - $marker_should_be_at_y;
+		$log->debug('Bottom Marker should be at ' . $marker_should_be_at_x . ' ' . $a);
+		$log->debug('Bottom Marker is at ' . $x2 .' ' . $y2);
+
+		$x3 = $x1 - $marker_should_be_at_x;
+		$y3 = $y1 - $marker_should_be_at_y;
+
+		$x4 = $x2 - $marker_should_be_at_x;
+		$y4 = $a - $y2;
+		$log->debug('Crop would start at ' . $x3 .' ' . $y3. ' ' . $x4 .' ' . $y4);
+
+		if( $this->rescale < 2)
+		{
+
+			$image = new ilScanAssessmentGDWrapper($this->file_helper->getScanTempPath() . 'new_file.jpg');
+			$image->imageCropWithSource($image, $x3, $y3, $x4, $y4, $this->file_helper->getScanTempPath() . 'rescaled.jpg');
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -110,41 +152,64 @@ class ilScanAssessmentScanProcess
 	{
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
+		$not_cropped = true;
 		copy($org, $this->file_helper->getScanTempPath() . 'new_file.jpg');
 		$log->debug('Start with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 		$marker = $this->detectMarker($scanner, $log);
-
-		$qr_pos = $this->detectQrCode($log);
-		if($qr_pos !== false)
+		$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file.jpg';
+		if(file_exists($rotate_file))
 		{
-			$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
-			if($im2 !== false)
+			copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file.jpg');
+		}
+		$scanner->image_helper->drawTempImage($scanner->getImage(), '/tmp/new_file.jpg');
+		$scanner->image_helper->drawTempImage($scanner->getTempImage(), '/tmp/tmp_new_file.jpg');
+		
+		if($this->checkIfMustBeCropped($scanner, $log, $marker))
+		{
+			$log->debug('Image was scaled re-detecting marker positions.');
+			if( $this->rescale < 2 )
 			{
-				$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
-				$scanner->image_helper->drawTempImage($im2, $path);
-				$qr_code = $this->processQrCode($path, $org);
-				if(! $qr_code)
-				{
-					return false;
-				}
-			}
-			else
-			{
-				$this->log->warn('No QR Code found!');
-				$this->getAnalysingFolder();
+				$this->rescale++;
+				$not_cropped = false;
+				$this->analyseImage($this->file_helper->getScanTempPath() , 'rescaled.jpg');
 			}
 		}
 
-		$done = $this->path_to_done . '/' . $entry;
+		if($not_cropped)
+		{
+			$qr_pos = $this->detectQrCode($log);
+			if($qr_pos !== false)
+			{
+				$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
+				if($im2 !== false)
+				{
+					$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
+					$scanner->image_helper->drawTempImage($im2, $path);
+					$qr_code = $this->processQrCode($path, $org);
+					if(! $qr_code)
+					{
+						return false;
+					}
+				}
+				else
+				{
+					$this->log->warn('No QR Code found!');
+					$this->getAnalysingFolder();
+				}
+			}
 
-		$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+			$done = $this->path_to_done . '/' . $entry;
 
-		$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
-		$this->processAnswers($scan_answer_object, $qr_code, $scanner);
-		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		$this->file_helper->moveFile($org, $done);
+			$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+
+			$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
+			$this->processAnswers($scan_answer_object, $qr_code, $scanner);
+			$log->debug('Coping file: ' . $org . ' to ' .$done );
+			#$this->file_helper->moveFile($org, $done);
+		}
+
 		return true;
 	}
 
@@ -190,7 +255,8 @@ class ilScanAssessmentScanProcess
 			
 			if($qid != $value['qid'])
 			{
-				$whole_answer = $scanner->image_helper->imageCropByPoints($scanner->image_helper->getImage(), $value['start'], $value['end']);
+				$answer_image = new ilScanAssessmentGDWrapper($this->path_to_done . '/answer_detection.jpg');
+				$whole_answer = $scanner->image_helper->imageCropByPoints($answer_image->getImage(), $value['start'], $value['end']);
 				$file_whole_path = $whole_path . $qr_code->getPageNumber() . '_' . $value['qid'] . '.jpg';
 				$scanner->image_helper->drawTempImage($whole_answer, $file_whole_path);
 				$qid = $value['qid'];

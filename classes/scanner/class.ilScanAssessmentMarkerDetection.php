@@ -21,21 +21,22 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	}
 
 	/**
+	 * @param $path
 	 * @return array|bool
 	 */
-	public function getMarkerPosition()
+	public function getMarkerPosition($path)
 	{
 
-		$im = $this->getImage();
+		$im = $this->getTempImage();
 		$this->log->debug(sprintf('Starting marker detection...'));
 		$this->setThreshold(self::LOWER_THRESHOLD);
-		$marker = $this->findMarker($im, false, $this->getThreshold());
+		$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
 
 		if($marker === false)
 		{
 			$this->log->debug(sprintf('Marker not found retrying with higher threshold.'));
 			$this->setThreshold(self::HIGHER_THRESHOLD);
-			$marker = $this->findMarker($im, false, $this->getThreshold());
+			$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
 		}
 		$this->log->debug(sprintf('Marker detection done.'));
 		return $marker;
@@ -49,7 +50,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 * @var ilScanAssessmentVector $locate_bottom_left
 	 * @return array|bool
 	 */
-	public function findMarker(&$im, $rotated = false, $threshold = 150) {
+	public function findMarker(&$im, $rotated = false, $threshold = 150, $path) {
 
 		$locate_top_left = null;
 		$locate_bottom_left = null;
@@ -71,7 +72,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		{
 			$this->log->debug(sprintf('Top Left Marker found Start[%s, %s], End[%s, %s] starting to detect exact position.', $scan_top_left->getStart()->getX(), $scan_top_left->getStart()->getY(),  $scan_top_left->getEnd()->getX(), $scan_top_left->getEnd()->getY()));
 			$locate_top_left = $this->detectExactMarkerPosition($scan_top_left, $threshold);
-			$this->log->debug(sprintf('Exact Top Left Marker found at [%s, %s].', $locate_top_left->getPosition()->getX(), $locate_top_left->getPosition()->getY()));
+			$this->log->debug(sprintf('Exact Top Left Marker found at [%s, %s] with length %s.', $locate_top_left->getPosition()->getX(), $locate_top_left->getPosition()->getY(), $locate_top_left->getLength()));
 			$scan_bottom_left = $this->probeMarkerPosition('bottom', $threshold);
 
 			if($scan_bottom_left !== false) 
@@ -79,7 +80,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$this->log->debug(sprintf('Bottom Left Marker found Start[%s, %s], End[%s, %s] starting to detect exact position.', $scan_bottom_left->getStart()->getX(), $scan_bottom_left->getStart()->getY(),  $scan_bottom_left->getEnd()->getX(), $scan_bottom_left->getEnd()->getY()));
 
 				$locate_bottom_left = $this->detectExactMarkerPosition($scan_bottom_left, $threshold);
-				$this->log->debug(sprintf('Exact Bottom Left Marker found at [%s, %s].', $locate_bottom_left->getPosition()->getX(), $locate_bottom_left->getPosition()->getY()));
+				$this->log->debug(sprintf('Exact Bottom Left Marker found at [%s, %s] with length %s.', $locate_bottom_left->getPosition()->getX(), $locate_bottom_left->getPosition()->getY(), $locate_bottom_left->getLength()));
 
 				$dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
 				$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
@@ -92,7 +93,8 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 					$im = $this->image_helper->rotate($rad * -1 );
 					$this->setTempImage($im);
 					$this->setImage($im);
-					return $this->findMarker($im, true, $threshold);
+					$this->image_helper->drawTempImage($im, $path . '/rotate_file.jpg');
+					return $this->findMarker($im, true, $threshold, $path);
 				}
 				else 
 				{

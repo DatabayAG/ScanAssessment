@@ -120,8 +120,8 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 				if($found) break;
 			}
 			$fixedMaxY = $yi;
-			$fixedMaxX = $fixedMaxX + 15;
-			$fixedMaxY = $fixedMaxY + 15;
+			$fixedMaxX = $fixedMaxX + 20;
+			$fixedMaxY = $fixedMaxY + 20;
 
 			$found = false;
 			for($sq = $w2 / 10; $sq < $w2 / 2; $sq += 3)
