@@ -161,11 +161,12 @@ class ilScanAssessmentScanProcess
 		$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file.jpg';
 		if(file_exists($rotate_file))
 		{
+			$log->debug('Rotated file found, using that for further processing.');
 			copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file.jpg');
+			unlink($rotate_file);
+			$this->rescale = 0;
 		}
-		$scanner->image_helper->drawTempImage($scanner->getImage(), '/tmp/new_file.jpg');
-		$scanner->image_helper->drawTempImage($scanner->getTempImage(), '/tmp/tmp_new_file.jpg');
-		
+
 		if($this->checkIfMustBeCropped($scanner, $log, $marker))
 		{
 			$log->debug('Image was scaled re-detecting marker positions.');
@@ -207,7 +208,7 @@ class ilScanAssessmentScanProcess
 			$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
 			$this->processAnswers($scan_answer_object, $qr_code, $scanner);
 			$log->debug('Coping file: ' . $org . ' to ' .$done );
-			#$this->file_helper->moveFile($org, $done);
+			$this->file_helper->moveFile($org, $done);
 		}
 
 		return true;
