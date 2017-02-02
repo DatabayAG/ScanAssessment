@@ -9,7 +9,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 {
 
 	/**
-	 * @var 
+	 * @var
 	 */
 	protected $image;
 
@@ -43,7 +43,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 * @param ilScanAssessmentPoint $point
 	 * @return array
 	 */
-	public function getColor(ilScanAssessmentPoint $point) 
+	public function getColor(ilScanAssessmentPoint $point)
 	{
 		$color	= imagecolorat($this->getImage(), $point->getX(), $point->getY());
 		$blue	= 0x0000ff & $color;
@@ -69,13 +69,13 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	/**
 	 * @return resource
 	 */
-	public function removeBlackBorder() 
+	public function removeBlackBorder()
 	{
 		$img = $this->getImage();
 
-		for($y = $this->getImageSizeY() - 1; $y > $this->getImageSizeY() - 100; $y--) 
+		for($y = $this->getImageSizeY() - 1; $y > $this->getImageSizeY() - 100; $y--)
 		{
-			if($this->getGrey( new ilScanAssessmentPoint(round($this->getImageSizeX()) / 2 , $y)) > 50) 
+			if($this->getGrey( new ilScanAssessmentPoint(round($this->getImageSizeX()) / 2 , $y)) > 50)
 			{
 				$img2 = imagecreatetruecolor($this->getImageSizeX(), $y);
 				imagecopy($img2, $this->getImage(), 0,0,0,0,$this->getImageSizeX(), $y);
@@ -83,9 +83,9 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 			}
 		}
 
-		for($x = $this->getImageSizeX() - 1;  $x > $this->getImageSizeX() - 100; $x--) 
+		for($x = $this->getImageSizeX() - 1;  $x > $this->getImageSizeX() - 100; $x--)
 		{
-			if($this->getGrey(new ilScanAssessmentPoint($x, round( $this->getImageSizeY() ) / 2 ) ) > 50 ) 
+			if($this->getGrey(new ilScanAssessmentPoint($x, round( $this->getImageSizeY() ) / 2 ) ) > 50 )
 			{
 				$img2 = imagecreatetruecolor($x, $this->getImageSizeY());
 				imagecopy($img2, $this->getImage(), 0,0,0,0,$x, $this->getImageSizeY());
@@ -249,7 +249,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	function imageCrop($image, $vector)
 	{
-		return imagecrop($image, ['x' => $vector->getPosition()->getX(), 'y' => $vector->getPosition()->getY(), 'width' => $vector->getLength(), 'height' => $vector->getLength()]);
+		return imagecrop($image, array('x' => $vector->getPosition()->getX(), 'y' => $vector->getPosition()->getY(), 'width' => $vector->getLength(), 'height' => $vector->getLength()));
 	}
 
 	/**
@@ -281,7 +281,32 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 			$height = 1;
 		}
 
-		return imagecrop($image, ['x' => $point1->getX(), 'y' => $point1->getY(), 'width' => $width, 'height' => $height]);
+		return imagecrop($image, array('x' => $point1->getX(), 'y' => $point1->getY(), 'width' => $width, 'height' => $height));
 	}
 
+	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename)
+	{
+		if($src_x < 0)
+		{
+			$src_x = 0;
+		}
+		if($src_y < 0)
+		{
+			$src_y = 0;
+		}
+		if($dest_x < 0)
+		{
+			$dest_x = 0;
+		}
+		if($dest_y < 0)
+		{
+			$dest_y = 0;
+		}
+		$height = $image->getImageSizeY() - $src_y - $dest_y;
+		$width = $image->getImageSizeX() - $src_x - $dest_x;
+		$scaled_image = imagecreatetruecolor($width, $height);
+		imagecopy($scaled_image , $image->getImage() , 0 , 0 , $src_x, $src_y,  $width, $height);
+		$this->drawTempImage($scaled_image, $filename);
+	}
+	
 }

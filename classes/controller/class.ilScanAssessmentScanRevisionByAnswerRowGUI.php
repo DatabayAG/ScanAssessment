@@ -128,12 +128,16 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 				$name_l = $pdf_id . '_' .$page . '_' . $data['correct']['qid'] . '_' .$data['correct']['position'] . '_l';
 				$name_r = $pdf_id . '_' .$page . '_' . $data['wrong']['qid'] . '_' .$data['correct']['position'] . '_r';
 				$answer = $this->getKprimAnswerTexts($data['correct']['qid']);
-				$this->answerIsChecked($checked_answers, $name_l, $template);
+				if(array_key_exists($name_l, $checked_answers))
+				{
+					$template->touchBlock('checked_1');
+				}
+				if(array_key_exists($name_r, $checked_answers))
+				{
+					$template->touchBlock('checked_2');
+				}
 				$template->setCurrentBlock($data['type']);
 				$template->setVariable('ANSWER_ID', 'revision[' . $name_l .']');
-				#$template->parseCurrentBlock();
-				$this->answerIsChecked($checked_answers, $name_r, $template);
-				#$template->setCurrentBlock($data['type']);
 				$template->setVariable('ANSWER_ID_2', 'revision[' . $name_r .']');
 				$template->setVariable('VALUE', $answer[$data['correct']['position']]);
 				$template->parseCurrentBlock();
