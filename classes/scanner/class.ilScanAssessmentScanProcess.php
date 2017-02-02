@@ -201,16 +201,18 @@ class ilScanAssessmentScanProcess
 				}
 			}
 
-			$done = $this->path_to_done . '/' . $entry;
+
 
 			$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
 
 			$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
 			$this->processAnswers($scan_answer_object, $qr_code, $scanner);
-			$log->debug('Coping file: ' . $org . ' to ' .$done );
-			$this->file_helper->moveFile($org, $done);
-		}
 
+
+		}
+		$done = $this->path_to_done . '/' . $entry;
+		$log->debug('Coping file: ' . $org . ' to ' .$done );
+		$this->file_helper->moveFile($org, $done);
 		return true;
 	}
 
