@@ -37,6 +37,16 @@ class ilScanAssessmentScanProcess
 	protected $test;
 
 	/**
+	 * @var array
+	 */
+	protected $non_conform_files = array();
+
+	/**
+	 * @var array
+	 */
+	protected $files_not_for_this_test = array();
+	
+	/**
 	 * ilScanAssessmentScanProcess constructor.
 	 * @param ilScanAssessmentFileHelper $file_helper
 	 * @param                            $test_obj_id
@@ -150,6 +160,7 @@ class ilScanAssessmentScanProcess
 	 */
 	protected function analyseImage($path, $entry)
 	{
+		$qr_code = false;
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
 		$not_cropped = true;
@@ -158,62 +169,75 @@ class ilScanAssessmentScanProcess
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 		$marker = $this->detectMarker($scanner, $log);
-		$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file.jpg';
-		if(file_exists($rotate_file))
+		if($marker != false)
 		{
-			$log->debug('Rotated file found, using that for further processing.');
-			copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file.jpg');
-			unlink($rotate_file);
-			$this->rescale = 0;
-		}
-
-		if($this->checkIfMustBeCropped($scanner, $log, $marker))
-		{
-			$log->debug('Image was scaled re-detecting marker positions.');
-			if( $this->rescale < 2 )
+			$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file.jpg';
+			if(file_exists($rotate_file))
 			{
-				$this->rescale++;
-				$not_cropped = false;
-				$this->analyseImage($this->file_helper->getScanTempPath() , 'rescaled.jpg');
+				$log->debug('Rotated file found, using that for further processing.');
+				copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file.jpg');
+				unlink($rotate_file);
+				$this->rescale = 0;
 			}
-		}
 
-		if($not_cropped)
-		{
-			$qr_pos = $this->detectQrCode($log);
-			if($qr_pos !== false)
+			if($this->checkIfMustBeCropped($scanner, $log, $marker))
 			{
-				$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
-				if($im2 !== false)
+				$log->debug('Image was scaled re-detecting marker positions.');
+				if( $this->rescale < 2 )
 				{
-					$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
-					$scanner->image_helper->drawTempImage($im2, $path);
-					$qr_code = $this->processQrCode($path, $org);
-					if(! $qr_code)
+					$this->rescale++;
+					$not_cropped = false;
+					$this->analyseImage($this->file_helper->getScanTempPath() , 'rescaled.jpg');
+				}
+			}
+
+			if($not_cropped)
+			{
+				$qr_pos = $this->detectQrCode($log);
+				if($qr_pos !== false)
+				{
+					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
+					if($im2 !== false)
 					{
+						$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
+						$scanner->image_helper->drawTempImage($im2, $path);
+						$qr_code = $this->processQrCode($path, $org);
+						if(! $qr_code)
+						{
+							return false;
+						}
+					}
+					else
+					{
+						$this->log->warn('No QR Code found!');
+						$this->getAnalysingFolder();
 						return false;
 					}
 				}
-				else
+				$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+				$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
+				$this->processAnswers($scan_answer_object, $qr_code, $scanner);
+			}
+			if($qr_code != false || !$not_cropped)
+			{
+				$done = $this->path_to_done . '/' . $entry;
+				$log->debug('Moving file: ' . $org . ' to ' .$done );
+				$this->file_helper->moveFile($org, $done);
+				return true;
+			}
+			else
+			{
+				if($entry != 'rescaled.jpg')
 				{
-					$this->log->warn('No QR Code found!');
-					$this->getAnalysingFolder();
+					$this->files_not_for_this_test[] = $entry;
 				}
 			}
-
-
-
-			$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
-
-			$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
-			$this->processAnswers($scan_answer_object, $qr_code, $scanner);
-
-
 		}
-		$done = $this->path_to_done . '/' . $entry;
-		$log->debug('Coping file: ' . $org . ' to ' .$done );
-		$this->file_helper->moveFile($org, $done);
-		return true;
+		else
+		{
+			$this->non_conform_files[] = $entry;
+			return false;
+		}
 	}
 
 	/**
@@ -287,6 +311,11 @@ class ilScanAssessmentScanProcess
 			if($identification->getTestId() != $this->test->getId())
 			{
 				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
+				$file = basename($org);
+				if($file != 'rescaled.jpg')
+				{
+					$this->files_not_for_this_test[] = $file;
+				}
 				return false;
 			}
 		}
@@ -433,4 +462,20 @@ class ilScanAssessmentScanProcess
 		return true;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getNonConformFiles()
+	{
+		return $this->non_conform_files;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getFilesNotForThisTest()
+	{
+		return $this->files_not_for_this_test;
+	}
+	
 }
