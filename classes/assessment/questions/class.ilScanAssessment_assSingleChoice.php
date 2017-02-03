@@ -9,19 +9,20 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 
 	/**
 	 * @param $question
-	 * @param $answer
+	 * @param $answer_position
+	 * @param $answer_text
 	 * @param $x
 	 * @param $y
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer, $x, $y)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y)
 	{
-		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer->getOrder(), $answer->getAnswertext(), $x, $y, __CLASS__));
+		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer_position, $answer_text, $x, $y, __CLASS__));
 
 		return array(
 			'qid'  => $question->getId(),
-			'aid'  => $answer->getOrder(),
-			//'a_text' => $answer->getAnswertext(), 
+			'aid'  => $answer_position,
+			//'a_text' => $answer_text, 
 			'x'    => $x,
 			'y'    => $y,
 			'type' => __CLASS__
@@ -43,7 +44,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			$x = $this->pdf_helper->pdf->GetX() + 34;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
 			$this->pdf_helper->writeHTML($answer->getAnswertext());
-			$answer_positions[] = $this->appendAnswer($question, $answer, $x, $y);
+			$answer_positions[] = $this->appendAnswer($question, $answer->getOrder(), $answer->getAnswertext(), $x, $y);
 		}
 		return $answer_positions;
 	}
@@ -81,18 +82,13 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 		{
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->pdf->Rect($columns * 34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$x = $this->pdf_helper->pdf->GetX() + 34;
+			$this->pdf_helper->pdf->Rect($columns * 25, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
+			$x = $this->pdf_helper->pdf->GetX() + ($columns * 25);
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->pdf_helper->writeHTMLCell(0, 0, $columns * 34, $y, $answer['identifier'], 0, 1, 0, TRUE, '', TRUE);
+			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 1, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = array(
-				'qid'  => $question->getId(),
-				'aid'  => $answer['order'],
-				'x'    => $x,
-				'y'    => $y,
-				'type' => __CLASS__
-			);
+			$answer_positions[] = $this->appendAnswer($question, $answer['order'], $answer['answertext'], $x, $y);
+
 		}
 		$this->pdf_helper->pdf->Ln();
 		

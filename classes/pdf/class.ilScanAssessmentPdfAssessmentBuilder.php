@@ -221,7 +221,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		else
 		{
 			$this->addQuestionWithoutCheckbox($pdf_h, $questions, $question_builder);
-			$this->addAnswerData($pdf_h, $question_builder);
+			$this->addAnswerData($pdf_h, $question_builder, $data->getIdentificationObject());
 		}
 
 		$this->log->info('Document Information:' . json_encode($data->getIdentification()) . json_encode($this->document_information));
@@ -264,9 +264,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 * @param $pdf_h
 	 * @param $question_builder
 	 */
-	private function addAnswerData($pdf_h, $question_builder)
+	private function addAnswerData($pdf_h, $question_builder, $identification)
 	{
+		$identification->setPageNumber($pdf_h->pdf->getPage());
 		$this->addPageWithQrCode($pdf_h);
+		$this->log->debug(sprintf('We are on page %s ...', $pdf_h->pdf->getPage()));
 		$columns = 1;
 
 		foreach($this->map->getQuestionPositions() as $key => $page)
@@ -278,12 +280,12 @@ class ilScanAssessmentPdfAssessmentBuilder
 		}
 	}
 
-
 	/**
 	 * @param ilScanAssessmentPdfHelper $pdf_h
 	 * @param ilScanAssessmentPdfAssessmentQuestionBuilder $question_builder
-	 * @param assQuestion $question
-	 * @param int $counter
+	 * @param $question_array
+	 * @param $columns
+	 * @return int
 	 */
 	protected function addAnswerCheckboxesUsingTransaction($pdf_h, $question_builder, $question_array, $columns)
 	{
@@ -304,7 +306,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
 			$pdf->rollbackTransaction(true);
-			if($columns < 4)
+			if($columns < 6)
 			{
 				$columns++;
 				$pdf->setX($columns * 70);
@@ -314,10 +316,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 			}
 			else
 			{
+				$columns = 1;
 				$this->addPageWithQrCode($pdf_h);
 				$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
 				$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
-				$columns = 1;
 			}
 
 		}
@@ -429,6 +431,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	{
 		$pdf_h->pdf->setQRCodeOnThisPage(true);
 		$pdf_h->createQRCode($pdf_h->pdf->getMetadata()->getIdentification());
+		$this->log->info(sprintf('************ Creating qr code with following identification %s.', $pdf_h->pdf->getMetadata()->getIdentification()));
 	}
 
 	/**

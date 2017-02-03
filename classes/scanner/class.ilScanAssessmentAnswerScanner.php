@@ -77,9 +77,18 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$answers = $this->getAnswerPositions();
 		foreach($answers as $qid => $answer)
 		{
-			$question_start = new ilScanAssessmentPoint(1, ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
-			$question_end = new ilScanAssessmentPoint($this->image_helper->getImageSizeX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
-
+			if($this->getPdfMode())
+			{
+				$this->log->debug(sprintf('Not inlne!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111'));
+				$question_start = new ilScanAssessmentPoint(($answer['start_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+				$question_end = new ilScanAssessmentPoint( ($answer['end_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+			}
+			else
+			{
+				$question_start = new ilScanAssessmentPoint(1, ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+				$question_end = new ilScanAssessmentPoint($this->image_helper->getImageSizeX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+			}
+			
 			foreach($answer['answers'] as $id => $value)
 			{
 				if($value['type'] == 'ilScanAssessment_assSingleChoice' || $value['type'] == 'ilScanAssessment_assMultipleChoice')
@@ -273,6 +282,32 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			}
 		}
 		return $answers;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	private function getPdfMode()
+	{
+		if($this->qr_identification)
+		{
+			global $ilDB;
+			$res = $ilDB->queryF(
+				'SELECT pdf_mode FROM pl_scas_test_config
+					WHERE obj_id = %s',
+				array('integer'),
+				array($this->qr_identification->getTestId())
+			);
+
+			while($row = $ilDB->fetchAssoc($res))
+			{
+				if($row['pdf_mode'] == 1)
+				{
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
