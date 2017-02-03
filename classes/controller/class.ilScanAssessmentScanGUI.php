@@ -120,7 +120,25 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 
 		if($value == $scan_process::FOUND)
 		{
-			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_files_found'));
+			$txt = $this->getCoreController()->getPluginObject()->txt('scas_files_found');
+
+			if(sizeof($scan_process->getNonConformFiles()) > 0)
+			{
+				$txt .= '<br>' . $this->getCoreController()->getPluginObject()->txt('scas_non_conform_files_found');
+				foreach($scan_process->getNonConformFiles() as $key => $filename)
+				{
+					$txt .= '<br>' . $filename;
+				}
+			}
+			if(sizeof($scan_process->getFilesNotForThisTest()) > 0)
+			{
+				$txt .= '<br>' . $this->getCoreController()->getPluginObject()->txt('scas_not_for_this_test');
+				foreach($scan_process->getFilesNotForThisTest() as $key => $filename)
+				{
+					$txt .= '<br>' . $filename;
+				}
+			}
+			$this->redirectAndInfo($txt);
 		}
 		else if ($value == $scan_process::LOCKED)
 		{
