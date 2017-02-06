@@ -56,7 +56,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x2 = $this->pdf_helper->pdf->GetX() + 39;
 			$y	= $this->pdf_helper->pdf->GetY() - $y_diff;
 
-			$answer_positions[] = $this->appendAnswer($question, $answer->getOrder(), $answer->getAnswerText(), $x1, $x2, $y);
+			$answer_positions[] = $this->appendAnswer($question, $answer->getPosition(), $answer->getAnswerText(), $x1, $x2, $y);
 		}
 		return $answer_positions;
 	}

@@ -79,7 +79,6 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		{
 			if($this->getPdfMode())
 			{
-				$this->log->debug(sprintf('Not inlne!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1111'));
 				$question_start = new ilScanAssessmentPoint(($answer['start_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
 				$question_end = new ilScanAssessmentPoint( ($answer['end_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
 			}
@@ -169,35 +168,39 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 */
 	protected function findMatriculation(&$im)
 	{
-		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
-
-		$im2 = $im;
-		$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
-		$matriculation = array();
-		$positions = $this->getMatriculationPosition();
-		foreach($positions as $key => $col)
+		if($this->qr_identification->getPageNumber() == $this->getPageForMatriculation())
 		{
-			/** @var ilScanAssessmentVector $vector */
-			foreach($col as $row => $vector)
+			$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
+
+			$im2 = $im;
+			$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
+			$matriculation = array();
+			$positions = $this->getMatriculationPosition();
+			foreach($positions as $key => $col)
 			{
-				$answer_x = ($vector['x']) * ($corrected->getX());
-				$answer_y = ($vector['y']) * ($corrected->getY());
-
-				$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
-				$second_point = new ilScanAssessmentPoint($answer_x + ($vector['w'] * $corrected->getX()), $answer_y + ($vector['w'] * $corrected->getY()));
-
-				$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
-				$marked = $checkbox->isMarked($im, true);
-				#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
-				if($marked == 2)
+				/** @var ilScanAssessmentVector $vector */
+				foreach($col as $row => $vector)
 				{
-					$matriculation[$key] = $row;
+					$answer_x = ($vector['x']) * ($corrected->getX());
+					$answer_y = ($vector['y']) * ($corrected->getY());
+
+					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
+					$second_point = new ilScanAssessmentPoint($answer_x + ($vector['w'] * $corrected->getX()), $answer_y + ($vector['w'] * $corrected->getY()));
+
+					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+					$marked = $checkbox->isMarked($im, true);
+					#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+					if($marked == 2)
+					{
+						$matriculation[$key] = $row;
+					}
 				}
 			}
+			$this->saveMatriculationNumber($matriculation);
+			$this->log->debug(sprintf('...done scanning matriculation checkboxes.'));
+			$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
+
 		}
-		$this->saveMatriculationNumber($matriculation);
-		$this->log->debug(sprintf('...done scanning matriculation checkboxes.'));
-		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
 
 	}
 
@@ -336,6 +339,34 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			return $matriculation_matrix['value_rows'];
 		}
 		return $matriculation_matrix;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getPageForMatriculation()
+	{
+		$matriculation_matrix = array();
+		if($this->qr_identification)
+		{
+			global $ilDB;
+			$res = $ilDB->queryF(
+				'SELECT matriculation_matrix FROM pl_scas_pdf_data
+					WHERE pdf_id = %s',
+				array('integer'),
+				array($this->qr_identification->getPdfId())
+			);
+
+			while($row = $ilDB->fetchAssoc($res))
+			{
+				$matriculation_matrix = json_decode($row['matriculation_matrix'], true);
+			}
+		}
+		if(array_key_exists('page', $matriculation_matrix))
+		{
+			return $matriculation_matrix['page'];
+		}
+		return 1;
 	}
 
 	/**

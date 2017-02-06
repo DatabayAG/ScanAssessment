@@ -337,3 +337,17 @@ if(!$ilDB->tableColumnExists('pl_scas_test_config', 'pdf_mode'))
 	);
 }
 ?>
+<#19>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data_qpl', 'has_checkboxes'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data_qpl', 'has_checkboxes',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '1',
+			'default' => 0
+		)
+	);
+}
+?>

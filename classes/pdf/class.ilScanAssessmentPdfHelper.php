@@ -22,6 +22,11 @@ class ilScanAssessmentPdfHelper
 	protected $qr_images_path = '';
 
 	/**
+	 * @var
+	 */
+	protected $add_head;
+
+	/**
 	 * ilScannAssessmentPdfHelper constructor.
 	 * @param ilScanAssessmentPdfMetaData $data
 	 */
@@ -29,6 +34,7 @@ class ilScanAssessmentPdfHelper
 	{
 		$this->qr_images_path = ilUtil::getDataDir() .'/temp_qr_images';
 		$this->initializePDFStructure($data);
+		$this->setAddHead(false);
 	}
 
 	/**
@@ -147,6 +153,7 @@ class ilScanAssessmentPdfHelper
 		{
 			$this->pdf->setBackgroundPDF($pdfTemplate);
 		}
+		$this->pdf->setAddHead($this->getAddHead());
 		$this->pdf->AddPage();
 	}
 
@@ -200,6 +207,22 @@ class ilScanAssessmentPdfHelper
 		if (file_exists($qr_image)) {
 			unlink($qr_image);
 		}
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAddHead()
+	{
+		return $this->add_head;
+	}
+
+	/**
+	 * @param mixed $add_head
+	 */
+	public function setAddHead($add_head)
+	{
+		$this->add_head = $add_head;
 	}
 
 }

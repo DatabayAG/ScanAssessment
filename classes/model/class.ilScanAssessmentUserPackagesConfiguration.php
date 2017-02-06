@@ -49,10 +49,15 @@ class ilScanAssessmentUserPackagesConfiguration
 	protected $no_name_field;
 
 	/**
-	 * @var 
+	 * @var
 	 */
 	protected $assessment_date;
-	
+
+	/**
+	 * @var
+	 */
+	protected $pdf_mode;
+
 	/**
 	 * @param int $test_obj_id
 	 */
@@ -87,19 +92,20 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setDocumentsGenerated($row['documents_generated']);
 		$this->setNoNameField($row['no_name_field']);
 		$this->setAssessmentDate($row['assessment_date']);
+		$this->setPdfMode($this->queryPdfMode());
 	}
-	
+
 	public function setValuesFromPost()
 	{
-		$this->setCountDocuments((int) $_POST['count_pdfs']);
-		$this->setMatriculationCode((int) $_POST['matriculation']);
-		$this->setMatriculationStyle((int) $_POST['coding']);
-		$this->setDownloadStyle((int) $_POST['complete_download']);
-		$this->setPersonalised((int) $_POST['personalised']);
-		$this->setNoNameField((int) $_POST['no_name_field']);
+		$this->setCountDocuments((int)$_POST['count_pdfs']);
+		$this->setMatriculationCode((int)$_POST['matriculation']);
+		$this->setMatriculationStyle((int)$_POST['coding']);
+		$this->setDownloadStyle((int)$_POST['complete_download']);
+		$this->setPersonalised((int)$_POST['personalised']);
+		$this->setNoNameField((int)$_POST['no_name_field']);
 
 		$date = ilUtil::stripSlashesRecursive($_POST['assessment_date']);
-		$date = new ilDateTime($date["date"]." ".$date["time"], IL_CAL_DATETIME);
+		$date = new ilDateTime($date["date"] . " " . $date["time"], IL_CAL_DATETIME);
 		$this->setAssessmentDate($date->getUnixTime());
 	}
 
@@ -111,19 +117,19 @@ class ilScanAssessmentUserPackagesConfiguration
 
 		global $ilDB;
 
-		$ilDB->manipulate('DELETE FROM pl_scas_user_packages WHERE tst_id = '. (int)$this->getTestId());
+		$ilDB->manipulate('DELETE FROM pl_scas_user_packages WHERE tst_id = ' . (int)$this->getTestId());
 
 		$ilDB->insert('pl_scas_user_packages',
 			array(
-				'tst_id'				=> array('integer', $this->getTestId()),
-				'count_documents'		=> array('integer', $this->getCountDocuments()),
-				'matriculation_code'	=> array('integer', $this->isMatriculationCode()),
-				'matriculation_style'	=> array('integer', $this->getMatriculationStyle()),
-				'download_style'		=> array('integer', $this->getDownloadStyle()),
-				'personalised'			=> array('integer', $this->isNotPersonalised()),
-				'documents_generated'	=> array('integer', $this->getDocumentsGenerated()),
-				'no_name_field'			=> array('integer', $this->isNoNameField()),
-				'assessment_date'		=> array('integer', $this->getAssessmentDate())
+				'tst_id'              => array('integer', $this->getTestId()),
+				'count_documents'     => array('integer', $this->getCountDocuments()),
+				'matriculation_code'  => array('integer', $this->isMatriculationCode()),
+				'matriculation_style' => array('integer', $this->getMatriculationStyle()),
+				'download_style'      => array('integer', $this->getDownloadStyle()),
+				'personalised'        => array('integer', $this->isNotPersonalised()),
+				'documents_generated' => array('integer', $this->getDocumentsGenerated()),
+				'no_name_field'       => array('integer', $this->isNoNameField()),
+				'assessment_date'     => array('integer', $this->getAssessmentDate())
 			));
 	}
 
@@ -275,4 +281,44 @@ class ilScanAssessmentUserPackagesConfiguration
 	{
 		$this->assessment_date = $assessment_date;
 	}
+
+	/**
+	 * @return int
+	 */
+	public function getPdfMode()
+	{
+		return $this->pdf_mode;
+	}
+
+	/**
+	 * @param int $pdf_mode
+	 */
+	public function setPdfMode($pdf_mode)
+	{
+		$this->pdf_mode = $pdf_mode;
+	}
+
+	/**
+	 * @return boolean
+	 */
+	private function queryPdfMode()
+	{
+		global $ilDB;
+		$res = $ilDB->queryF(
+			'SELECT pdf_mode FROM pl_scas_test_config
+					WHERE obj_id = %s',
+			array('integer'),
+			array($this->getTestId())
+		);
+
+		while($row = $ilDB->fetchAssoc($res))
+		{
+			if($row['pdf_mode'] == 1)
+			{
+				return 1;
+			}
+		}
+		return 0;
+	}
+
 }

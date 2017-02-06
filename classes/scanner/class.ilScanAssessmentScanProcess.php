@@ -279,7 +279,7 @@ class ilScanAssessmentScanProcess
 					));
 			}
 			$checkbox = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-			
+
 			if($qid != $value['qid'])
 			{
 				$answer_image = new ilScanAssessmentGDWrapper($this->path_to_done . '/answer_detection.jpg');
@@ -288,7 +288,7 @@ class ilScanAssessmentScanProcess
 				$scanner->image_helper->drawTempImage($whole_answer, $file_whole_path);
 				$qid = $value['qid'];
 			}
-			
+
 			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']  .'.jpg';
 
 			$scanner->image_helper->drawTempImage($checkbox, $file_path);

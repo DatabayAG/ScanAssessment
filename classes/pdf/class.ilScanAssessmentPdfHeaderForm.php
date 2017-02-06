@@ -35,17 +35,24 @@ class ilScanAssessmentPdfHeaderForm
 	protected $global_settings;
 
 	/**
+	 * @var
+	 */
+	protected $pdf_mode;
+
+	/**
 	 * ilScanAssessmentPdfHeaderForm constructor.
 	 * @param tcpdf $pdf
 	 * @param ilScanAssessmentPdfMetaData $metadata
+	 * @param $pdf_mode
 	 */
-	public function __construct($pdf, $metadata)
+	public function __construct($pdf, $metadata, $pdf_mode)
 	{
 		global $lng;
 		
 		$this->lng				= $lng;
 		$this->pdf				= $pdf;
 		$this->metadata			= $metadata;
+		$this->pdf_mode			= $pdf_mode;
 		$this->global_settings	= ilScanAssessmentGlobalSettings::getInstance(); 
 	}
 
@@ -103,7 +110,15 @@ class ilScanAssessmentPdfHeaderForm
 		if($this->shouldMatriculationMatrixBePrinted() && $columns > 0)
 		{
 			$this->insertFirstAndSurnameBoxes($columns, $first_column);
-			$this->pdf->MultiCell($second_column, 52, ' ' . $this->lng->txt('matriculation') . ': ', 1, 'C', 0, 1, $first_column + 15, 37, true);
+			if($this->pdf_mode == 1)
+			{
+				$y = 41;
+			}
+			else
+			{
+				$y = 37;
+			}
+			$this->pdf->MultiCell($second_column, 52, ' ' . $this->lng->txt('matriculation') . ': ', 1, 'C', 0, 1, $first_column + 15, $y, true);
 		}
 		else
 		{
@@ -170,14 +185,21 @@ class ilScanAssessmentPdfHeaderForm
 	 */
 	protected function addMatriculationMatrixForm($columns, $format)
 	{
-			$positions	= array('head_row' => array(), 'value_rows' => array());
-
+			$positions	= array('head_row' => array(), 'value_rows' => array(), 'page' => $this->pdf->getPage());
+			if($this->pdf_mode == 1)
+			{
+				$org_y = 51;
+			}
+			else
+			{
+				$org_y = 47;
+			}
 			$this->pdf->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_MATRICULATION);
 			if($columns > 0)
 			{
 				for($i = 0; $i <= 9; $i++)
 				{
-					$y = 47 + ($i * 4);
+					$y = $org_y + ($i * 4);
 					$x = 186 - ($columns * 4);
 					$this->pdf->MultiCell(5, 4, $i, 0, 'C', 0, 1, $x + 1.5, $y + 0.3, true);
 
