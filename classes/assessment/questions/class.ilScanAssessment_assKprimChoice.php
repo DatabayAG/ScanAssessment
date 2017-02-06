@@ -8,21 +8,24 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 {
 	/**
-	 * @param $question
-	 * @param $answer_position
-	 * @param $answer_text
-	 * @param $x1
-	 * @param $x2
-	 * @param $y
+	 * @param     $question
+	 * @param     $answer_position
+	 * @param     $answer_text
+	 * @param     $x1
+	 * @param     $x2
+	 * @param     $y
+	 * @param int $end_x
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer_position, $answer_text, $x1, $x2, $y)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x1, $x2, $y, $end_x = 0)
 	{
 		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer_position, $answer_text, $x1 , $y, $x2 , $y));
 
 		return array( 'correct' => array('qid' => $question->getId() , 'position' => $answer_position , 'a_text' => $answer_text, 'x' => $x1 , 'y' => $y, 'correctness' => 1),
 					  'wrong' => array('qid' => $question->getId()  , 'position' => $answer_position , 'a_text' => $answer_text, 'x' => $x2 , 'y' => $y, 'correctness' => 0),
-					  'type' => __CLASS__);
+					  'type' => __CLASS__,
+					  'end_x'=> $end_x,
+					  'x' => $x1);
 	}
 
 	/**
@@ -110,11 +113,11 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x1 = $this->pdf_helper->pdf->GetX() + $pos_x;
 			$x2 = $x1 + 5;
 			$y	= $this->pdf_helper->pdf->GetY();
-			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 15, $pos_y, $answer['identifier'], 0, 1, 0, TRUE, '', TRUE);
+			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 15, $pos_y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['pos'], $answer['answertext'], $x1, $x2, $y);
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getPosition(), $answer['answer']->getAnswerText(), $x1, $x2, $y, $x2 + 15);
+			$this->pdf_helper->pdf->Ln();
 		}
-		$this->pdf_helper->pdf->Ln();
 
 		return $answer_positions;
 	}

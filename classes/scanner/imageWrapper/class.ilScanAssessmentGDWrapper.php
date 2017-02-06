@@ -183,7 +183,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function drawTempImage($img, $fn)
 	{
-		imagejpeg($img, $fn);
+		imagejpeg($img, $fn, 100);
 	}
 
 	/**

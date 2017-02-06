@@ -327,9 +327,9 @@ class ilScanAssessmentPdfAssessmentBuilder
 			{
 				$columns = 1;
 				$this->addPageWithQrCode($pdf_h);
-				$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
-				$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
 				$this->resetY = 35;
+				$question_start = new ilScanAssessmentPoint($pdf->getX(), $this->resetY);
+				$answers = $question_builder->addCheckboxToPdf($question, $question_array['answers'], $columns);
 			}
 
 		}
@@ -338,9 +338,30 @@ class ilScanAssessmentPdfAssessmentBuilder
 			$pdf->commitTransaction();
 			$this->log->debug(sprintf('Transaction worked for page %s commit.', $pdf->getPage()));
 		}
-		$question_end = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
+		$point = $this->getXCoordinateFromAnswers($answers);
+		$question_start->setX($point->getX());
+		$question_end = new ilScanAssessmentPoint($point->getY(), $pdf->getY());
 		$this->map->setQuestionPositions($pdf->getPage(), array('question' => $question->getId() ,'answers' => $answers, 'start_x' => $question_start->getX(), 'start_y' => $question_start->getY(), 'end_x' => $question_end->getX(), 'end_y' => $question_end->getY(), 'has_checkboxes' => 1));
+		$pdf->Ln();
 		return $columns;
+	}
+	
+	private function getXCoordinateFromAnswers($answers)
+	{
+		$x1 = 0;
+		$x2 = 0;
+		foreach($answers as $key => $answer)
+		{
+			if($answer['x'] > $x1)
+			{
+				$x1 = $answer['x'];
+			}
+			else if($answer['end_x'] > $x2)
+			{
+				$x2 = $answer['end_x'];
+			}
+		}
+		return new ilScanAssessmentPoint($x1, $x2);
 	}
 	
 	/**

@@ -79,13 +79,23 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		{
 			if($this->getPdfMode())
 			{
-				$question_start = new ilScanAssessmentPoint(($answer['start_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
-				$question_end = new ilScanAssessmentPoint( ($answer['end_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+				$x1 = ($answer['start_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX();
+				$y1 = ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$x2 = ($answer['end_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX();
+				$y2 = ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$question_start = new ilScanAssessmentPoint($x1, $y1);
+				$question_end = new ilScanAssessmentPoint($x2 , $y2);
+				$this->log->debug(sprintf('Crop points for question [%s, %s], [%s, %s]', $x1, $y1, $x2, $y2));
 			}
 			else
 			{
-				$question_start = new ilScanAssessmentPoint(1, ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
-				$question_end = new ilScanAssessmentPoint($this->image_helper->getImageSizeX(), ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY());
+				$x1 = 1;
+				$y1 = ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$x2 = $this->image_helper->getImageSizeX();
+				$y2 = ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$question_start = new ilScanAssessmentPoint($x1, $y1);
+				$question_end = new ilScanAssessmentPoint($x2 , $y2);
+				$this->log->debug(sprintf('Crop points for question [%s, %s], [%s, %s]', $x1, $y1, $x2, $y2));
 			}
 			
 			foreach($answer['answers'] as $id => $value)
@@ -236,7 +246,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 		$ilDB->update('pl_scas_pdf_data',
 			array(
-				'usr_id'	=> array('integer', $usr_id),
+				'usr_id' => array('integer', $usr_id),
 			),
 			array(
 				'pdf_id' => array('integer',$this->qr_identification->getPdfId())

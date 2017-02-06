@@ -67,7 +67,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 					$not_found = false;
 					foreach($question_data as $position => $data)
 					{
-						if($position != 'checkboxes')
+						if(is_array($data))
 						{
 							$qid = $data['question'];
 

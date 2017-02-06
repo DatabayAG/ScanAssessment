@@ -8,14 +8,15 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 {
 
 	/**
-	 * @param $question
-	 * @param $answer_position
-	 * @param $answer_text
-	 * @param $x
-	 * @param $y
+	 * @param     $question
+	 * @param     $answer_position
+	 * @param     $answer_text
+	 * @param     $x
+	 * @param     $y
+	 * @param int $end_x
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y, $end_x = 0)
 	{
 		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer_position, $answer_text, $x, $y, __CLASS__));
 
@@ -25,7 +26,8 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			//'a_text' => $answer_text, 
 			'x'    => $x,
 			'y'    => $y,
-			'type' => __CLASS__
+			'type' => __CLASS__,
+			'end_x'=> $end_x
 		);
 	}
 
@@ -85,13 +87,11 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			$this->pdf_helper->pdf->Rect($columns * 25, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$x = $this->pdf_helper->pdf->GetX() + ($columns * 25);
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 1, 0, TRUE, '', TRUE);
+			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['order'], $answer['answertext'], $x, $y);
-
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x, $y, $x + 25);
+			$this->pdf_helper->pdf->Ln();
 		}
-		$this->pdf_helper->pdf->Ln();
-		
 		return $answer_positions;
 	}
 

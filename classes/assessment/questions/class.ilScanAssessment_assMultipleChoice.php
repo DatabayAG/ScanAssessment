@@ -7,14 +7,15 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assMultipleChoice extends ilScanAssessment_assSingleChoice 
 {
 	/**
-	 * @param $question
-	 * @param $answer_position
-	 * @param $answer_text
-	 * @param $x
-	 * @param $y
+	 * @param     $question
+	 * @param     $answer_position
+	 * @param     $answer_text
+	 * @param     $x
+	 * @param     $y
+	 * @param int $end_x
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y, $end_x = 0)
 	{
 		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer_position, $answer_text, $x, $y, __CLASS__));
 		return array(
@@ -23,7 +24,8 @@ class ilScanAssessment_assMultipleChoice extends ilScanAssessment_assSingleChoic
 			//'a_text' => $answer_text, 
 			'x'    => $x,
 			'y'    => $y,
-			'type' => __CLASS__
+			'type' => __CLASS__,
+			'end_x'=> $end_x
 		);
 	}
 
