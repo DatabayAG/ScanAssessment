@@ -135,3 +135,4 @@ scas_user_already_assigned#:#User is already assigned to another PDF.
 scas_not_found#:#No data found.
 scas_revision_answer#:#Revision of answers
 scas_none_shuffle#:#No shuffle
+scas_internal_error#:#An unexpected error interrupted the operation. Please consult the ScanAssessment Plugin log files.
