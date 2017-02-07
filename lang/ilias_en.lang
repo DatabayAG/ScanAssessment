@@ -137,3 +137,4 @@ scas_revision_answer#:#Revision of answers
 scas_none_shuffle#:#No shuffle
 scas_non_conform_files_found#:#In these files where no markers found:
 scas_not_for_this_test#:#These files do not belong to this test:
+scas_internal_error#:#An unexpected error interrupted the operation. Please consult the ScanAssessment Plugin log files.

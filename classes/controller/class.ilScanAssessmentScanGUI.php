@@ -116,7 +116,16 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	public function analyseCmd()
 	{
 		$scan_process = new ilScanAssessmentScanProcess($this->file_helper, $this->test->getId());
-		$value = $scan_process->analyse();
+
+		try
+        {
+            $value = $scan_process->analyse();
+        }
+        catch (Exception $e)
+        {
+            $this->log->err(sprintf('An exception occured: %s', $e));
+            $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_internal_error'));
+        }
 
 		if($value == $scan_process::FOUND)
 		{
