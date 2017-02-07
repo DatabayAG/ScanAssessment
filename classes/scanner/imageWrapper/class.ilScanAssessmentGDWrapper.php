@@ -284,7 +284,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		return imagecrop($image, array('x' => $point1->getX(), 'y' => $point1->getY(), 'width' => $width, 'height' => $height));
 	}
 
-	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename)
+	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename = null)
 	{
 		if($src_x < 0)
 		{
@@ -306,7 +306,11 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		$width = $image->getImageSizeX() - $src_x - $dest_x;
 		$scaled_image = imagecreatetruecolor($width, $height);
 		imagecopy($scaled_image , $image->getImage() , 0 , 0 , $src_x, $src_y,  $width, $height);
-		$this->drawTempImage($scaled_image, $filename);
+		if($filename != null)
+		{
+			$this->drawTempImage($scaled_image, $filename);
+		}
+	return $scaled_image;
 	}
 	
 }

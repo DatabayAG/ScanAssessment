@@ -45,11 +45,17 @@ class ilScanAssessmentScanner
 	protected $log;
 
 	/**
+	 * @var string
+	 */
+	protected $fn;
+	
+	/**
 	 * ilScanAssessmentScanner constructor.
 	 * @param $fn
 	 */
 	public function __construct($fn)
 	{
+		$this->fn = $fn;
 		if($this->getImage() === null)
 		{
 			/**
@@ -67,7 +73,10 @@ class ilScanAssessmentScanner
 			$this->log = ilScanAssessmentLog::getInstance();
 		}
 	}
-
+	public function getFn()
+	{
+		return $this->fn;
+	}
 	/**
 	 * @param ilScanAssessmentLine $line
 	 * @param $color
@@ -82,6 +91,11 @@ class ilScanAssessmentScanner
 		}
 	}
 
+	public function getCorrectedPosition()
+	{
+		return new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
+	}
+	
 	/**
 	 * @param ilScanAssessmentPoint $point
 	 * @param $color

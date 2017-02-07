@@ -70,8 +70,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 */
 	protected function findAnswers(&$im, $marker_positions, $qr_position)
 	{
-		$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
-
+		$corrected = $this->getCorrectedPosition();
 		$im2 = $im;
 		$this->log->debug(sprintf('Starting to scan checkboxes...'));
 		$answers = $this->getAnswerPositions();

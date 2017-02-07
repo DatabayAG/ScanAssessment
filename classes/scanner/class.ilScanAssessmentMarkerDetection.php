@@ -11,6 +11,8 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 {
 
+	protected $top_left_length;
+
 	/**
 	 * ilScanAssessmentMarkerDetection constructor.
 	 * @param $fn
@@ -31,13 +33,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('Starting marker detection...'));
 		$this->setThreshold(self::LOWER_THRESHOLD);
 		$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
-
-		if($marker === false)
-		{
-			$this->log->debug(sprintf('Marker not found retrying with higher threshold.'));
-			$this->setThreshold(self::HIGHER_THRESHOLD);
-			$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
-		}
 		$this->log->debug(sprintf('Marker detection done.'));
 		return $marker;
 	}
@@ -84,6 +79,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 				$dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
 				$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
+				$this->log->debug(sprintf('dX,dY [%s, %s] => atan %s.', $dx, $dy, atan2($dx, $dy)));
 
 				$rad = rad2deg(atan2($dx, $dy));
 				$this->log->debug(sprintf('Rotation (%s).', $rad));
@@ -230,7 +226,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		{
 			$len = $this->getLengthFromScanLine($d, $top_bottom, $threshold);
 
-			if( ($beginD == -1 && $len < $d/3*2 ) ||
+			if( ($beginD == -1 && $len < $d) ||
 				($beginD != -1 && $len - $subDX/2 <= $beginD)
 			)
 			{
@@ -253,7 +249,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				} 
 				else 
 				{
-					$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint(0 + $subDX / 2, $this->image_helper->getImageSizeY()- ($d - $subDX / 2)), new ilScanAssessmentPoint($len, $this->image_helper->getImageSizeY()- ($d - $len))), 0xffff00);
+					$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint(0 + $subDX / 2, $this->image_helper->getImageSizeY()- ($d - $subDX / 2)), new ilScanAssessmentPoint($len, $this->image_helper->getImageSizeY()- ($d - $len))), 0xff0000);
 				}
 			}
 			else
