@@ -68,11 +68,31 @@ class ilScanAssessmentScanProcess
 	{
 		$time_start	= microtime(true);
 		$marker		= $scanner->getMarkerPosition($this->file_helper->getScanTempPath());
+		if($marker === false)
+		{
+			$marker = $this->detectMarkerAfterCrop($scanner);
+		}
 		$time_end	= microtime(true);
 		$time		= $time_end - $time_start;
 		$log->debug('Marker Position detection duration: ' . $time);
 		$log->debug($marker);
 
+		return $marker;
+	}
+
+	/**
+	 * @param ilScanAssessmentMarkerDetection $scanner
+	 * @return array | bool
+	 */
+	protected function detectMarkerAfterCrop($scanner)
+	{
+		$this->log->debug(sprintf('Marker not found retrying after cropping...'));
+		$image  = new ilScanAssessmentGDWrapper($scanner->getFn());
+		$scaled = $image->imageCropWithSource($image, $image->getImageSizeX() / 10, $image->getImageSizeY() / 100, 0, 0, $this->file_helper->getScanTempPath() . '/new_file.jpg');
+		$scanner->setTempImage($scaled);
+		$scanner->image_helper->setImage($scaled);
+		$scanner->setImage($scaled);
+		$marker = $scanner->getMarkerPosition($this->file_helper->getScanTempPath());
 		return $marker;
 	}
 
@@ -84,14 +104,15 @@ class ilScanAssessmentScanProcess
 	 */
 	protected function checkIfMustBeCropped($scanner, $log, $marker)
 	{
-		$corrected = new ilScanAssessmentPoint($scanner->image_helper->getImageSizeX() / 210, $scanner->image_helper->getImageSizeY() / 297);
+		$corrected = $scanner->getCorrectedPosition();
 		$x1        = $marker[0]->getPosition()->getX();
 		$x2        = $marker[1]->getPosition()->getX();
 		$y1        = $marker[0]->getPosition()->getY();
 		$y2        = $marker[1]->getPosition()->getY();
 		$marker_should_be_at_x = 10 * $corrected->getX();
 		$marker_should_be_at_y = 10 * $corrected->getY();
-
+		
+		$log->debug('Corrected Position values [' . $corrected->getX() .' ,' . $corrected->getY() . ']');
 		$log->debug('Top Marker should be at ' . $marker_should_be_at_x .' ' . $marker_should_be_at_y);
 		$log->debug('Top Marker is at ' . $x1 .' ' . $y1);
 
@@ -102,11 +123,11 @@ class ilScanAssessmentScanProcess
 		$x3 = $x1 - $marker_should_be_at_x;
 		$y3 = $y1 - $marker_should_be_at_y;
 
-		$x4 = $x2 - $marker_should_be_at_x;
-		$y4 = $a - $y2;
+		$x4 = 0;#$x2 - $marker_should_be_at_x;
+		$y4 = 0;#$a - $y2;
 		$log->debug('Crop would start at ' . $x3 .' ' . $y3. ' ' . $x4 .' ' . $y4);
 
-		if( $this->rescale < 2)
+		if( $this->rescale < 2 && ($x3 > 10 || $y3 > 10))
 		{
 
 			$image = new ilScanAssessmentGDWrapper($this->file_helper->getScanTempPath() . 'new_file.jpg');
@@ -124,7 +145,7 @@ class ilScanAssessmentScanProcess
 	protected function detectQrCode($log)
 	{
 		$time_start = microtime(true);
-		$qr			= new ilScanAssessmentQrCode( $this->file_helper->getScanTempPath() . 'new_file.jpg');
+		$qr			= new ilScanAssessmentQrCode($this->file_helper->getScanTempPath() . 'new_file.jpg');
 		$qr_pos		= $qr->getQRPosition();
 		$time_end   = microtime(true);
 		$time       = $time_end - $time_start;
@@ -279,7 +300,7 @@ class ilScanAssessmentScanProcess
 					));
 			}
 			$checkbox = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
-			
+
 			if($qid != $value['qid'])
 			{
 				$answer_image = new ilScanAssessmentGDWrapper($this->path_to_done . '/answer_detection.jpg');
@@ -288,7 +309,7 @@ class ilScanAssessmentScanProcess
 				$scanner->image_helper->drawTempImage($whole_answer, $file_whole_path);
 				$qid = $value['qid'];
 			}
-			
+
 			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']  .'.jpg';
 
 			$scanner->image_helper->drawTempImage($checkbox, $file_path);

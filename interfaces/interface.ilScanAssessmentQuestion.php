@@ -8,8 +8,10 @@ interface ilScanAssessmentQuestion
 {
 	/**
 	 * @param assQuestion $question
+	 * @param $counter
+	 * @return 
 	 */
-	public function writeQuestionToPdf($question);
+	public function writeQuestionToPdf($question, $counter);
 
 	/**
 	 * @param assQuestion $question
@@ -20,6 +22,22 @@ interface ilScanAssessmentQuestion
 
 	/**
 	 * @param assQuestion $question
+	 * @param $counter
+	 * @return 
 	 */
-	public function writeAnswersToPdf($question);
+	public function writeAnswersWithCheckboxToPdf($question, $counter);
+
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 * @return 
+	 */
+	public function writeAnswersWithIdentifierToPdf($question, $counter);
+
+	/**
+	 * @param $question
+	 * @param $answers
+	 * @return 
+	 */
+	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns);
 }

@@ -62,29 +62,37 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 			{
 				/** @var ilTemplate $template */
 				$template = $pluginObject->getTemplate('default/tpl.revision_whole_answer.html', true, true);
-				$not_found = false;
-				foreach($question_data as $position => $data)
+				if($question_data['checkboxes'] == 1)
 				{
-					$qid = $data['question'];
-					if($this->doesQuestionFileExist($pdf_id, $page, $qid))
+					$not_found = false;
+					foreach($question_data as $position => $data)
 					{
-						$this->addAnswersToTemplate($pdf_id, $page, $data['answers'], $checked_answers, $template);
-						$template->setCurrentBlock('checkbox');
-						$template->setVariable('IMAGE', $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . '.jpg');
+						if(is_array($data))
+						{
+							$qid = $data['question'];
+
+							if($this->doesQuestionFileExist($pdf_id, $page, $qid))
+							{
+								$this->addAnswersToTemplate($pdf_id, $page, $data['answers'], $checked_answers, $template);
+								$template->setCurrentBlock('checkbox');
+								$template->setVariable('IMAGE', $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . '.jpg');
+								$template->parseCurrentBlock();
+							}
+							else
+							{
+								$not_found = true;
+							}
+						}
+
+					}
+					if($not_found)
+					{
+						$template->setCurrentBlock('not_found');
+						$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
 						$template->parseCurrentBlock();
 					}
-					else
-					{
-						$not_found = true;
-					}
+					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page, $template->get());
 				}
-				if($not_found)
-				{
-					$template->setCurrentBlock('not_found');
-					$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
-					$template->parseCurrentBlock();
-				}
-				$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page, $template->get());
 			}
 			$header_string = 'PDF ' . $pdf_id;
 			$pdf_accordion->addItem($header_string, $page_accordion->getHTML());
@@ -280,7 +288,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 		$answers = array();
 		global $ilDB;
 		$res = $ilDB->queryF(
-			'SELECT qpl_data, page, dq.pdf_id FROM pl_scas_pdf_data_qpl dq INNER JOIN pl_scas_pdf_data pd ON pd.pdf_id = dq.pdf_id
+			'SELECT qpl_data, page, dq.pdf_id, has_checkboxes FROM pl_scas_pdf_data_qpl dq INNER JOIN pl_scas_pdf_data pd ON pd.pdf_id = dq.pdf_id
 					WHERE obj_id = %s ',
 			array('integer'),
 			array($this->test->getId())
@@ -289,6 +297,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 		while($row = $ilDB->fetchAssoc($res))
 		{
 			$answers[$row['pdf_id']][$row['page']] = json_decode($row['qpl_data'], true);
+			$answers[$row['pdf_id']][$row['page']]['checkboxes'] = $row['has_checkboxes'];
 		}
 		return $answers;
 	}

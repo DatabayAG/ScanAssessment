@@ -60,7 +60,7 @@ class ilScanAssessmentDefaultGUI extends ilScanAssessmentController
 						1 => $pluginObject->txt('scas_answer_sheet')
 		);
 		$select_mode->setOptions($modes);
-		$select_mode->setDisabled(true);
+		#$select_mode->setDisabled(true);
 		$form->addItem($select_mode);
 
 		$shuffle = new ilSelectInputGUI($pluginObject->txt('scas_shuffling'), 'shuffle');

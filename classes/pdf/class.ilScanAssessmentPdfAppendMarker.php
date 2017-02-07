@@ -42,6 +42,11 @@ class ilPDFAppendMarker extends TCPDF{
 	protected $metadata = null;
 
 	/**
+	 * @var bool
+	 */
+	protected $headAdded = false;
+
+	/**
 	 * @return ilScanAssessmentPdfMetaData
 	 */
 	public function getMetadata()
@@ -57,6 +62,8 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->metadata = $metadata;
 	}
 
+	protected $add_head;
+	
 	/**
 	 * 
 	 */
@@ -88,7 +95,7 @@ class ilPDFAppendMarker extends TCPDF{
 				$this->addTopLeftMarker($circleStyle, $innerColor);
 				$this->addBottomLeftMarker($circleStyle, $innerColor);
 				$log = ilScanAssessmentLog::getInstance();
-				$log->debug(sprintf('Marker where added to 1:X:%s Y:%s, 2:X:%s Y:%s', PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y));
+				$log->debug(sprintf('Marker where added to 1:X:%s Y:%s, 2:X:%s Y:%s on page %s with qr img %s', PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, $this->getPage(), $this->qrImg));
 				#$this->addMarker();
 			}
 		}
@@ -131,14 +138,14 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->Cell(20, 7, $date, 1, 0, 'C', 1);
 		$this->SetLineWidth(0.3);
 		$this->Ln();
-		if($this->pageNr === 1)
+		if($this->shouldIdentificationHeadBeAdded())
 		{
 			$this->Ln(1);
 			$this->Cell(40, 8, ' ' . $this->metadata->getAuthor(), 'LTB', 0, 'L', 1);
 			$this->Cell(120, 8, $this->metadata->getTestTitle(), 'TB', 0, 'C', 1);
 			$this->Cell(20, 8, 'FB0', 'RTB', 0, 'C', 1);
 			$this->Ln();
-			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata);
+			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata, $this->metadata->getPdfMode());
 			$header_form->insertIdentification();
 			$a = $header_form->getMatriculationPositions();
 		}
@@ -148,6 +155,27 @@ class ilPDFAppendMarker extends TCPDF{
 		$this->addMarkerAndQrCode();
 	}
 
+	protected function shouldIdentificationHeadBeAdded()
+	{
+		if($this->metadata->getPdfMode() == 1)
+		{
+			if(!$this->headAdded && $this->getAddHead())
+			{
+				$this->headAdded = true;
+				return true;
+			}
+		}
+		else
+		{
+			if($this->pageNr == 1)
+			{
+				$this->headAdded = true;
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Overwrites TCPDF Footer function
 	 */
@@ -216,4 +244,21 @@ class ilPDFAppendMarker extends TCPDF{
 	{
 		$this->QRState[] = $state;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getAddHead()
+	{
+		return $this->add_head;
+	}
+
+	/**
+	 * @param mixed $add_head
+	 */
+	public function setAddHead($add_head)
+	{
+		$this->add_head = $add_head;
+	}
+	
 }

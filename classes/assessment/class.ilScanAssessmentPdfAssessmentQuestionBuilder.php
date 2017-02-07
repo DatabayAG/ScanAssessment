@@ -73,11 +73,39 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	public function addQuestionToPdf($question, $counter)
 	{
 		$class = 'ilScanAssessment_' . $question->getQuestionType();
-		/** @var ilScanAssessmentQuestion $instance */
+		/** @var ilScanAssessmentQuestionHandler $instance */
 		$instance = new $class($this->pdf_helper, $this->circleStyle);
 		$instance->writeQuestionTitleToPdf($question, $this->test, $counter);
-		$answer_positions = $instance->writeQuestionToPdf($question);
+		$answer_positions = $instance->writeQuestionToPdf($question, $counter);
 		return $answer_positions;
+	}
+
+	/**
+	 * @param assQuestion $question
+	 * @param $counter
+	 */
+	public function addQuestionToPdfWithoutCheckbox($question, $counter)
+	{
+		$class = 'ilScanAssessment_' . $question->getQuestionType();
+		/** @var ilScanAssessmentQuestionHandler $instance */
+		$instance = new $class($this->pdf_helper, $this->circleStyle);
+		$instance->writeQuestionTitleToPdf($question, $this->test, $counter);
+		$answers_to_append = $instance->writeQuestionWithoutCheckboxToPdf($question, $counter);
+		return $answers_to_append;
+	}
+
+	/**
+	 * @param $question
+	 * @param $answers
+	 * @param $columns
+	 */
+	public function addCheckboxToPdf($question, $answers, $columns)
+	{
+		$class = 'ilScanAssessment_' . $question->getQuestionType();
+		/** @var ilScanAssessmentQuestionHandler $instance */
+		$instance = new $class($this->pdf_helper, $this->circleStyle);
+		$answers_to_append = $instance->writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns);
+		return $answers_to_append;
 	}
 
 	/**
