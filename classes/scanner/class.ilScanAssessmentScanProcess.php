@@ -328,31 +328,29 @@ class ilScanAssessmentScanProcess
 
 		if($this->acquireScanLock())
 		{
-			$this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
+		    try
+            {
+                $this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
 
-			if ($handle = opendir($path))
-			{
-				while (false !== ($entry = readdir($handle)))
-				{
-					if(is_dir($path . '/' . $entry) === false)
-					{
-						if($entry !== 'scan_assessment.lock')
-						{
-							$return_value = self::FOUND;
-							$this->analyseImage($path, $entry);
-						}
-					}
-				}
-				closedir($handle);
-			}
-			if($this->releaseScanLock())
-			{
-				$this->log->info(sprintf('Removed lock file: %s' , $this->getScanLockFilePath()));
-			}
-			else
-			{
-				$this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
-			}
+                if ($handle = opendir($path)) {
+                    while (false !== ($entry = readdir($handle))) {
+                        if (is_dir($path . '/' . $entry) === false) {
+                            if ($entry !== 'scan_assessment.lock') {
+                                $return_value = self::FOUND;
+                                $this->analyseImage($path, $entry);
+                            }
+                        }
+                    }
+                    closedir($handle);
+                }
+            }
+            catch (Exception $e)
+            {
+                $this->releaseScanLock();
+                throw $e;
+            }
+
+			$this->releaseScanLock();
 		}
 		else
 		{
@@ -423,14 +421,17 @@ class ilScanAssessmentScanProcess
 		{
 			if(@unlink($this->getScanLockFilePath()))
 			{
-				return true;
+                $this->log->info(sprintf('Removed lock file: %s' , $this->getScanLockFilePath()));
 			}
 			else
 			{
-				return false;
+                $this->log->debug(sprintf('Failed to remove lock: %s', $this->getScanLockFilePath()));
 			}
 		}
-		return true;
+		else
+        {
+            $this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
+        }
 	}
 
 }

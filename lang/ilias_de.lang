@@ -135,3 +135,4 @@ scas_user_already_assigned#:#Benutzer ist schon einem anderen PDF zugewiesen.
 scas_not_found#:#Keine Daten vorhanden.
 scas_revision_answer#:#Revision der Fragen
 scas_none_shuffle#:#Keine Randomisierung
+scas_internal_error#:#Ein unvorhergesehener Fehler hat den Vorgang unterbrochen. Details finden Sie in den ScanAssessment Plugin Logdateien.
