@@ -191,7 +191,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getWhite()
 	{
-		return '0xffffff';
+		return 0xffffff;
 	}
 
 	/**
@@ -199,7 +199,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getBlack()
 	{
-		return '0x000000';
+		return 0x000000;
 	}
 
 	/**
@@ -207,7 +207,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getRed()
 	{
-		return '0xff0000';
+		return 0xff0000;
 	}
 
 	/**
@@ -215,7 +215,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getGreen()
 	{
-		return '0x00ff00';
+		return 0x00ff00;
 	}
 
 	/**
@@ -223,7 +223,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getPink()
 	{
-		return '0xff00ff';
+		return 0xff00ff;
 	}
 
 	/**
@@ -231,7 +231,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getYellow()
 	{
-		return '0xffff00';
+		return 0xffff00;
 	}
 
 	/**
@@ -239,7 +239,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function getBlue()
 	{
-		return '0x0000ff';
+		return 0x0000ff;
 	}
 
 	/**
