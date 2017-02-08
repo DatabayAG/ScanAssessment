@@ -42,13 +42,23 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
 		$this->addColumn('', 'file_id',  '1px', true);
-		$this->setSelectAllCheckbox('file_id');
+		#$this->setSelectAllCheckbox('file_id');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_date'), 'file_date');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_size'), 'file_size');
 		
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'), 'actions', '10%');
 
+	}
+
+	/**
+	 * @param $sort_field
+	 * @param $order_dir
+	 * @return string
+	 */
+	public function setOrderLink($sort_field, $order_dir)
+	{
+		return '';
 	}
 
 	/**
@@ -61,6 +71,7 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 			if($key == 'file_id')
 			{
 				$value = ilUtil::formCheckbox(0, 'file_id[]', $value);
+				continue;
 			}
 			else if($key == 'file_name')
 			{

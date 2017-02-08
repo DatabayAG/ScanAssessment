@@ -50,6 +50,16 @@ class ilScanAssessmentScanTableReturnResultsGUI extends ilTable2GUI
 	}
 
 	/**
+	 * @param $sort_field
+	 * @param $order_dir
+	 * @return string
+	 */
+	public function setOrderLink($sort_field, $order_dir)
+	{
+		return '';
+	}
+
+	/**
 	 * @param array $a_set
 	 */
 	protected function fillRow($a_set)
@@ -59,6 +69,7 @@ class ilScanAssessmentScanTableReturnResultsGUI extends ilTable2GUI
 			if($key == 'usr_id')
 			{
 				$value = ilUtil::formCheckbox(0, 'usr_id[]', $value);
+				continue;
 			}
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}

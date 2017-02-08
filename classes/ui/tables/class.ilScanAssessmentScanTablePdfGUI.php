@@ -34,14 +34,13 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
 		$this->setFormAction(ilScanAssessmentPlugin::getInstance()->getFormAction(__CLASS__ . '.saveForm'));
-		$this->setDefaultOrderDirection('ASC');
-		$this->setDefaultOrderField('filename');
+
 		$this->setShowRowsSelector(false);
 		$this->setTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_created_pdfs'));
 		$this->setRowTemplate('tpl.row_scans.html', ilScanAssessmentPlugin::getInstance()->getDirectory());
 
 		$this->addColumn('', 'file_id',  '1px', true);
-		$this->setSelectAllCheckbox('file_id');
+		#$this->setSelectAllCheckbox('file_id');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_name'), 'file_name');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_date'), 'file_date');
 		$this->addColumn(ilScanAssessmentPlugin::getInstance()->txt('scas_file_size'), 'file_size');
@@ -50,12 +49,13 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 	}
 
 	/**
-	 * @param string $column
-	 * @return bool
+	 * @param $sort_field
+	 * @param $order_dir
+	 * @return string
 	 */
-	public function numericOrdering($column)
+	public function setOrderLink($sort_field, $order_dir)
 	{
-		
+		return '';
 	}
 
 	/**
@@ -68,13 +68,14 @@ class ilScanAssessmentScanTablePdfGUI extends ilTable2GUI
 			if($key == 'file_id')
 			{
 				$value = ilUtil::formCheckbox(0, 'file_id[]', $value);
+				continue;
 			}
 			else if($key == 'file_name')
 			{
 				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentUserPackagesPdfGUI' . '.downloadPdf',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
 				$this->tpl->setVariable('VAL_LINK', $link);
 			}
-			
+
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}
 
