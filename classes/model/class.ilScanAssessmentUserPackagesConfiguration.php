@@ -105,7 +105,15 @@ class ilScanAssessmentUserPackagesConfiguration
 		$this->setNoNameField((int)$_POST['no_name_field']);
 
 		$date = ilUtil::stripSlashesRecursive($_POST['assessment_date']);
-		$date = new ilDateTime($date["date"] . " " . $date["time"], IL_CAL_DATETIME);
+		if(is_array($date) && array_key_exists('date', $date))
+		{
+			$date = new ilDateTime($date["date"] . " " . $date["time"], IL_CAL_DATETIME);
+		}
+		else
+		{
+			$date = new ilDateTime($date, IL_CAL_DATE);
+		}
+
 		$this->setAssessmentDate($date->getUnixTime());
 	}
 

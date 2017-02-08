@@ -68,6 +68,19 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		if(file_exists($xml_file))
 		{
 			$parser = new ilTestResultsImportParser($xml_file, $this->test);
+
+			if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
+			{
+				$questions = $this->test->getQuestions();
+				$questions_mapping = array();
+				foreach($questions as $key => $question)
+				{
+					$questions_mapping[$question] = $question;
+				}
+				$parser->setQuestionIdMapping($questions_mapping);
+			}
+			
+
 			$parser->startParsing();
 			$this->test->recalculateScores(true);
 			unlink($xml_file);

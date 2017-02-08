@@ -89,7 +89,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 			}
 
 			$template->setCurrentBlock('form');
-			$template->setVariable('REVISION_DONE', sprintf($pluginObject->txt('scas_revision_done_spf'), $pdf_id));
+			$template->setVariable('REVISION_DONE', sprintf($pluginObject->txt('scas_revision_done'), $pdf_id));
 			$template->setVariable('REVISION_CHECK', 'revision_done['.$pdf_id.']');
 			$template->parseCurrentBlock();
 			$template->setCurrentBlock('hidden');
@@ -150,7 +150,7 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 		$pdf_id = $img['pdf_id'];
 		if($checked == true)
 		{
-			$template->touchBlock('checked');
+			$template->touchBlock('checked_checkbox');
 		}
 		$template->setCurrentBlock('checkbox');
 		$template->setVariable('IMAGE', $img['relative_path']);

@@ -124,7 +124,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 			if($data['type'] == 'ilScanAssessment_assSingleChoice' || $data['type'] == 'ilScanAssessment_assMultipleChoice')
 			{
 				$name = $pdf_id . '_' .$page . '_' . $data['qid'] . '_' .$data['aid'] . '_l';
-				$this->answerIsChecked($checked_answers, $name, $template);
+				$this->answerIsChecked($checked_answers, $name, $template, $data['type']);
 				$template->setCurrentBlock($data['type']);
 				$answer = $this->getSingleOrMultipleAnswerTexts($data['qid']);
 				$template->setVariable('VALUE', $answer[$data['aid']]);
@@ -196,11 +196,18 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 	 * @param $answer_id
 	 * @param $template
 	 */
-	protected function answerIsChecked($checked_answers, $answer_id, $template)
+	protected function answerIsChecked($checked_answers, $answer_id, $template, $type)
 	{
 		if(array_key_exists($answer_id, $checked_answers))
 		{
-			$template->touchBlock('checked');
+			if($type == 'ilScanAssessment_assSingleChoice')
+			{
+				$template->touchBlock('checked_single');
+			}
+			else
+			{
+				$template->touchBlock('checked_multiple');
+			}
 		}
 	}
 
