@@ -114,7 +114,8 @@ scas_scan#:#Scan
 scas_scan_revision#:#Revision
 scas_checkbox_revision#:#Checkbox Revision
 scas_found_elements#:#Found Elements
-scas_revision_done#:#Revision for PDF done
+scas_revision_done#:#Revision done
+scas_revision_done_spf#:#Revision for PDF %s done
 scas_revsion_all_done#:#Revision done for all
 scas_revsion_all_undone#:#Revision not done for all
 scas_revision_state#:#Revisionsstatus for all PDF

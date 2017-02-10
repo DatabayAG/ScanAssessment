@@ -3,7 +3,14 @@ ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGloba
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfConstants.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('pdf/class.ilScanAssessmentPdfHeaderForm.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentVector.php');
-
+if(file_exists('Services/PDFGeneration/classes/tcpdf/tcpdf.php'))
+{
+	require_once 'Services/PDFGeneration/classes/tcpdf/tcpdf.php';
+}
+else
+{
+	require_once 'libs/composer/vendor/tecnickcom/tcpdf/tcpdf.php';
+}
 /**
  * Class ilPDFAppendMarker
  * @author Guido Vollbach <gvollbach@databay.de>
