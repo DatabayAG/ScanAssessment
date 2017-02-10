@@ -138,3 +138,9 @@ scas_none_shuffle#:#No shuffle
 scas_non_conform_files_found#:#In these files where no markers found:
 scas_not_for_this_test#:#These files do not belong to this test:
 scas_internal_error#:#An unexpected error interrupted the operation. Please consult the ScanAssessment Plugin log files.
+scas_tiff_enabled#:#Enable TIFF support
+scas_tiff_enabled_info#:#Allows scanned images to be uploaded as TIFFs.
+scas_tiff_dpi_minimum#:#Minimal DPI value for TIFF processing
+scas_tiff_dpi_minimum_info#:#TIFFs with a DPI value below this value won't be processed. Leave empty to process any TIFF.
+scas_tiff_dpi_maximum#:#Maximum DPI value for TIFF processing
+scas_tiff_dpi_maximum_info#:#TIFFs with a DPI value above this value will be rescaled. Leave empty to never rescale.
