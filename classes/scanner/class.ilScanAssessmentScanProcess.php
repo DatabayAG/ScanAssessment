@@ -45,7 +45,7 @@ class ilScanAssessmentScanProcess
 	 * @var array
 	 */
 	protected $files_not_for_this_test = array();
-	
+
 	/**
 	 * ilScanAssessmentScanProcess constructor.
 	 * @param ilScanAssessmentFileHelper $file_helper
@@ -111,7 +111,7 @@ class ilScanAssessmentScanProcess
 		$y2        = $marker[1]->getPosition()->getY();
 		$marker_should_be_at_x = 10 * $corrected->getX();
 		$marker_should_be_at_y = 10 * $corrected->getY();
-		
+
 		$log->debug('Corrected Position values [' . $corrected->getX() .' ,' . $corrected->getY() . ']');
 		$log->debug('Top Marker should be at ' . $marker_should_be_at_x .' ' . $marker_should_be_at_y);
 		$log->debug('Top Marker is at ' . $x1 .' ' . $y1);
@@ -173,6 +173,91 @@ class ilScanAssessmentScanProcess
 
 		return $ans;
 	}
+
+    /**
+     * @param $path
+     * @param $entry
+     * @return bool
+     */
+    protected function prepareTIFF($path, $entry)
+    {
+        $log = ilScanAssessmentLog::getInstance();
+        $org = $path . '/' . $entry;
+        $pathinfo = pathinfo($org);
+
+        $t0 = microtime(true);
+
+        $dpi_limits = ilScanAssessmentGlobalSettings::getInstance()->getTiffDpiLimits();
+        $lower_dpi_limit = 0;
+        $upper_dpi_limit = PHP_INT_MAX;
+
+        if(!empty($dpi_limits))
+        {
+            if(!empty($dpi_limits[0]))
+            {
+                $lower_dpi_limit = $dpi_limits[0];
+            }
+            if(!empty($dpi_limits[1]))
+            {
+                $upper_dpi_limit = $dpi_limits[1];
+            }
+        }
+
+        $img = new Imagick(realpath($org));
+
+        $n_images = $img->getNumberImages();
+        $log->debug('Preparing TIFF ' . $org . ' with ' . $n_images . ' images');
+
+        $target_file_type = 'png'; // we want something lossless here
+
+        for($i = 0; $i < $n_images; $i++) {
+            if(!$img->setImageIndex($i)) {
+                return false;
+            }
+
+            $resolution = $img->getImageResolution();
+            $dpi_x = $resolution['x'];
+            $dpi_y = $resolution['y'];
+
+            if($dpi_x < $lower_dpi_limit || $dpi_y < $lower_dpi_limit)
+            {
+                return false;
+            }
+
+            if($dpi_x > $upper_dpi_limit || $dpi_y > $upper_dpi_limit)
+            {
+                $dpi_x = min($dpi_x, $upper_dpi_limit);
+                $dpi_y = min($dpi_y, $upper_dpi_limit);
+
+                if(!$img->setResolution($dpi_x, $dpi_y))
+                {
+                    return false;
+                }
+
+                if(!$img->resampleImage($dpi_x, $dpi_y, Imagick::FILTER_BOX, 0))
+                {
+                    return false;
+                }
+            }
+
+            $img_path = $path . '/' . $pathinfo['filename'] . '-' . $i . '.' . $target_file_type;
+            $log->debug('Writing file: ' . $img_path . ' with dpi (' . $dpi_x . ', ' . $dpi_y . ')');
+            if(!$img->writeImage($img_path))
+            {
+                return false;
+            }
+        }
+
+        $img->destroy();
+
+        $t1 = microtime(true);
+        $log->debug('Converting TIFF took ' . ($t1 - $t0) . 's');
+
+        $log->debug('Deleting TIFF: ' . $org);
+        unlink($org);
+
+        return true;
+    }
 
 	/**
 	 * @param $path
@@ -368,47 +453,66 @@ class ilScanAssessmentScanProcess
 		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
-	/**
-	 * @return int
-	 */
-	public function analyse()
-	{
-		$path = $this->file_helper->getScanPath();
-		$return_value	= self::NOT_FOUND;
+    private function traverse($path, $callback)
+    {
+        $return_value = self::NOT_FOUND;
 
-		if($this->acquireScanLock())
-		{
-		    try
+        if($handle = opendir($path))
+        {
+            while(false !== ($entry = readdir($handle)))
             {
-                $this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
-
-                if ($handle = opendir($path)) {
-                    while (false !== ($entry = readdir($handle))) {
-                        if (is_dir($path . '/' . $entry) === false) {
-                            if ($entry !== 'scan_assessment.lock') {
-                                $return_value = self::FOUND;
-                                $this->analyseImage($path, $entry);
-                            }
+                if(is_dir($path . '/' . $entry) === false)
+                {
+                    if($entry !== 'scan_assessment.lock')
+                    {
+                        if(call_user_func(array($this, $callback), $path, $entry)) {
+                            $return_value = self::FOUND;
                         }
                     }
-                    closedir($handle);
                 }
             }
-            catch (Exception $e)
+            closedir($handle);
+        }
+
+        return $return_value;
+    }
+
+    /**
+     * @return int
+     */
+    public function analyse()
+    {
+        $path = $this->file_helper->getScanPath();
+        $return_value	= self::NOT_FOUND;
+
+        if($this->acquireScanLock())
+        {
+            $this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
+
+            try
+            {
+                if(ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled())
+                {
+                    $this->traverse($path, 'prepareTIFF');
+                }
+
+                $return_value = $this->traverse($path, 'analyseImage');
+            }
+            catch(Exception $e)
             {
                 $this->releaseScanLock();
                 throw $e;
             }
 
-			$this->releaseScanLock();
-		}
-		else
-		{
-			$return_value = self::LOCKED;
-		}
+            $this->releaseScanLock();
+        }
+        else
+        {
+            $return_value = self::LOCKED;
+        }
 
-		return $return_value;
-	}
+        return $return_value;
+    }
 
 	/**
 	 * @param $path
@@ -499,5 +603,5 @@ class ilScanAssessmentScanProcess
 	{
 		return $this->files_not_for_this_test;
 	}
-	
+
 }

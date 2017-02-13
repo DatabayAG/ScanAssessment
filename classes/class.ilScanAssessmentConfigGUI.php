@@ -91,10 +91,14 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		if(!$form instanceof ilPropertyFormGUI)
 		{
 			$form = $this->getConfigurationForm();
-			$form->setValuesByArray(array(
+            $dpi_limits = ilScanAssessmentGlobalSettings::getInstance()->getTiffDpiLimits();
+            $form->setValuesByArray(array(
 				'institution'			=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
 				'matriculation_style'	=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
-				'disable_manual_scan'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan()
+				'disable_manual_scan'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan(),
+                'tiff_enabled'          => ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
+                'tiff_dpi_minimum'      => $dpi_limits[0],
+                'tiff_dpi_maximum'      => $dpi_limits[1]
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -131,8 +135,29 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 			$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_info'));
 		}
 		$form->addItem($disable_manual_scan);
-		
-		$form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
+
+        $tiff_support = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_tiff_enabled'), 'tiff_enabled');
+        $tiff_support->setInfo($this->getPluginObject()->txt('scas_tiff_enabled_info'));
+        $form->addItem($tiff_support);
+
+        $tiff_dpi_minimum = new ilTextInputGUI($this->getPluginObject()->txt('scas_tiff_dpi_minimum'), 'tiff_dpi_minimum');
+        $tiff_dpi_minimum->setValidationRegexp('/^[0-9]*$/');
+        $tiff_dpi_minimum->setInfo($this->getPluginObject()->txt('scas_tiff_dpi_minimum_info'));
+        $form->addItem($tiff_dpi_minimum);
+
+        $tiff_dpi_maximum = new ilTextInputGUI($this->getPluginObject()->txt('scas_tiff_dpi_maximum'), 'tiff_dpi_maximum');
+        $tiff_dpi_maximum->setValidationRegexp('/^[0-9]*$/');
+        $tiff_dpi_maximum->setInfo($this->getPluginObject()->txt('scas_tiff_dpi_maximum_info'));
+        $form->addItem($tiff_dpi_maximum);
+
+        if(!class_exists(Imagick))
+        {
+            $tiff_support->setDisabled(true);
+            $tiff_dpi_minimum->setDisabled(true);
+            $tiff_dpi_maximum->setDisabled(true);
+        }
+
+        $form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
 
 		return $form;
 	}
@@ -149,6 +174,9 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				ilScanAssessmentGlobalSettings::getInstance()->setInstitution($form->getInput('institution'));
 				ilScanAssessmentGlobalSettings::getInstance()->setMatriculationStyle($form->getInput('matriculation_style'));
 				ilScanAssessmentGlobalSettings::getInstance()->setDisableManualScan($form->getInput('disable_manual_scan'));
+                ilScanAssessmentGlobalSettings::getInstance()->setTiffEnabled($form->getInput('tiff_enabled'));
+                ilScanAssessmentGlobalSettings::getInstance()->setTiffDpiLimits(array(
+                    $form->getInput('tiff_dpi_minimum'), $form->getInput('tiff_dpi_maximum')));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}
