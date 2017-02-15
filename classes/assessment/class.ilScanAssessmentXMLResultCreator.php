@@ -176,6 +176,10 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 			{
 				$value2 = 0;
 			}
+			else
+			{
+				$value2 = $row['value1'];
+			}
 			$attrs = array(
 				'solution_id' => $row['answer_id'],
 				'active_fi' => $row['pdf_id'],

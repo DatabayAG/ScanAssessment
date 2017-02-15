@@ -97,6 +97,13 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 				ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
 			}
 		}
+		
+		if(file_exists('./Customizing/global/plugins/Modules/TestQuestionPool/Questions/assFreestyleScanQuestion/classes/class.assFreestyleScanQuestion.php'))
+		{
+			require_once './Customizing/global/plugins/Modules/TestQuestionPool/Questions/assFreestyleScanQuestion/classes/class.assFreestyleScanQuestion.php';
+			$freestyle = new assFreestyleScanQuestion();
+			$freestyle->moveScanAssessmentImageToRegularPlaceAfterImport();
+		}
 	}
 
 	/**

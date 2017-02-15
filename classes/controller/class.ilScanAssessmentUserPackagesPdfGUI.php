@@ -75,7 +75,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 			$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $pluginObject->txt('scas_create'));
 		}
 		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
-		#$form->addCommandButton(__CLASS__ . '.createDemoPdfAndCutToImages', 'Create Example Scans');
+		$form->addCommandButton(__CLASS__ . '.createDemoPdfAndCutToImages', 'Create Example Scans');
 
 		return $form;
 	}
@@ -188,7 +188,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		{
 			$pdf->createNonPersonalisedPdf($this->configuration->getCountDocuments());
 		}
-		exec('convert -density 300 ' . $this->file_helper->getPdfPath() . '*.pdf -quality 100 ' . $this->file_helper->getScanPath() . 'scans.jpg');
+		exec('convert -density 300 ' . $this->file_helper->getPdfPath() . '*.pdf -alpha remove -quality 100 ' . $this->file_helper->getScanPath() . 'scans.jpg');
 		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 	}
 

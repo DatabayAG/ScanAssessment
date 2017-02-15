@@ -3,6 +3,7 @@
 require_once 'Modules/TestQuestionPool/classes/class.assQuestion.php';
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assMultipleChoice.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assKprimChoice.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.ilScanAssessment_assFreestyleScanQuestion.php');
 /**
  * Class ilScanAssessmentPdfAssessmentQuestionBuilder
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -13,7 +14,8 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	protected $supported_assessment_question_types = array(
 		'assSingleChoice',
 		'assMultipleChoice',
-		'assKprimChoice'
+		'assKprimChoice',
+		'assFreestyleScanQuestion'
 	);
 
 	/**

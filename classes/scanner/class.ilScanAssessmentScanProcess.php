@@ -384,7 +384,16 @@ class ilScanAssessmentScanProcess
 						'correctness'	=> array('text', ilUtil::stripSlashes($pos)),
 					));
 			}
-			$checkbox = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
+			
+			if(array_key_exists('vector', $value))
+			{
+				$checkbox = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $value['vector']);
+			}
+			else if(array_key_exists('start_point', $value) && array_key_exists('end_point', $value))
+			{
+				$pos = 'i';
+				$checkbox = $scanner->image_helper->imageCropByPoints($scanner->image_helper->getImage(), $value['start_point'], $value['end_point']);
+			}
 
 			if($qid != $value['qid'])
 			{

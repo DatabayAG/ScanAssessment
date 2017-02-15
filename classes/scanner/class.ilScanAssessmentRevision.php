@@ -65,6 +65,56 @@ class ilScanAssessmentRevision
 
 		}
 	}
+	
+	public static function saveFreeStyleAnswer($test_id, $answers)
+	{
+		global $ilDB;
+		foreach($answers as $answer)
+		{
+			$pdf_id = (int) basename(dirname($answer));
+			$parts	= preg_split('/_/', basename($answer));
+			if(is_array($parts))
+			{
+				$page	= (int) $parts[0];
+				$qid	= (int) $parts[1];
+				$aid	= 0;
+				self::removeOldFreestyleData($pdf_id, $test_id, $page, $qid);
+				$id	= $ilDB->nextId(self::scan_data_table);
+				$ilDB->insert(self::scan_data_table,
+					array(
+						'answer_id'		=> array('integer', $id),
+						'pdf_id'		=> array('integer', $pdf_id),
+						'test_id'		=> array('integer', $test_id),
+						'page'			=> array('integer', $page),
+						'qid'			=> array('integer', $qid),
+						'value1'		=> array('text', $answer),
+						'value2'		=> array('text', $answer),
+						'correctness'	=> array('text', 0),
+					));
+				#ilScanAssessmentLog::getInstance()->debug(sprintf('User with the id (%s) set the answer for %s state from pdf (%s) to %s', $ilUser->getId(), $value['qid'], $pdf_id, $value['aid']));
+			}
+		}
+
+	}
+
+	/**
+	 * @param $pdf_id
+	 * @param $test_id
+	 * @param $page
+	 * @param $qid
+	 */
+	protected static function removeOldFreestyleData($pdf_id, $test_id, $page, $qid)
+	{
+		/**
+		 * @var $ilDB ilDB
+		 */
+		global $ilDB;
+		$ilDB->manipulate('DELETE FROM '. self::scan_data_table .'
+						  WHERE 	' . $ilDB->in('pdf_id', array($pdf_id), false, 'integer') .
+						' AND ' . $ilDB->in('test_id', array($test_id), false, 'integer') .
+						' AND ' . $ilDB->in('page', array($page), false, 'integer') .
+						' AND ' . $ilDB->in('qid', array($qid), false, 'integer'));
+	}
 
 	/**
 	 * @param $pdf_id

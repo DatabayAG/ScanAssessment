@@ -152,10 +152,20 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 		{
 			$template->touchBlock('checked_checkbox');
 		}
-		$template->setCurrentBlock('checkbox');
-		$template->setVariable('IMAGE', $img['relative_path']);
-		$template->setVariable('CHECKBOX', 'revision['.$img['id'].']');
-		$template->parseCurrentBlock();
+		if($img['type_helper'] != 'i')
+		{
+			$template->setCurrentBlock('checkbox');
+			$template->setVariable('IMAGE', $img['relative_path']);
+			$template->setVariable('CHECKBOX', 'revision['.$img['id'].']');
+			$template->parseCurrentBlock();
+		}
+		else
+		{
+			$template->setCurrentBlock('freestyle');
+			$template->setVariable('IMAGE_2', $img['relative_path']);
+			$template->setVariable('FREESTYLE_PATH', $img['relative_path']);
+			$template->parseCurrentBlock();
+		}
 		return $pdf_id;
 	}
 
@@ -214,7 +224,8 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 						$element = array(	'file_name'			=> $filename->getFilename(),
 											'relative_path'		=> $this->file_helper->getRevisionPath() . '/' . $dir . '/' .$pdf_id. '/'. $filename->getFilename(),
 											'pdf_id'			=> $pdf_id,
-											'id'				=> $answer_id
+											'id'				=> $answer_id,
+											 'type_helper'		=> $parts[3]
 										);
 
 						if(array_key_exists($answer_id, $answers))
@@ -288,6 +299,11 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 				{
 					$answers = ilUtil::stripSlashesRecursive($_POST['revision']);
 					ilScanAssessmentRevision::addAnswers($this->test->getId(), $answers);
+				}
+				if(array_key_exists('freestyle', $_POST))
+				{
+					$answers = ilUtil::stripSlashesRecursive($_POST['freestyle']);
+					ilScanAssessmentRevision::saveFreeStyleAnswer($this->test->getId(), $answers);
 				}
 				ilUtil::sendSuccess($this->lng->txt('saved_successfully'));
 				$form = $this->getForm();

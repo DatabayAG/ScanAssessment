@@ -1,6 +1,12 @@
 <!-- BEGIN checkbox -->
-	<div class="col-xs-1" style="padding:2px"><img src="{IMAGE}" style="padding:2px"/><input type="checkbox" name="{CHECKBOX}" <!-- BEGIN checked_checkbox -->checked="checked"<!-- END checked_checkbox -->/></div>
+	<div class="col-xs-1" style="padding:2px"><img src="{IMAGE}" style="padding:2px;"/><input type="checkbox" name="{CHECKBOX}" <!-- BEGIN checked_checkbox -->checked="checked"<!-- END checked_checkbox -->/></div>
 <!-- END checkbox -->
+<!-- BEGIN freestyle -->
+<div class="col-xs-12">
+	<img src="{IMAGE_2}" style="padding:2px;max-width:400px;"/>
+	<input type="hidden" name="freestyle[]" value="{FREESTYLE_PATH}"/>
+</div>
+<!-- END freestyle -->
 <!-- BEGIN link_list -->
 <div class="col-xs-12">
 	<ul>
@@ -11,7 +17,6 @@
 			<!-- END link -->
 		</ul>
 		</li>
-		
 	</ul>
 </div>
 <!-- END link_list -->
