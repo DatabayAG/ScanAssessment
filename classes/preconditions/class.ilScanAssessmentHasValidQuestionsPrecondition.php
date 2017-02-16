@@ -14,7 +14,8 @@ class ilScanAssessmentHasValidQuestionsPrecondition extends ilScanAssessmentPrec
 	protected static $supported_type_tags = array(
 		'assSingleChoice',
 		'assMultipleChoice',
-		'assKprimChoice'
+		'assKprimChoice',
+		'assFreestyleScanQuestion'
 	);
 
 	/**

@@ -244,7 +244,20 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->addPageWithQrCode($pdf_h);
 		$counter = 1;
 		$this->has_checkboxes = 1;
+		$freestyle_container = array();
 		foreach($questions as $question)
+		{
+			if($question->getQuestionType() == 'assFreestyleScanQuestion')
+			{
+				$freestyle_container[] = $question;
+			}
+			else
+			{
+				$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
+				$counter++;
+			}
+		}
+		foreach($freestyle_container as $question)
 		{
 			$this->addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter);
 			$counter++;

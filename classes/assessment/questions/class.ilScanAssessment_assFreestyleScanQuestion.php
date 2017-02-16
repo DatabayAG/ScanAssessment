@@ -77,9 +77,14 @@ class ilScanAssessment_assFreestyleScanQuestion extends ilScanAssessmentQuestion
 		$answer_positions	= array();
 
 		$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+		$x1 = $this->pdf_helper->pdf->GetX();
+		$y1 = $this->pdf_helper->pdf->GetY();
 		$this->pdf_helper->writeHTMLCell(0, 0, 0, $y, $answers[0]['identifier'], 0, 0, 0, TRUE, '', TRUE);
 		$image = $question->getImagePath() . $question->getImageFilename();
 		$this->pdf_helper->pdf->Image($image, 35, $y, 0, 90, '', '', 'B', true, 300);
+		$x2 = $this->pdf_helper->pdf->GetX();
+		$y2 = $this->pdf_helper->pdf->GetY();
+		$answer_positions[] = $this->appendAnswer($question, 0, '', $x1, $y1, $x2, $y2);
 		$this->pdf_helper->pdf->Ln(2);
 
 		return $answer_positions;

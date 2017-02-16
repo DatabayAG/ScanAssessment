@@ -171,7 +171,21 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					$end_y = ($value['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
 					if($this->getPdfMode())
 					{
-						
+						$first_point  = new ilScanAssessmentPoint(0, $start_y);
+						$second_point = new ilScanAssessmentPoint($this->image_helper->getImageSizeX(), $end_y);
+						$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+
+						$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), false));
+						$this->checkbox_container[] = array('element' => $checkbox,
+															'marked' => false,
+															'qid' => $answer['question'],
+															'aid' => 0,
+															'value2' => null,
+															'start_point' => $first_point,
+															'end_point' => $second_point,
+															'start' => $first_point,
+															'end' => $second_point
+						);
 					}
 					else
 					{
