@@ -504,6 +504,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	public function createNonPersonalisedPdf($number)
 	{
+		$number = $this->calculatePdfCountToCreate($number);
+
 		if($number > 0)
 		{
 			$start_time = microtime(TRUE);
@@ -515,13 +517,39 @@ class ilScanAssessmentPdfAssessmentBuilder
 				$data 			= new ilScanAssessmentPdfMetaData($this->test, $identification);
 
 				$pdf_h	= $this->createPdf($data);
-				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $i . self::FILE_TYPE;
+				$filename = $this->path_for_pdfs . $this->test->getId() . '_' . $identification->getPdfId() . self::FILE_TYPE;
 				$this->writePdfFile($pdf_h, $filename);
 				$this->saveQuestionData($data);
 			}
 			$end_time = microtime(TRUE);
 			$this->log->info(sprintf('Creating pdfs finished for test %s which took %s seconds for %s tests.', $this->test->getId(), $end_time - $start_time, $number));
 		}
+	}
+
+	/**
+	 * @param int $number
+	 * @return int
+	 */
+	protected function calculatePdfCountToCreate($number)
+	{
+		$number = $number - $this->file_helper->countFilesInDirectory($this->path_for_pdfs);
+		if($this->doesDemoPdfExists())
+		{
+			$number++;
+		}
+		return $number;
+	}
+
+	/**
+	 * @return bool
+	 */
+	protected function doesDemoPdfExists()
+	{
+		if(file_exists($this->path_for_pdfs . $this->test->getId() . '_demo'  . self::FILE_TYPE))
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**

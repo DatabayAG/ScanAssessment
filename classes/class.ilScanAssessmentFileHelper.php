@@ -191,6 +191,27 @@ class ilScanAssessmentFileHelper
 
 	/**
 	 * @param $path
+	 * @return int
+	 */
+	public function countFilesInDirectory($path)
+	{
+		$count = 0;
+		if($handle = opendir($path))
+		{
+			while(false !== ($entry = readdir($handle)))
+			{
+				if(is_file($path . $entry))
+				{
+					$count++;
+				}
+			}
+			closedir($handle);
+		}
+		return $count;
+	}
+
+	/**
+	 * @param $path
 	 * @return array
 	 */
 	public function getFilesFromFolderRecursive($path)
