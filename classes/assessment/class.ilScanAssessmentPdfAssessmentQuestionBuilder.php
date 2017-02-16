@@ -128,7 +128,7 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 			$question = assQuestion::_instantiateQuestion($value);
 			if(in_array($question->getQuestionType(), $this->supported_assessment_question_types))
 			{
-				$this->questions[]	= $question;
+				$this->questions[] = $question;
 				$this->log->debug(sprintf('Question with id %s of type %s instantiated.', $question->getId(), $question->getQuestionType()));
 			}
 			else

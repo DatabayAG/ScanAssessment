@@ -69,17 +69,18 @@ class ilScanAssessment_assFreestyleScanQuestion extends ilScanAssessmentQuestion
 	/**
 	 * @param $question
 	 * @param $answers
+	 * @param $columns
 	 * @return array
 	 */
 	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)
 	{
 		$answer_positions	= array();
-		$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
-		$x = $this->pdf_helper->pdf->GetX() + ($columns * 25);
+
 		$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
-		$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answers[0]['identifier'], 0, 0, 0, TRUE, '', TRUE);
+		$this->pdf_helper->writeHTMLCell(0, 0, 0, $y, $answers[0]['identifier'], 0, 0, 0, TRUE, '', TRUE);
 		$image = $question->getImagePath() . $question->getImageFilename();
-		$this->pdf_helper->pdf->Image($image, $x, $y, 0, 20, '', '', 'B', true, 300);
+		$this->pdf_helper->pdf->Image($image, 35, $y, 0, 90, '', '', 'B', true, 300);
+		$this->pdf_helper->pdf->Ln(2);
 
 		return $answer_positions;
 	}
