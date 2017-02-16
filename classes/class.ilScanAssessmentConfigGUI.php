@@ -96,6 +96,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				'institution'			=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
 				'matriculation_style'	=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
 				'disable_manual_scan'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan(),
+				'disable_manual_pdf'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf(),
                 'tiff_enabled'          => ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
                 'tiff_dpi_minimum'      => $dpi_limits[0],
                 'tiff_dpi_maximum'      => $dpi_limits[1]
@@ -135,6 +136,17 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 			$disable_manual_scan->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_info'));
 		}
 		$form->addItem($disable_manual_scan);
+		$disable_manual_pdf = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_disable_manual_pdf'), 'disable_manual_pdf');
+		if(!$this->getPluginObject()->checkIfScanAssessmentCronExists())
+		{
+			$disable_manual_pdf->setDisabled(true);
+			$disable_manual_pdf->setInfo($this->getPluginObject()->txt('scas_disable_manual_scan_no_cron_info'));
+		}
+		else
+		{
+			$disable_manual_pdf->setInfo($this->getPluginObject()->txt('scas_disable_manual_pdf_info'));
+		}
+		$form->addItem($disable_manual_pdf);
 
         $tiff_support = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_tiff_enabled'), 'tiff_enabled');
         $tiff_support->setInfo($this->getPluginObject()->txt('scas_tiff_enabled_info'));
@@ -174,6 +186,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				ilScanAssessmentGlobalSettings::getInstance()->setInstitution($form->getInput('institution'));
 				ilScanAssessmentGlobalSettings::getInstance()->setMatriculationStyle($form->getInput('matriculation_style'));
 				ilScanAssessmentGlobalSettings::getInstance()->setDisableManualScan($form->getInput('disable_manual_scan'));
+				ilScanAssessmentGlobalSettings::getInstance()->setDisableManualPdf($form->getInput('disable_manual_pdf'));
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffEnabled($form->getInput('tiff_enabled'));
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffDpiLimits(array(
                     $form->getInput('tiff_dpi_minimum'), $form->getInput('tiff_dpi_maximum')));

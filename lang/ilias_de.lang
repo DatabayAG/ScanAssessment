@@ -107,6 +107,9 @@ scas_lock_file_found#:#Lock Datei gefunden.
 scas_disable_manual_scan#:#Manuelles scannen deaktivieren
 scas_disable_manual_scan_info#:#Wenn diese Option aktiviert ist, wird das manuelle scannen deaktiviert und es ist nur noch möglich mit dem Cron Job Plugin zu scannen.
 scas_manual_scan_disabled#:#Manuelles scannen ist deaktiviert.
+scas_disable_manual_pdf#:#Manuelles erzeugen der PDFs deaktivieren
+scas_disable_manual_pdf_info#:#Wenn diese Option aktiviert ist, wird die manuelle PDF Erzeugung deaktiviert und es ist nur noch möglich mit dem Cron Job Plugin PDF zu erzeugen, ausnahme sind die Demo PDFs.
+scas_manual_pdf_disabled#:#Manuelles PDF Erzeugung ist deaktiviert.
 scas_disable_manual_scan_no_cron_info#:#Der Cronjob ist nicht installiert oder eingerichtet.
 scas_least_one_participant#:#Es muss mindestens ein Teilnehmer eingetragen sein.
 scas_scan#:#Scan

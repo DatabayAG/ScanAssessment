@@ -31,14 +31,19 @@ class ilScanAssessmentGlobalSettings
 	 */
 	protected $disable_manual_scan;
 
-    /**
-     * @var boolean
-     */
-    protected $tiff_enabled;
+	/**
+	 * @var boolean
+	 */
+	protected $disable_manual_pdf;
 
-    /**
-     * @var array
-     */
+	/**
+	 * @var boolean
+	 */
+	protected $tiff_enabled;
+
+	/**
+	 * @var array
+	 */
 	protected $tiff_dpi_limits;
 
 	/**
@@ -52,7 +57,6 @@ class ilScanAssessmentGlobalSettings
 
 	/**
 	 * Get singleton instance
-	 *
 	 * @return self
 	 */
 	public static function getInstance()
@@ -70,12 +74,13 @@ class ilScanAssessmentGlobalSettings
 	 */
 	protected function read()
 	{
-		$institution			= $this->settings->get('institution');
-		$matriculation_format	= $this->settings->get('matriculation_format');
-		$disable_manual_scan	= $this->settings->get('disable_manual_scan');
-        $tiff_enabled	        = $this->settings->get('tiff_enabled');
-        $tiff_dpi_minimum       = $this->settings->get('tiff_dpi_minimum');
-        $tiff_dpi_maximum       = $this->settings->get('tiff_dpi_maximum');
+		$institution          = $this->settings->get('institution');
+		$matriculation_format = $this->settings->get('matriculation_format');
+		$disable_manual_scan  = $this->settings->get('disable_manual_scan');
+		$disable_manual_pdf   = $this->settings->get('disable_manual_pdf');
+		$tiff_enabled         = $this->settings->get('tiff_enabled');
+		$tiff_dpi_minimum     = $this->settings->get('tiff_dpi_minimum');
+		$tiff_dpi_maximum     = $this->settings->get('tiff_dpi_maximum');
 
 		if(strlen($institution))
 		{
@@ -86,7 +91,8 @@ class ilScanAssessmentGlobalSettings
 			$this->setMatriculationStyle($matriculation_format);
 		}
 		$this->setDisableManualScan($disable_manual_scan);
-        $this->setTiffEnabled($tiff_enabled);
+		$this->setDisableManualPdf($disable_manual_pdf);
+		$this->setTiffEnabled($tiff_enabled);
 		$this->setTiffDpiLimits(array($tiff_dpi_minimum, $tiff_dpi_maximum));
 	}
 
@@ -111,13 +117,14 @@ class ilScanAssessmentGlobalSettings
 	 */
 	public function save()
 	{
-		$this->settings->set('institution',				$this->getInstitution());
-		$this->settings->set('matriculation_format',	$this->getMatriculationStyle());
-		$this->settings->set('disable_manual_scan',		$this->isDisableManualScan());
-        $this->settings->set('tiff_enabled',    		$this->isTiffEnabled());
+		$this->settings->set('institution', $this->getInstitution());
+		$this->settings->set('matriculation_format', $this->getMatriculationStyle());
+		$this->settings->set('disable_manual_scan', $this->isDisableManualScan());
+		$this->settings->set('disable_manual_pdf', $this->isDisableManualPdf());
+		$this->settings->set('tiff_enabled', $this->isTiffEnabled());
 		$dpi_limits = $this->getTiffDpiLimits();
-		$this->settings->set('tiff_dpi_minimum',        $dpi_limits[0]);
-        $this->settings->set('tiff_dpi_maximum',        $dpi_limits[1]);
+		$this->settings->set('tiff_dpi_minimum', $dpi_limits[0]);
+		$this->settings->set('tiff_dpi_maximum', $dpi_limits[1]);
 	}
 
 	/**
@@ -189,35 +196,51 @@ class ilScanAssessmentGlobalSettings
 		$this->disable_manual_scan = $disable_manual_scan;
 	}
 
-    /**
-     * @return boolean
-     */
+	/**
+	 * @return bool
+	 */
+	public function isDisableManualPdf()
+	{
+		return $this->disable_manual_pdf;
+	}
+
+	/**
+	 * @param bool $disable_manual_pdf
+	 */
+	public function setDisableManualPdf($disable_manual_pdf)
+	{
+		$this->disable_manual_pdf = $disable_manual_pdf;
+	}
+
+	/**
+	 * @return boolean
+	 */
 	public function isTiffEnabled()
-    {
-        return $this->tiff_enabled;
-    }
+	{
+		return $this->tiff_enabled;
+	}
 
-    /**
-     * @param boolean $enable_tiff
-     */
-    public function setTiffEnabled($tiff_enabled)
-    {
-        $this->tiff_enabled = $tiff_enabled;
-    }
+	/**
+	 * @param boolean $tiff_enabled
+	 */
+	public function setTiffEnabled($tiff_enabled)
+	{
+		$this->tiff_enabled = $tiff_enabled;
+	}
 
-    /**
-     * @return array
-     */
-    public function getTiffDpiLimits()
-    {
-        return $this->tiff_dpi_limits;
-    }
+	/**
+	 * @return array
+	 */
+	public function getTiffDpiLimits()
+	{
+		return $this->tiff_dpi_limits;
+	}
 
-    /**
-     * @param array $tiff_dpi_limits
-     */
-    public function setTiffDPILimits($tiff_dpi_limits)
-    {
-        $this->tiff_dpi_limits = $tiff_dpi_limits;
-    }
+	/**
+	 * @param array $tiff_dpi_limits
+	 */
+	public function setTiffDPILimits($tiff_dpi_limits)
+	{
+		$this->tiff_dpi_limits = $tiff_dpi_limits;
+	}
 }
