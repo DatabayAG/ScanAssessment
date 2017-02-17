@@ -53,13 +53,14 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$scan_top_left = $this->probeMarkerPosition('top', $threshold);
 		if($scan_top_left === false)
 		{
-			$this->log->debug(sprintf('Probing found nothing trying to rotate... NEEDS IMPLEMENTAION'));
-			if($rotated) 
+			$this->log->debug(sprintf('Probing found nothing trying to rotate...'));
+			if(!$rotated) 
 			{
-				return false;
+				$im = $this->image_helper->rotate(180);
+				$this->log->debug(sprintf('Rotation done, rescanning...'));
+				$this->image_helper->setImage($im);
+				$this->drawTempImage($im, $path . '/new_file.jpg');
 			}
-			
-			#$im = $this->image_helper->rotate($im,180);
 			$scan_top_left = $this->probeMarkerPosition('top', $threshold);
 		}
 

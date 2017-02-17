@@ -224,7 +224,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	{
 		if($this->qr_identification->getPageNumber() == $this->getPageForMatriculation())
 		{
-			$corrected = new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
+			$corrected = $this->getCorrectedPosition();
 
 			$im2 = $im;
 			$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
@@ -235,7 +235,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x']) * ($corrected->getX());
+					$answer_x = ($vector['x'] + 1) * ($corrected->getX());
 					$answer_y = ($vector['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
