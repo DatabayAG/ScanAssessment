@@ -102,11 +102,20 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 	
 	protected function exportTestObject()
 	{
-		require_once 'Modules/Test/classes/class.ilTestExportFactory.php';
-		$expFactory = new ilTestExportFactory($this->test);
-		$test_exp = $expFactory->getExporter('xml');
-		$test_exp->setResultExportingEnabledForTestExport(true);
-		$src = $test_exp->buildExportFile();
+		if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
+		{
+			require_once 'Modules/Test/classes/class.ilTestExportFactory.php';
+			$expFactory = new ilTestExportFactory($this->test);
+			$test_exp   = $expFactory->getExporter('xml');
+			$test_exp->setResultExportingEnabledForTestExport(true);
+			$src = $test_exp->buildExportFile();
+		}
+		else
+		{	require_once 'Modules/Test/classes/class.ilTestExport.php';
+			$test_exp = new ilTestExport($this->test, 'xml');
+			$src = $test_exp->buildExportFile();
+		}
+
 		if($src)
 		{
 			$this->file_helper->moveFile($src, $this->file_helper->getExportPath() . basename($src));
