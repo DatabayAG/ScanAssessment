@@ -114,7 +114,7 @@ class ilScanAssessmentDebugExport extends ilXmlWriter
 
 	protected function exportScasQplData()
 	{
-		$result = $this->db->query("SELECT * FROM pl_scas_pdf_data_qpl WHERE " . $this->db->in('pdf_id', $this->pdf_ids, false, array('integer')));
+		$result = $this->db->query("SELECT * FROM pl_scas_pdf_data_qpl WHERE " . $this->db->in('pdf_id', $this->pdf_ids, false, 'integer'));
 
 		$this->xmlStartTag("sacs_pdf_data_qpl", NULL);
 		while ($row = $this->db->fetchAssoc($result))
