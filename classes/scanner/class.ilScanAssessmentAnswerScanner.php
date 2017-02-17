@@ -109,7 +109,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					$aid = $value['aid'];
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
-					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
+					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s] %s.', $value['x'], $value['y'], $answer_y));
+					$this->log->debug(sprintf('Checkbox for at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 					$this->checkbox_container[] = array('element' => $checkbox, 
 														'marked' => $marked, 
 														'qid' => $answer['question'], 

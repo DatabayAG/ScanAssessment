@@ -98,12 +98,13 @@ class ilScanAssessmentScanProcess
 	}
 
 	/**
-	 * @param $scanner
+	 * @param ilScanAssessmentScanner $scanner
 	 * @param ilScanAssessmentLog $log
-	 * @param $marker
+	 * @param ilScanAssessmentVector[] $marker
+	 * @param ilScanAssessmentVector $qr_pos
 	 * @return bool
 	 */
-	protected function checkIfMustBeCropped($scanner, $log, $marker)
+	protected function checkIfMustBeCropped($scanner, $log, $marker, $qr_pos)
 	{
 		$corrected = $scanner->getCorrectedPosition();
 		$x1        = $marker[0]->getPosition()->getX();
@@ -112,25 +113,37 @@ class ilScanAssessmentScanProcess
 		$y2        = $marker[1]->getPosition()->getY();
 		$marker_should_be_at_x = 10 * $corrected->getX();
 		$marker_should_be_at_y = 10 * $corrected->getY();
+		$image_x = $scanner->image_helper->getImageSizeX();
+		$image_y = $scanner->image_helper->getImageSizeY();
 
 		$log->debug('Corrected Position values [' . $corrected->getX() .' ,' . $corrected->getY() . ']');
 		$log->debug('Top Marker should be at ' . $marker_should_be_at_x .' ' . $marker_should_be_at_y);
 		$log->debug('Top Marker is at ' . $x1 .' ' . $y1);
 
-		$a =  $scanner->image_helper->getImageSizeY() - $marker_should_be_at_y;
-		$log->debug('Bottom Marker should be at ' . $marker_should_be_at_x . ' ' . $a);
+		$marker_should_be_at_y_2 =  $scanner->image_helper->getImageSizeY() - $marker_should_be_at_y;
+		$log->debug('Bottom Marker should be at ' . $marker_should_be_at_x . ' ' . $marker_should_be_at_y_2);
 		$log->debug('Bottom Marker is at ' . $x2 .' ' . $y2);
 
 		$x3 = $x1 - $marker_should_be_at_x;
 		$y3 = $y1 - $marker_should_be_at_y;
 
-		$x4 = 0;#$x2 - $marker_should_be_at_x;
-		$y4 = 0;#$a - $y2;
+		$x4 = $x2 - $marker_should_be_at_x;
+		$y4 = $marker_should_be_at_y_2 - $y2;
 		$log->debug('Crop would start at ' . $x3 .' ' . $y3. ' ' . $x4 .' ' . $y4);
-
-		if( $this->rescale < 2 && ($x3 > 10 || $y3 > 10))
+		$max_cut_x = $qr_pos->getPosition()->getX() + $qr_pos->getLength();
+		if($max_cut_x > $image_x - $x4)
 		{
-
+			$log->debug('Crop would destroy qr_code on the left reducing width.');
+			$x4 = 0;
+		}
+		$max_cut_y = $qr_pos->getPosition()->getY() + $qr_pos->getLength();
+		if($max_cut_y > $image_y - $y4)
+		{
+			$log->debug('Crop would destroy qr_code on the left reducing height.');
+			$y4 = 0;
+		}
+		if( $this->rescale < 2 && ($x3 > 2 || $y3 > 2))
+		{
 			$image = new ilScanAssessmentGDWrapper($this->file_helper->getScanTempPath() . 'new_file.jpg');
 			$image->imageCropWithSource($image, $x3, $y3, $x4, $y4, $this->file_helper->getScanTempPath() . 'rescaled.jpg');
 			return true;
@@ -286,8 +299,8 @@ class ilScanAssessmentScanProcess
 				unlink($rotate_file);
 				$this->rescale = 0;
 			}
-
-			if($this->checkIfMustBeCropped($scanner, $log, $marker))
+			$qr_pos = $this->detectQrCode($log);
+			if($this->checkIfMustBeCropped($scanner, $log, $marker, $qr_pos))
 			{
 				$log->debug('Image was scaled re-detecting marker positions.');
 				if( $this->rescale < 2 )
@@ -300,7 +313,7 @@ class ilScanAssessmentScanProcess
 
 			if($not_cropped)
 			{
-				$qr_pos = $this->detectQrCode($log);
+				#$qr_pos = $this->detectQrCode($log);
 				if($qr_pos !== false)
 				{
 					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);

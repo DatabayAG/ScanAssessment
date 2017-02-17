@@ -259,4 +259,35 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 		// TODO: Implement imageCrop() method.
 	}
 
+	/**
+	 * @param $filename
+	 */
+	public function createNewImageInstanceFromFileName($filename)
+	{
+		// TODO: Implement createNewImageInstanceFromFileName() method.
+	}
+
+	/**
+	 * @param                       $image
+	 * @param ilScanAssessmentPoint $point1
+	 * @param ilScanAssessmentPoint $point2
+	 */
+	function imageCropByPoints($image, $point1, $point2)
+	{
+		// TODO: Implement imageCropByPoints() method.
+	}
+
+	/**
+	 * @param      $image
+	 * @param      $src_x
+	 * @param      $src_y
+	 * @param      $dest_x
+	 * @param      $dest_y
+	 * @param null $filename
+	 */
+	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename = null)
+	{
+		// TODO: Implement imageCropWithSource() method.
+	}
+
 }

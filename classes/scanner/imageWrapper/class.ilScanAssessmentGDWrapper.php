@@ -32,6 +32,15 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	}
 
 	/**
+	 * @param $filename
+	 * @return resource
+	 */
+	public function createNewImageInstanceFromFileName($filename)
+	{
+		return imagecreatefromjpeg($filename);
+	}
+	
+	/**
 	 * @param mixed $image
 	 */
 	public function setImage($image)
@@ -284,6 +293,15 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		return imagecrop($image, array('x' => $point1->getX(), 'y' => $point1->getY(), 'width' => $width, 'height' => $height));
 	}
 
+	/**
+	 * @param      $image
+	 * @param      $src_x
+	 * @param      $src_y
+	 * @param      $dest_x
+	 * @param      $dest_y
+	 * @param null $filename
+	 * @return resource
+	 */
 	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename = null)
 	{
 		if($src_x < 0)

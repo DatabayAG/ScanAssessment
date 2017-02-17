@@ -25,8 +25,17 @@ interface ilScanAssessmentImageWrapper
 	 */
 	public function getGrey(ilScanAssessmentPoint $point);
 
+	/**
+	 * @return mixed
+	 */
 	public function removeBlackBorder();
 
+	/**
+	 * @param $filename
+	 * @return mixed
+	 */
+	public function createNewImageInstanceFromFileName($filename);
+	
 	/**
 	 * @param $rad
 	 * @return mixed
@@ -122,4 +131,25 @@ interface ilScanAssessmentImageWrapper
 	 * @return mixed
 	 */
 	function imageCrop($image, $rect);
+
+
+	/**
+	 * @param $image
+	 * @param ilScanAssessmentPoint $point1
+	 * @param ilScanAssessmentPoint $point2
+	 * @return mixed
+	 */
+	function imageCropByPoints($image, $point1, $point2);
+
+	/**
+	 * @param      $image
+	 * @param      $src_x
+	 * @param      $src_y
+	 * @param      $dest_x
+	 * @param      $dest_y
+	 * @param null $filename
+	 * @return mixed
+	 */
+	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename = null);
+
 }
