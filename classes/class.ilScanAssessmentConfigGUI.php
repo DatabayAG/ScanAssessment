@@ -99,7 +99,8 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				'disable_manual_pdf'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf(),
                 'tiff_enabled'          => ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
                 'tiff_dpi_minimum'      => $dpi_limits[0],
-                'tiff_dpi_maximum'      => $dpi_limits[1]
+                'tiff_dpi_maximum'      => $dpi_limits[1],
+				'scas_enable_debug_export' => ilScanAssessmentGlobalSettings::getInstance()->isEnableDebugExportTab()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -169,7 +170,11 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
             $tiff_dpi_maximum->setDisabled(true);
         }
 
-        $form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
+		$enable_debug_export = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_enable_debug_export'), 'scas_enable_debug_export');
+		$enable_debug_export->setInfo($this->getPluginObject()->txt('scas_enable_debug_export_info'));
+		$form->addItem($enable_debug_export);
+        
+		$form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
 
 		return $form;
 	}
@@ -190,6 +195,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffEnabled($form->getInput('tiff_enabled'));
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffDpiLimits(array(
                     $form->getInput('tiff_dpi_minimum'), $form->getInput('tiff_dpi_maximum')));
+				ilScanAssessmentGlobalSettings::getInstance()->setEnableDebugExportTab($form->getInput('scas_enable_debug_export'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}

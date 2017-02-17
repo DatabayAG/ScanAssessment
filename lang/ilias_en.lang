@@ -148,3 +148,6 @@ scas_tiff_dpi_minimum#:#Minimal DPI value for TIFF processing
 scas_tiff_dpi_minimum_info#:#TIFFs with a DPI value below this value won't be processed. Leave empty to process any TIFF.
 scas_tiff_dpi_maximum#:#Maximum DPI value for TIFF processing
 scas_tiff_dpi_maximum_info#:#TIFFs with a DPI value above this value will be rescaled. Leave empty to never rescale.
+scas_enable_debug_export#:#Enable Debug Tab for Export
+scas_enable_debug_export_info#:#Enable Debug Tab for Export
+scas_debug_export#:#Debug Export

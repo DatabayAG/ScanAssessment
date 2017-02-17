@@ -3,6 +3,8 @@
 
 require_once 'Services/UIComponent/classes/class.ilUIHookPluginGUI.php';
 require_once 'Services/Link/classes/class.ilLink.php';
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
+
 
 /**
  * Class ilScanAssessmentUIHookGUI
@@ -115,6 +117,11 @@ class ilScanAssessmentUIHookGUI extends ilUIHookPluginGUI
 			foreach($this->tabs as $key => $value)
 			{
 				$this->appendStepTab($value, 'scas_' . $value, $key);
+			}
+			$setting = ilScanAssessmentGlobalSettings::getInstance();
+			if($setting->isEnableDebugExportTab())
+			{
+				$this->appendStepTab('debug', 'scas_debug_export', 'ilScanAssessmentDebugExportGUI.default');
 			}
 		}
 		else

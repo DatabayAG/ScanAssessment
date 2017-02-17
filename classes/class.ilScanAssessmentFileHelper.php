@@ -16,6 +16,7 @@ class ilScanAssessmentFileHelper
 	const TEMP				= 'tmp/';
 	const RESULTS			= '/results/';
 	const WHOLE_REVISION	= '/whole/';
+	const EXPORT			= '/export/';
 
 	/**
 	 * @var int
@@ -57,6 +58,16 @@ class ilScanAssessmentFileHelper
 		return $path;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getExportPath()
+	{
+		$path = $this->getBasePath() . self::EXPORT;
+		$this->ensurePathExists($path);
+		return $path;
+	}
+	
 	/**
 	 * @return string
 	 */

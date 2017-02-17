@@ -148,3 +148,6 @@ scas_tiff_dpi_minimum#:#Minimaler DPI-Wert für TIFF-Verarbeitung
 scas_tiff_dpi_minimum_info#:#TIFFs mit DPI unter diesem Wert werden nicht verarbeitet. Leer bedeutet: immer verarbeiten.
 scas_tiff_dpi_maximum#:#Maximaler DPI-Wert für TIFF-Verarbeitung
 scas_tiff_dpi_maximum_info#:#TIFFs mit DPI über diesem Wert werden reskaliert. Leer bedeutet: niemals reskalieren.
+scas_enable_debug_export#:#Aktiviert einen Debug Tab für Exporte
+scas_enable_debug_export_info#:#Aktiviert einen Debug Tab für Exporte
+scas_debug_export#:#Debug Export

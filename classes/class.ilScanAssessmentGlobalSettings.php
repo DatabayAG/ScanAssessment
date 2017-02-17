@@ -47,6 +47,11 @@ class ilScanAssessmentGlobalSettings
 	protected $tiff_dpi_limits;
 
 	/**
+	 * @var boolean
+	 */
+	protected $enable_debug_export_tab;
+
+	/**
 	 *
 	 */
 	private function __construct()
@@ -81,6 +86,7 @@ class ilScanAssessmentGlobalSettings
 		$tiff_enabled         = $this->settings->get('tiff_enabled');
 		$tiff_dpi_minimum     = $this->settings->get('tiff_dpi_minimum');
 		$tiff_dpi_maximum     = $this->settings->get('tiff_dpi_maximum');
+		$enable_debug_export_tab = $this->settings->get('enable_debug_export_tab');
 
 		if(strlen($institution))
 		{
@@ -94,6 +100,7 @@ class ilScanAssessmentGlobalSettings
 		$this->setDisableManualPdf($disable_manual_pdf);
 		$this->setTiffEnabled($tiff_enabled);
 		$this->setTiffDpiLimits(array($tiff_dpi_minimum, $tiff_dpi_maximum));
+		$this->setEnableDebugExportTab($enable_debug_export_tab);
 	}
 
 	/**
@@ -125,6 +132,7 @@ class ilScanAssessmentGlobalSettings
 		$dpi_limits = $this->getTiffDpiLimits();
 		$this->settings->set('tiff_dpi_minimum', $dpi_limits[0]);
 		$this->settings->set('tiff_dpi_maximum', $dpi_limits[1]);
+		$this->settings->set('enable_debug_export_tab', $this->isEnableDebugExportTab());
 	}
 
 	/**
@@ -242,5 +250,21 @@ class ilScanAssessmentGlobalSettings
 	public function setTiffDPILimits($tiff_dpi_limits)
 	{
 		$this->tiff_dpi_limits = $tiff_dpi_limits;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isEnableDebugExportTab()
+	{
+		return $this->enable_debug_export_tab;
+	}
+
+	/**
+	 * @param bool $enable_debug_export_tab
+	 */
+	public function setEnableDebugExportTab($enable_debug_export_tab)
+	{
+		$this->enable_debug_export_tab = $enable_debug_export_tab;
 	}
 }
