@@ -115,6 +115,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 		if($pdf->getPage() != $start_page || $height - $y < self::PAGE_SIZE_LEFT)
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
+			if($pdf->getPage() == $start_page)
+			{
+				$pdf_h->pdf->getMetadata()->getIdentificationObject()->setPageNumber($start_page);
+			}
 			$pdf->rollbackTransaction(true);
 			$this->addPageWithQrCode($pdf_h);
 			$question_start = new ilScanAssessmentPoint($pdf->getX(), $pdf->getY());
@@ -354,6 +358,10 @@ class ilScanAssessmentPdfAssessmentBuilder
 		if($pdf->getPage() != $start_page || $height - $y < self::PAGE_SIZE_LEFT)
 		{
 			$this->log->debug(sprintf('Transaction failed for page %s rollback ended up on page %s.', $start_page, $pdf->getPage()));
+			if($pdf->getPage() == $start_page)
+			{
+				$pdf_h->pdf->getMetadata()->getIdentificationObject()->setPageNumber($start_page);
+			}
 			$pdf->rollbackTransaction(true);
 			if($columns < 6)
 			{
