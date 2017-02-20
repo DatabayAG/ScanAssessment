@@ -213,6 +213,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
+		//Todo: re-add
 		$this->findMatriculation($im);
 		return $this->checkbox_container;
 	}
