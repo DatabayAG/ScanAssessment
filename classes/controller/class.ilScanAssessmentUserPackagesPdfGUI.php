@@ -180,8 +180,13 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		}
 		else
 		{
-			$pdf_builder->createNonPersonalisedPdf($this->configuration->getCountDocuments());
-			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
+		    $number = $this->configuration->getCountDocuments();
+		    if ($number > 0) {
+                $pdf_builder->createNonPersonalisedPdf($number);
+                $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
+            } else {
+                $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_zero_count'));
+            }
 		}
 	}
 

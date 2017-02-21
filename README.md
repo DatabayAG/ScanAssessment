@@ -1,5 +1,5 @@
 # ILIAS ScanAssessment Plugin (Development Version)
-* For ILIAS versions: 5.1.0 - 5.1.999
+* For ILIAS versions: 5.1.0 - 5.2.999
 
 ##Important notice
 Since this is still in development, do **NOT** use this for real assessments at the moment!

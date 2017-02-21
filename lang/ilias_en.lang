@@ -52,6 +52,7 @@ scas_complete_download_info#:#Complete Download
 scas_download_as_flag#:#Flag
 scas_download_as_zip#:#Zip
 scas_pdfs_created#:#PDF creation done.
+scas_pdfs_zero_count#:#Please configure a valid PDF count in the Setting tab.
 scas_create_demo_pdf#:#Create Demo PDF
 scas_steps#:#Steps
 scas_steps#:#Position
@@ -111,7 +112,7 @@ scas_manual_scan_disabled#:#Manual scan is disabled.
 scas_disable_manual_pdf#:#Disable manual pdf creation
 scas_disable_manual_pdf_info#:#If this option is checked it is only possible to create pdfs with the cron job, the demo pdf is still possible.
 scas_manual_pdf_disabled#:#Manual pdf creation is disabled.
-scas_disable_manual_scan_no_cron_info#:#The cron is not installed or activated.
+scas_disable_manual_scan_no_cron_info#:#The ScanAssessmentCron is not installed or activated.
 scas_least_one_participant#:#At least one participant is needed.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision

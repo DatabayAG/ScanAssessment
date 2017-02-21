@@ -52,6 +52,7 @@ scas_complete_download_info#:#Sammeldownload
 scas_download_as_flag#:#Fahne
 scas_download_as_zip#:#Zip-Archiv
 scas_pdfs_created#:#PDF Erzeugung abgeschlossen.
+scas_pdfs_zero_count#:#Bitte konfigurieren Sie im Tab "Einstellungen" eine gültige PDF-Anzahl.
 scas_create_demo_pdf#:#Demo PDF erzeugen
 scas_steps#:#Schritt
 scas_is_activated#:#Ist aktiviert
@@ -110,7 +111,7 @@ scas_manual_scan_disabled#:#Manuelles scannen ist deaktiviert.
 scas_disable_manual_pdf#:#Manuelles erzeugen der PDFs deaktivieren
 scas_disable_manual_pdf_info#:#Wenn diese Option aktiviert ist, wird die manuelle PDF Erzeugung deaktiviert und es ist nur noch möglich mit dem Cron Job Plugin PDF zu erzeugen, ausnahme sind die Demo PDFs.
 scas_manual_pdf_disabled#:#Manuelles PDF Erzeugung ist deaktiviert.
-scas_disable_manual_scan_no_cron_info#:#Der Cronjob ist nicht installiert oder eingerichtet.
+scas_disable_manual_scan_no_cron_info#:#Der ScanAssessmentCron ist nicht installiert oder eingerichtet.
 scas_least_one_participant#:#Es muss mindestens ein Teilnehmer eingetragen sein.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
