@@ -116,7 +116,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'qid' => $answer['question'], 
 														'aid' => $aid, 
 														'value2' => null, 
-														'vector' => new ilScanAssessmentVector($first_point, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -141,7 +141,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'aid' => $aid_correct, 
 														'value2' => null, 
 														'correctness' => $value['correct']['correctness'],  
-														'vector' => new ilScanAssessmentVector($first_point_correct, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -158,7 +158,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'aid' => $aid_wrong, 
 														'value2' => null, 
 														'correctness' => $value['wrong']['correctness'], 
-														'vector' => new ilScanAssessmentVector($first_point_wrong, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -213,7 +213,6 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
-		//Todo: re-add
 		$this->findMatriculation($im);
 		return $this->checkbox_container;
 	}

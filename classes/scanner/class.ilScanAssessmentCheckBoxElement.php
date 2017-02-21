@@ -9,15 +9,15 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilSc
 class ilScanAssessmentCheckBoxElement
 {
 	const MIN_VALUE_BLACK		= 150;
-	const MIN_MARKED_AREA		= 0.45;
-	const MARKED_AREA_CHECKED	= 0.50;
+	const MIN_MARKED_AREA		= 0.40;
+	const MARKED_AREA_CHECKED	= 0.45;
 	const MARKED_AREA_UNCHECKED	= 0.90;
 	const BOX_SIZE				= 5;
 	const CHECKED				= 2;
 	const UNCHECKED				= 1;
 	const UNTOUCHED				= 0;
-	const SEARCH_LENGTH			= 15;
-	const SEARCH_ROUNDS			= 25;
+	const SEARCH_LENGTH			= 5;
+	const SEARCH_ROUNDS			= 10;
 	const SEARCH_INCREMENT		= 3;
 
 	protected $color_mapping;
@@ -37,6 +37,8 @@ class ilScanAssessmentCheckBoxElement
 	protected $image_helper;
 	
 	protected $recalculate_position = false;
+	
+	protected $border_left_temp;
 
 	/**
 	 * ilScanAssessmentCheckBoxElement constructor.
@@ -54,6 +56,7 @@ class ilScanAssessmentCheckBoxElement
 			self::UNCHECKED	=> $this->image_helper->getPink(),
 			self::CHECKED	=> $this->image_helper->getGreen()
 		);
+		$this->border_left_temp = array();
 	}
 
 	/**
@@ -103,7 +106,7 @@ class ilScanAssessmentCheckBoxElement
 	{
 		$this->right_bottom = $right_bottom;
 	}
-
+	
 	/**
 	 * @param      $im
 	 * @param bool $mark
@@ -114,7 +117,7 @@ class ilScanAssessmentCheckBoxElement
 		$black = 0;
 		$white = 0;
 		$total = 0;
-		$this->detectBorder($im, $mark);
+		$this->detectBorder($im);
 		for($x = $this->getLeftTop()->getX(); $x < $this->getRightBottom()->getX(); $x++)
 		{
 			for($y = $this->getLeftTop()->getY(); $y < $this->getRightBottom()->getY(); $y++)
@@ -144,52 +147,81 @@ class ilScanAssessmentCheckBoxElement
 	 * @param bool $mark
 	 * @return ilScanAssessmentArea
 	 */
-	protected function detectBorder($im, $mark = false)
+	protected function detectBorder($im)
 	{
-
-		$left_border	= false;
-		$right_border	= false;
-		$top_border		= false;
-		$bottom_border	= false;
-		$this->recalculate_position = false;
 
 		$center_x		= ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
 		$center_y		= ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
 
-		$left_border = $this->getLeftBorderPosition($im, $center_x, $center_y);
-		$right_border = $this->getRightBorderPosition($im, $center_x, $center_y);
-		$top_border = $this->getTopBorderPosition($im, $center_x, $center_y);
-		$bottom_border = $this->getBottomBorderPosition($im, $center_x, $center_y);
+		$length = ($center_x - $this->getLeftTop()->getX());
+		ilScanAssessmentLog::getInstance()->warn(sprintf('LENGTH: %s', $length));
 
-		#if($left_border && $right_border && $top_border && $bottom_border && !$this->recalculate_position )
-		#{
-		#	ilScanAssessmentLog::getInstance()->debug(sprintf('All found, should be ok.'));
-		#}
-		#else
-		#{
+		$left_border = $this->getLeftBorderPosition($im, $center_x, $center_y, $length);
+		$right_border = $this->getRightBorderPosition($im, $center_x, $center_y, $length);
+		$top_border = $this->getTopBorderPosition($im, $center_x, $center_y, $length);
+		$bottom_border = $this->getBottomBorderPosition($im, $center_x, $center_y, $length);
+
 		ilScanAssessmentLog::getInstance()->debug(sprintf('%s %s %s %s',$bottom_border->getLength(), $top_border->getLength(), $right_border->getLength(), $left_border->getLength()));
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Found Borders [%s, %s], [%s, %s], [%s, %s], [%s, %s].',
 				$left_border->getPosition()->getX(), $left_border->getPosition()->getY(),
 				$right_border->getPosition()->getX(), $right_border->getPosition()->getY(),
 				$top_border->getPosition()->getX(), $top_border->getPosition()->getY(),
 				$bottom_border->getPosition()->getX(), $bottom_border->getPosition()->getY()));
-			$new_center_x		= ($top_border->getPosition()->getX() + $bottom_border->getPosition()->getX() + $left_border->getPosition()->getX() + $right_border->getPosition()->getX()) / 4;
-			$new_center_y		= ($left_border->getPosition()->getY() + $right_border->getPosition()->getY() + $left_border->getPosition()->getY() + $right_border->getPosition()->getY()) / 4;
+			$new_center_x		= ($left_border->getPosition()->getX() + $right_border->getPosition()->getX()) / 2;
+			$new_center_y		= ($top_border->getPosition()->getY() + $bottom_border->getPosition()->getY()) / 2;
+			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
+			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
+			$this->checkIfCenterIsCentered($im, $new_center_x, $new_center_y, $left_border->getPosition()->getX(), $right_border->getPosition()->getX(), $top_border->getPosition()->getY(), $bottom_border->getPosition()->getY());
 			ilScanAssessmentLog::getInstance()->warn(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
-			#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x,$new_center_y), $this->image_helper->getPink());
 
-
-			$new_top_left = new ilScanAssessmentPoint($left_border->getPosition()->getX(), $top_border->getPosition()->getY());
-			$new_bottom_right = new ilScanAssessmentPoint($right_border->getPosition()->getX(), $bottom_border->getPosition()->getY());
-			$this->setLeftTop($new_top_left);
-			$this->setRightBottom($new_bottom_right);
-		#}
 
 		if(!$left_border && !$right_border && !$top_border && !$bottom_border)
 		{
 			ilScanAssessmentLog::getInstance()->warn(sprintf('Non orientation point found. We are nowhere near a checkbox.'));
 		}
-
+	}
+	
+	protected function checkIfCenterIsCentered($im, $x, $y, $left_x, $right_x, $top_y, $bottom_y)
+	{
+		$to_the_left	= $x - $left_x;
+		$to_the_right	= $right_x - $x;
+		$to_the_top		= $y - $top_y;
+		$to_the_bottom	= $bottom_y - $y;
+		if(	abs($to_the_left - $to_the_right) > 0   ||
+			abs($to_the_left - $to_the_bottom) > 0  ||
+			abs($to_the_left - $to_the_top) > 0     ||
+			abs($to_the_right - $to_the_left) > 0   ||
+			abs($to_the_right - $to_the_bottom) > 0 ||
+			abs($to_the_right - $to_the_top) > 0 
+			)
+		{
+			$correct_value = 0;
+			if($to_the_left > $correct_value)
+			{
+				$correct_value = $to_the_left;
+			}
+			if($to_the_right > $correct_value)
+			{
+				$correct_value = $to_the_right;
+			}
+			if($to_the_top > $correct_value)
+			{
+				$correct_value = $to_the_top;
+			}
+			if($to_the_bottom > $correct_value)
+			{
+				$correct_value = $to_the_bottom;
+			}
+			$new_top_left = new ilScanAssessmentPoint($left_x - ($correct_value - $to_the_left), $top_y - ($correct_value - $to_the_top));
+			$new_bottom_right = new ilScanAssessmentPoint($right_x + ($correct_value - $to_the_right), $bottom_y + ($correct_value - $to_the_bottom));
+		}
+		else
+		{
+			$new_top_left = new ilScanAssessmentPoint($left_x, $top_y);
+			$new_bottom_right = new ilScanAssessmentPoint($right_x, $bottom_y);
+		}
+		$this->setLeftTop($new_top_left);
+		$this->setRightBottom($new_bottom_right);
 	}
 
 	/**
@@ -199,7 +231,7 @@ class ilScanAssessmentCheckBoxElement
 	 * @param int $length_multiplier
 	 * @return ilScanAssessmentVector
 	 */
-	protected function getBottomBorderPosition($im, $center_x, $center_y, $length_multiplier = 1)
+	protected function getBottomBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
 		$border_temp 	= array();
 		$bottom_border	= false;
@@ -207,16 +239,22 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$bottom			= false;
 			$black_pixel 	= 0;
-			for($y = $center_y ; $y < $this->getRightBottom()->getY() + (self::SEARCH_LENGTH * $length_multiplier); $y++)
+			for($y = $center_y ; $y < $this->getRightBottom()->getY() + ($length * $length_multiplier); $y++)
 			{
 				$x = $center_x - $i;
-
+				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getRed());
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
+
 				if($gray < self::MIN_VALUE_BLACK)
 				{
 					$bottom = true;
 					$bottom_border = false;
 					$black_pixel++;
+					if($bottom_border == true)
+					{
+						array_pop($border_temp);
+						$bottom_border = false;
+					}
 				}
 				else if($bottom && !$bottom_border)
 				{
@@ -229,21 +267,30 @@ class ilScanAssessmentCheckBoxElement
 		}
 		if(!$bottom_border)
 		{
-			$border_temp[] = $this->getBottomBorderPosition($im, $center_x, $center_y, $length_multiplier + 1);
+			$border_temp = array();
+			$border_temp[] = $this->getBottomBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
 			$this->recalculate_position = true;
 		}
+
 		$x = 0;
 		$y = 0;
-		$count = 0;
-
+		$found_twice = false;
 		foreach($border_temp as $vector)
 		{
-			$x += $vector->getPosition()->getX();
-			$y += $vector->getPosition()->getY();
-			$count++;
-			ilScanAssessmentLog::getInstance()->warn($vector->getLength());
+			if($vector->getPosition()->getY() >= $y)
+			{
+				if($vector->getPosition()->getY() == $y)
+				{
+					$found_twice = true;
+				}
+				if(!$found_twice)
+				{
+					$x = $vector->getPosition()->getX();
+					$y = $vector->getPosition()->getY();
+				}
+			}
 		}
-		$bottom_border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x/$count, $y/$count), $count);
+		$bottom_border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), 0);
 		return $bottom_border;
 	}
 
@@ -254,7 +301,7 @@ class ilScanAssessmentCheckBoxElement
 	 * @param int $length_multiplier
 	 * @return ilScanAssessmentVector
 	 */
-	protected function getTopBorderPosition($im, $center_x, $center_y, $length_multiplier = 1)
+	protected function getTopBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
 		$border_temp 	= array();
 		$top_border		= false;
@@ -262,14 +309,19 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$top			= false;
 			$black_pixel 	= 0;
-			for($y = $center_y ; $y > $this->getLeftTop()->getY() -(self::SEARCH_LENGTH * $length_multiplier); $y--)
+			for($y = $center_y ; $y > $this->getLeftTop()->getY() - ($length * $length_multiplier); $y--)
 			{
 				$x = $center_x - $i;
+				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getBlue());
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
 				if($gray < self::MIN_VALUE_BLACK)
 				{
 					$top = true;
-					$top_border = false;
+					if($top_border == true)
+					{
+						array_pop($border_temp);
+						$top_border = false;
+					}
 					$black_pixel++;
 				}
 				else if($top && !$top_border)
@@ -282,20 +334,29 @@ class ilScanAssessmentCheckBoxElement
 		}
 		if(!$top_border)
 		{
-			$border_temp[] = $this->getTopBorderPosition($im, $center_x, $center_y, $length_multiplier + 1);
+			$border_temp = array();
+			$border_temp[] = $this->getTopBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
 			$this->recalculate_position = true;
 		}
-		$x = 0;
-		$y = 0;
-		$count = 0;
-		ilScanAssessmentLog::getInstance()->warn(count($border_temp));
+		$x = $this->image_helper->getImageSizeX();
+		$y = $this->image_helper->getImageSizeY();
+		$found_twice = false;
 		foreach($border_temp as $vector)
 		{
-			$x += $vector->getPosition()->getX();
-			$y += $vector->getPosition()->getY();
-			$count++;
+			if($vector->getPosition()->getY() <= $y)
+			{
+				if($vector->getPosition()->getY() == $y)
+				{
+					$found_twice = true;
+				}
+				if(!$found_twice)
+				{
+					$x = $vector->getPosition()->getX();
+					$y = $vector->getPosition()->getY();
+				}
+			}
 		}
-		$top_border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x/$count, $y/$count), $count);
+		$top_border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), 0);
 		return $top_border;
 	}
 
@@ -306,7 +367,7 @@ class ilScanAssessmentCheckBoxElement
 	 * @param int $length_multiplier
 	 * @return ilScanAssessmentVector
 	 */
-	protected function getLeftBorderPosition($im, $center_x, $center_y, $length_multiplier = 1)
+	protected function getLeftBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
 		$border_temp 	= array();
 		$border			= false;
@@ -314,15 +375,22 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$black			= false;
 			$black_pixel 	= 0;
-			for($x = $center_x; $x > $this->getLeftTop()->getX() - (self::SEARCH_LENGTH * $length_multiplier); $x--)
+			$border = false;
+			for($x = $center_x; $x > $this->getLeftTop()->getX() - ($length * $length_multiplier); $x--)
 			{
 				$y = $center_y - $i;
+				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getGreen());
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
+
 				if($gray < self::MIN_VALUE_BLACK)
 				{
 					$black = true;
-					$border = false;
 					$black_pixel++;
+					if($border == true)
+					{
+						array_pop($border_temp);
+						$border = false;
+					}
 				}
 				else if($black && !$border)
 				{
@@ -332,23 +400,33 @@ class ilScanAssessmentCheckBoxElement
 				}
 			}
 		}
+
 		if(!$border)
 		{
-			ilScanAssessmentLog::getInstance()->warn($length_multiplier + 1);
-			$border_temp[] = $this->getLeftBorderPosition($im, $center_x, $center_y, $length_multiplier + 1);
+			$border_temp = array();
+			$border_temp[] = $this->getLeftBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
 			$this->recalculate_position = true;
 		}
-		$x = 0;
-		$y = 0;
-		$count = 0;
-		ilScanAssessmentLog::getInstance()->warn(count($border_temp));
+
+		$x = $this->image_helper->getImageSizeX();
+		$y = $this->image_helper->getImageSizeY();
+		$found_twice = false;
 		foreach($border_temp as $vector)
 		{
-			$x += $vector->getPosition()->getX();
-			$y += $vector->getPosition()->getY();
-			$count++;
+			if($vector->getPosition()->getX() <= $x)
+			{
+				if($vector->getPosition()->getX() == $x && !$found_twice)
+				{
+					$found_twice = true;
+				}
+				if(!$found_twice)
+				{
+					$x = $vector->getPosition()->getX();
+					$y = $vector->getPosition()->getY();
+				}
+			}
 		}
-		$border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x/$count, $y/$count), $count);
+		$border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), 0);
 		return $border;
 	}
 
@@ -359,7 +437,7 @@ class ilScanAssessmentCheckBoxElement
 	 * @param int $length_multiplier
 	 * @return ilScanAssessmentVector
 	 */
-	protected function getRightBorderPosition($im, $center_x, $center_y, $length_multiplier = 1)
+	protected function getRightBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
 		$border_temp 	= array();
 		$border			= false;
@@ -367,20 +445,23 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$black			= false;
 			$black_pixel 	= 0;
-			for($x = $center_x ; $x < $this->getRightBottom()->getX() + (self::SEARCH_LENGTH * $length_multiplier); $x++)
+			for($x = $center_x ; $x < $this->getRightBottom()->getX() + ($length * $length_multiplier); $x++)
 			{
 				$y = $center_y - $i;
-				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x, $y), $this->image_helper->getPink());
+				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getPink());
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
 				if($gray < self::MIN_VALUE_BLACK)
 				{
 					$black = true;
-					$border = false;
+					if($border == true)
+					{
+						array_pop($border_temp);
+						$border = false;
+					}
 					$black_pixel++;
 				}
 				else if($black && !$border)
 				{
-					$black = false;
 					$border_temp[] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), $black_pixel);
 					$border = true;
 				}
@@ -388,20 +469,30 @@ class ilScanAssessmentCheckBoxElement
 		}
 		if(!$border)
 		{
-			$border_temp[] = $this->getRightBorderPosition($im, $center_x, $center_y, $length_multiplier + 1);
+			$border_temp = array();
+			$border_temp[] = $this->getRightBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
 			$this->recalculate_position = true;
 		}
 		$x = 0;
 		$y = 0;
-		$count = 0;
-		ilScanAssessmentLog::getInstance()->warn(count($border_temp));
+
+		$found_twice = false;
 		foreach($border_temp as $vector)
 		{
-			$x += $vector->getPosition()->getX();
-			$y += $vector->getPosition()->getY();
-			$count++;
+			if($vector->getPosition()->getX() >= $x)
+			{
+				if($vector->getPosition()->getX() == $x)
+				{
+					$found_twice = true;
+				}
+				if(!$found_twice)
+				{
+					$x = $vector->getPosition()->getX();
+					$y = $vector->getPosition()->getY();
+				}
+			}
 		}
-		$border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x/$count, $y/$count), $count);
+		$border = new ilScanAssessmentVector(new ilScanAssessmentPoint($x, $y), 0);
 		return $border;
 	}
 	/**
