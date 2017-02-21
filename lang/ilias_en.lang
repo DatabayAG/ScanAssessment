@@ -52,6 +52,7 @@ scas_complete_download_info#:#Complete Download
 scas_download_as_flag#:#Flag
 scas_download_as_zip#:#Zip
 scas_pdfs_created#:#PDF creation done.
+scas_pdfs_zero_count#:#Please configure a valid PDF count in the Setting tab.
 scas_create_demo_pdf#:#Create Demo PDF
 scas_steps#:#Steps
 scas_steps#:#Position
