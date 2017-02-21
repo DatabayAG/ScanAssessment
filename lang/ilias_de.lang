@@ -52,6 +52,7 @@ scas_complete_download_info#:#Sammeldownload
 scas_download_as_flag#:#Fahne
 scas_download_as_zip#:#Zip-Archiv
 scas_pdfs_created#:#PDF Erzeugung abgeschlossen.
+scas_pdfs_zero_count#:#Bitte konfigurieren Sie im Tab "Einstellungen" eine gültige PDF-Anzahl.
 scas_create_demo_pdf#:#Demo PDF erzeugen
 scas_steps#:#Schritt
 scas_is_activated#:#Ist aktiviert
