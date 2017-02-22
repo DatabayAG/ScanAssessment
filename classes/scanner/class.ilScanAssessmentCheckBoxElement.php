@@ -334,7 +334,8 @@ class ilScanAssessmentCheckBoxElement
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x - $cross_length, $y - $cross_length), $this->image_helper->getPink());
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x + $cross_length, $y - $cross_length), $this->image_helper->getRed());
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x - $cross_length, $y + $cross_length), $this->image_helper->getBlue());
-			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x + $cross_length, $y + $cross_length), $this->image_helper->getGreen());*/
+			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x + $cross_length, $y + $cross_length), $this->image_helper->getGreen());
+			*/
 			return new ilScanAssessmentPoint($x, $y);
 		}
 		else if (! $black)
