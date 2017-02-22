@@ -315,7 +315,7 @@ class ilScanAssessmentCheckBoxElement
 		$gray = ($gray_left + $gray_right + $gray_top + $gray_bottom + $gray_top_left + $gray_top_right + $gray_bottom_left + $gray_bottom_right) /8;
 		if($black && $gray < 50)
 		{
-			ilScanAssessmentLog::getInstance()->debug(sprintf('Found Colors %s, %s, %s, %s, %s, %s, %s, %s, %s.',
+			/*ilScanAssessmentLog::getInstance()->debug(sprintf('Found Colors %s, %s, %s, %s, %s, %s, %s, %s, %s.',
 				$gray_left,
 				$gray_right,
 				$gray_top,
@@ -326,7 +326,7 @@ class ilScanAssessmentCheckBoxElement
 				$gray_bottom_right,
 				$gray
 			));
-			/*$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x - $cross_length, $y), $this->image_helper->getPink());
+			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x - $cross_length, $y), $this->image_helper->getPink());
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x + $cross_length, $y), $this->image_helper->getRed());
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x, $y - $cross_length), $this->image_helper->getBlue());
 			$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x, $y + $cross_length), $this->image_helper->getGreen());
@@ -340,7 +340,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			if($gray > 250)
 			{
-				ilScanAssessmentLog::getInstance()->debug(sprintf('Found Colors > 250 %s, %s, %s, %s, %s, %s, %s, %s, %s.',
+				/*ilScanAssessmentLog::getInstance()->debug(sprintf('Found Colors > 250 %s, %s, %s, %s, %s, %s, %s, %s, %s.',
 					$gray_left,
 					$gray_right,
 					$gray_top,
@@ -350,7 +350,7 @@ class ilScanAssessmentCheckBoxElement
 					$gray_bottom_left,
 					$gray_bottom_right,
 					$gray
-				));
+				));*/
 				return new ilScanAssessmentPoint($x, $y);
 			}
 		} 
@@ -363,12 +363,12 @@ class ilScanAssessmentCheckBoxElement
 		$to_the_right	= $right_x - $x;
 		$to_the_top		= $y - $top_y;
 		$to_the_bottom	= $bottom_y - $y;
-		if(	abs($to_the_left - $to_the_right) > 0   ||
-			abs($to_the_left - $to_the_bottom) > 0  ||
-			abs($to_the_left - $to_the_top) > 0     ||
-			abs($to_the_right - $to_the_left) > 0   ||
+		if(	abs($to_the_left - $to_the_right)   > 0 ||
+			abs($to_the_left - $to_the_bottom)  > 0 ||
+			abs($to_the_left - $to_the_top)     > 0 ||
+			abs($to_the_right - $to_the_left)   > 0 ||
 			abs($to_the_right - $to_the_bottom) > 0 ||
-			abs($to_the_right - $to_the_top) > 0 
+			abs($to_the_right - $to_the_top)    > 0 
 			)
 		{
 			return false;
