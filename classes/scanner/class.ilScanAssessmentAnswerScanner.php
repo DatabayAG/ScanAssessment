@@ -213,8 +213,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
-		//Todo Remove
+
 		$this->findMatriculation($im);
+
 		return $this->checkbox_container;
 	}
 
@@ -389,7 +390,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				$matriculation_matrix = json_decode($row['matriculation_matrix'], true);
 			}
 		}
-		if(array_key_exists('value_rows', $matriculation_matrix))
+		if(is_array($matriculation_matrix) && array_key_exists('value_rows', $matriculation_matrix))
 		{
 			return $matriculation_matrix['value_rows'];
 		}
@@ -417,11 +418,11 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				$matriculation_matrix = json_decode($row['matriculation_matrix'], true);
 			}
 		}
-		if(array_key_exists('page', $matriculation_matrix))
+		if(is_array($matriculation_matrix) && array_key_exists('page', $matriculation_matrix))
 		{
 			return $matriculation_matrix['page'];
 		}
-		return 1;
+		return -1;
 	}
 
 	/**

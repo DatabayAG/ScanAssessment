@@ -174,7 +174,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			ilScanAssessmentLog::getInstance()->warn(sprintf('Non center point found. Make more detailed scan starting %s %s %s.', $center_x, $center_y, $length));
 			$value = false;
-			for($k = 0; $k < 2; $k++)
+			for($k = 0; $k < $length; $k++)
 			{
 				if(!$value)
 				{
@@ -284,7 +284,7 @@ class ilScanAssessmentCheckBoxElement
 		if($found > 0)
 		{
 			$point = new ilScanAssessmentPoint($x / $found, $y / $found);
-			#$this->image_helper->drawPixel($im, $point, $this->image_helper->getGreen());
+			$this->image_helper->drawPixel($im, $point, $this->image_helper->getRed());
 			return $point;
 		}
 		return false;
