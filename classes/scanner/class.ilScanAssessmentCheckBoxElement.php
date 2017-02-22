@@ -16,7 +16,7 @@ class ilScanAssessmentCheckBoxElement
 	const CHECKED				= 2;
 	const UNCHECKED				= 1;
 	const UNTOUCHED				= 0;
-	const SEARCH_LENGTH			= 5;
+	const RECURSIVE_CALL		= 50;
 	const SEARCH_ROUNDS			= 10;
 	const SEARCH_INCREMENT		= 3;
 
@@ -427,7 +427,7 @@ class ilScanAssessmentCheckBoxElement
 			}
 
 		}
-		if(!$bottom_border)
+		if(!$bottom_border && $length_multiplier < self::RECURSIVE_CALL)
 		{
 			$border_temp = array();
 			$border_temp[] = $this->getBottomBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
@@ -493,7 +493,7 @@ class ilScanAssessmentCheckBoxElement
 				}
 			}
 		}
-		if(!$top_border)
+		if(!$top_border && $length_multiplier < self::RECURSIVE_CALL)
 		{
 			$border_temp = array();
 			$border_temp[] = $this->getTopBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
@@ -561,7 +561,7 @@ class ilScanAssessmentCheckBoxElement
 			}
 		}
 
-		if(!$border)
+		if(!$border && $length_multiplier < self::RECURSIVE_CALL)
 		{
 			$border_temp = array();
 			$border_temp[] = $this->getLeftBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
@@ -626,7 +626,7 @@ class ilScanAssessmentCheckBoxElement
 				}
 			}
 		}
-		if(!$border)
+		if(!$border && $length_multiplier < self::RECURSIVE_CALL)
 		{
 			$border_temp = array();
 			$border_temp[] = $this->getRightBorderPosition($im, $center_x, $center_y, $length, $length_multiplier + 1);
