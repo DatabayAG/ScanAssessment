@@ -214,7 +214,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
 		//Todo Remove
-		#$this->findMatriculation($im);
+		$this->findMatriculation($im);
 		return $this->checkbox_container;
 	}
 
@@ -236,7 +236,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x'] + 1) * ($corrected->getX());
+					$answer_x = ($vector['x']) * ($corrected->getX());
 					$answer_y = ($vector['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);

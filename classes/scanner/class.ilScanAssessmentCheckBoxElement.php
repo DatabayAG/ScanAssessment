@@ -9,8 +9,8 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilSc
 class ilScanAssessmentCheckBoxElement
 {
 	const MIN_VALUE_BLACK		= 150;
-	const MIN_MARKED_AREA		= 0.37;
-	const MARKED_AREA_CHECKED	= 0.40;
+	const MIN_MARKED_AREA		= 0.38;
+	const MARKED_AREA_CHECKED	= 0.45;
 	const MARKED_AREA_UNCHECKED	= 0.90;
 	const BOX_SIZE				= 5;
 	const CHECKED				= 2;
@@ -207,7 +207,8 @@ class ilScanAssessmentCheckBoxElement
 				$new_center_y = $value->getY();
 			}
 		}
-		#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
+		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
+		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
 		ilScanAssessmentLog::getInstance()->info(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
 	}
 	
@@ -275,7 +276,7 @@ class ilScanAssessmentCheckBoxElement
 		$y = 0;
 		foreach($point_store as $point)
 		{
-			ilScanAssessmentLog::getInstance()->info(sprintf('Found point [%s, %s]', $point->getX(), $point->getY()));
+			#ilScanAssessmentLog::getInstance()->debug(sprintf('Found point [%s, %s]', $point->getX(), $point->getY()));
 			$found ++;
 			$x += $point->getX();
 			$y += $point->gety();
@@ -666,12 +667,12 @@ class ilScanAssessmentCheckBoxElement
 			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
 			{
 				$value	= self::CHECKED;
-				#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is checked %s.', $area->percentBlack()));
+				ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is checked %s.', $area->percentBlack()));
 			}
 			else
 			{
 				$value	= self::UNCHECKED;
-				#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is unchecked %s.', $area->percentBlack()));
+				ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is unchecked %s.', $area->percentBlack()));
 			}
 		}
 
@@ -679,7 +680,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
 		}
-		#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
+		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
 		return $value;
 	}
 
