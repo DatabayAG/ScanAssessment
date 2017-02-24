@@ -340,7 +340,7 @@ class ilScanAssessmentCheckBoxElement
 		}
 		else if (! $black)
 		{
-			if($gray > 250)
+			if($gray > 200)
 			{
 				/*ilScanAssessmentLog::getInstance()->debug(sprintf('Found Colors > 250 %s, %s, %s, %s, %s, %s, %s, %s, %s.',
 					$gray_left,
@@ -365,12 +365,12 @@ class ilScanAssessmentCheckBoxElement
 		$to_the_right	= $right_x - $x;
 		$to_the_top		= $y - $top_y;
 		$to_the_bottom	= $bottom_y - $y;
-		if(	abs($to_the_left - $to_the_right)   > 0 ||
-			abs($to_the_left - $to_the_bottom)  > 0 ||
-			abs($to_the_left - $to_the_top)     > 0 ||
-			abs($to_the_right - $to_the_left)   > 0 ||
-			abs($to_the_right - $to_the_bottom) > 0 ||
-			abs($to_the_right - $to_the_top)    > 0 
+		if(	abs($to_the_left - $to_the_right)   > 0.5 ||
+			abs($to_the_left - $to_the_bottom)  > 0.5 ||
+			abs($to_the_left - $to_the_top)     > 0.5 ||
+			abs($to_the_right - $to_the_left)   > 0.5 ||
+			abs($to_the_right - $to_the_bottom) > 0.5 ||
+			abs($to_the_right - $to_the_top)    > 0.5 
 			)
 		{
 			return false;
