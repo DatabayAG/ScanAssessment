@@ -195,9 +195,14 @@ class ilScanAssessmentScanProcess
      */
     protected function prepareTIFF($path, $entry)
     {
-        $log = ilScanAssessmentLog::getInstance();
         $org = $path . '/' . $entry;
         $pathinfo = pathinfo($org);
+
+        if (!in_array(strtolower($pathinfo['extension']), array('tif', 'tiff'))) {
+            return;
+        }
+
+        $log = ilScanAssessmentLog::getInstance();
 
         $t0 = microtime(true);
 
@@ -222,7 +227,9 @@ class ilScanAssessmentScanProcess
         $n_images = $img->getNumberImages();
         $log->debug('Preparing TIFF ' . $org . ' with ' . $n_images . ' images');
 
-        $target_file_type = 'png'; // we want something lossless here
+        // we want something lossless like png here, but the analysis pipeline
+        // only works with jpg currently.
+        $target_file_type = 'jpg';
 
         for($i = 0; $i < $n_images; $i++) {
             if(!$img->setImageIndex($i)) {
