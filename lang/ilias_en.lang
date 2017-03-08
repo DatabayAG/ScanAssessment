@@ -151,3 +151,11 @@ scas_tiff_dpi_maximum_info#:#TIFFs with a DPI value above this value will be res
 scas_enable_debug_export#:#Enable Debug Tab for Export
 scas_enable_debug_export_info#:#Enable Debug Tab for Export
 scas_debug_export#:#Debug Export
+scas_min_value_black#:#Minimum Black Value
+scas_min_value_black_info#:#Minimum value which is seen as black. Between 0 and 255.
+scas_min_marked_area#:#Minimum marked area
+scas_min_marked_area_info#:#Value when a checkbox is seen as marked. Between 0.00 and 1.00
+scas_marked_area_checked#:#Checked
+scas_marked_area_checked_info#:#Value when a checkbox is seen as checked. Between 0.00 and 1.00
+scas_marked_area_unchecked#:#Unchecked
+scas_marked_area_unchecked_info#:#Value when a checkbox is seen as unchecked again. Between 0.00 and 1.00

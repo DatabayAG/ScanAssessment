@@ -93,14 +93,18 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 			$form = $this->getConfigurationForm();
             $dpi_limits = ilScanAssessmentGlobalSettings::getInstance()->getTiffDpiLimits();
             $form->setValuesByArray(array(
-				'institution'			=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
-				'matriculation_style'	=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
-				'disable_manual_scan'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan(),
-				'disable_manual_pdf'	=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf(),
-                'tiff_enabled'          => ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
-                'tiff_dpi_minimum'      => $dpi_limits[0],
-                'tiff_dpi_maximum'      => $dpi_limits[1],
-				'scas_enable_debug_export' => ilScanAssessmentGlobalSettings::getInstance()->isEnableDebugExportTab()
+				'institution'				=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
+				'matriculation_style'		=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
+				'disable_manual_scan'		=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan(),
+				'disable_manual_pdf'		=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf(),
+                'tiff_enabled'				=> ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
+                'tiff_dpi_minimum'			=> $dpi_limits[0],
+                'tiff_dpi_maximum'			=> $dpi_limits[1],
+				'scas_enable_debug_export'	=> ilScanAssessmentGlobalSettings::getInstance()->isEnableDebugExportTab(),
+				'min_value_black'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack(),
+				'min_marked_area'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea(),
+				'marked_area_checked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked(),
+				'marked_area_unchecked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -170,6 +174,19 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
             $tiff_dpi_maximum->setDisabled(true);
         }
 
+		$min_value_black = new ilTextInputGUI($this->getPluginObject()->txt('scas_min_value_black'), 'min_value_black');
+		$min_value_black->setInfo($this->getPluginObject()->txt('scas_min_value_black_info'));
+		$form->addItem($min_value_black);
+		$min_marked_area = new ilTextInputGUI($this->getPluginObject()->txt('scas_min_marked_area'), 'min_marked_area');
+		$min_marked_area->setInfo($this->getPluginObject()->txt('scas_min_marked_area_info'));
+		$form->addItem($min_marked_area);
+		$marked_area_checked = new ilTextInputGUI($this->getPluginObject()->txt('scas_marked_area_checked'), 'marked_area_checked');
+		$marked_area_checked->setInfo($this->getPluginObject()->txt('scas_marked_area_checked_info'));
+		$form->addItem($marked_area_checked);
+		$marked_area_unchecked = new ilTextInputGUI($this->getPluginObject()->txt('scas_marked_area_unchecked'), 'marked_area_unchecked');
+		$marked_area_unchecked->setInfo($this->getPluginObject()->txt('scas_marked_area_unchecked_info'));
+		$form->addItem($marked_area_unchecked);
+
 		$enable_debug_export = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_enable_debug_export'), 'scas_enable_debug_export');
 		$enable_debug_export->setInfo($this->getPluginObject()->txt('scas_enable_debug_export_info'));
 		$form->addItem($enable_debug_export);
@@ -195,6 +212,10 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffEnabled($form->getInput('tiff_enabled'));
                 ilScanAssessmentGlobalSettings::getInstance()->setTiffDpiLimits(array(
                     $form->getInput('tiff_dpi_minimum'), $form->getInput('tiff_dpi_maximum')));
+				ilScanAssessmentGlobalSettings::getInstance()->setMinValueBlack($form->getInput('min_value_black'));
+				ilScanAssessmentGlobalSettings::getInstance()->setMinMarkedArea($form->getInput('min_marked_area'));
+				ilScanAssessmentGlobalSettings::getInstance()->setMarkedAreaChecked($form->getInput('marked_area_checked'));
+				ilScanAssessmentGlobalSettings::getInstance()->setMarkedAreaUnchecked($form->getInput('marked_area_unchecked'));
 				ilScanAssessmentGlobalSettings::getInstance()->setEnableDebugExportTab($form->getInput('scas_enable_debug_export'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');

@@ -1,17 +1,14 @@
 <?php
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentArea.php');
-
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 /**
  * Class ilScanAssessmentCheckBoxElement
  * @author Guido Vollbach <gvollbach@databay.de>
  */
 class ilScanAssessmentCheckBoxElement
 {
-	const MIN_VALUE_BLACK		= 150;
-	const MIN_MARKED_AREA		= 0.35;
-	const MARKED_AREA_CHECKED	= 0.45;
-	const MARKED_AREA_UNCHECKED	= 0.90;
+
 	const BOX_SIZE				= 5;
 	const CHECKED				= 2;
 	const UNCHECKED				= 1;
@@ -34,6 +31,26 @@ class ilScanAssessmentCheckBoxElement
 	protected $image_helper;
 
 	/**
+	 * @var int
+	 */
+	protected $min_value_black;
+
+	/**
+	 * @var float
+	 */
+	protected $min_marked_area;
+
+	/**
+	 * @var float
+	 */
+	protected $marked_area_checked;
+
+	/**
+	 * @var float
+	 */
+	protected $marked_area_unchecked;
+
+	/**
 	 * ilScanAssessmentCheckBoxElement constructor.
 	 * @param ilScanAssessmentPoint $left_top
 	 * @param ilScanAssessmentPoint $right_bottom
@@ -49,6 +66,10 @@ class ilScanAssessmentCheckBoxElement
 			self::UNCHECKED	=> $this->image_helper->getPink(),
 			self::CHECKED	=> $this->image_helper->getGreen()
 		);
+		$this->min_value_black = ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack();
+		$this->min_marked_area = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
+		$this->marked_area_checked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
+		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
 	}
 
 	/**
@@ -115,7 +136,7 @@ class ilScanAssessmentCheckBoxElement
 			{
 				$total++;
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
-				if($gray < self::MIN_VALUE_BLACK)
+				if($gray < $this->min_value_black)
 				{
 					$black++;
 					if($mark)
@@ -143,9 +164,9 @@ class ilScanAssessmentCheckBoxElement
 		$area	= $this->analyseCheckBox($im, $mark);
 		$value	= self::UNTOUCHED;
 
-		if($area->percentBlack() >= self::MIN_MARKED_AREA)
+		if($area->percentBlack() >= $this->min_marked_area)
 		{
-			if($area->percentBlack() >= self::MARKED_AREA_CHECKED && $area->percentBlack() <= self::MARKED_AREA_UNCHECKED)
+			if($area->percentBlack() >= $this->marked_area_checked && $area->percentBlack() <= $this->marked_area_unchecked)
 			{
 				$value	= self::CHECKED;
 				#ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox is checked %s.', $area->percentBlack()));
