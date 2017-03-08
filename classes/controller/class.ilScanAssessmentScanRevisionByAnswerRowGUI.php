@@ -163,11 +163,14 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 		{
 			$question = assQuestion::_instantiateQuestion($qid);
 			$answer_texts = array();
-			foreach($question->getAnswers() as $key => $answer)
+			if($question != null)
 			{
-				$answer_texts[$answer->getOrder()] = $answer->getAnswerText();
+				foreach($question->getAnswers() as $key => $answer)
+				{
+					$answer_texts[$answer->getOrder()] = $answer->getAnswerText();
+				}
+				self::$question_cache[$qid] = $answer_texts;
 			}
-			self::$question_cache[$qid] = $answer_texts;
 		}
 		return self::$question_cache[$qid];
 	}
@@ -182,11 +185,14 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 		{
 			$question = assQuestion::_instantiateQuestion($qid);
 			$answer_texts = array();
-			foreach($question->getAnswers() as $key => $answer)
+			if($question != null)
 			{
-				$answer_texts[$answer->getPosition()] = $answer->getAnswerText();
+				foreach($question->getAnswers() as $key => $answer)
+				{
+					$answer_texts[$answer->getPosition()] = $answer->getAnswerText();
+				}
+				self::$question_cache[$qid] = $answer_texts;
 			}
-			self::$question_cache[$qid] = $answer_texts;
 		}
 		return self::$question_cache[$qid];
 	}

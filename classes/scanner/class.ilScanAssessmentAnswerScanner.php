@@ -116,7 +116,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'qid' => $answer['question'], 
 														'aid' => $aid, 
 														'value2' => null, 
-														'vector' => new ilScanAssessmentVector($first_point, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -141,7 +141,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'aid' => $aid_correct, 
 														'value2' => null, 
 														'correctness' => $value['correct']['correctness'],  
-														'vector' => new ilScanAssessmentVector($first_point_correct, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -158,7 +158,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'aid' => $aid_wrong, 
 														'value2' => null, 
 														'correctness' => $value['wrong']['correctness'], 
-														'vector' => new ilScanAssessmentVector($first_point_wrong, (2.5 * $corrected->getY())),
+														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -213,7 +213,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
+
 		$this->findMatriculation($im);
+
 		return $this->checkbox_container;
 	}
 
@@ -235,7 +237,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x'] + 1) * ($corrected->getX());
+					$answer_x = ($vector['x']) * ($corrected->getX());
 					$answer_y = ($vector['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
@@ -388,7 +390,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				$matriculation_matrix = json_decode($row['matriculation_matrix'], true);
 			}
 		}
-		if(array_key_exists('value_rows', $matriculation_matrix))
+		if(is_array($matriculation_matrix) && array_key_exists('value_rows', $matriculation_matrix))
 		{
 			return $matriculation_matrix['value_rows'];
 		}
@@ -416,11 +418,11 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				$matriculation_matrix = json_decode($row['matriculation_matrix'], true);
 			}
 		}
-		if(array_key_exists('page', $matriculation_matrix))
+		if(is_array($matriculation_matrix) && array_key_exists('page', $matriculation_matrix))
 		{
 			return $matriculation_matrix['page'];
 		}
-		return 1;
+		return -1;
 	}
 
 	/**

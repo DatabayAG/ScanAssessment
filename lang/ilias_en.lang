@@ -52,6 +52,7 @@ scas_complete_download_info#:#Complete Download
 scas_download_as_flag#:#Flag
 scas_download_as_zip#:#Zip
 scas_pdfs_created#:#PDF creation done.
+scas_pdfs_zero_count#:#Please configure a valid PDF count in the Setting tab.
 scas_create_demo_pdf#:#Create Demo PDF
 scas_steps#:#Steps
 scas_steps#:#Position
@@ -115,7 +116,10 @@ scas_disable_manual_scan_no_cron_info#:#The ScanAssessmentCron is not installed 
 scas_least_one_participant#:#At least one participant is needed.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
-scas_checkbox_revision#:#Checkbox Revision
+scas_checkbox_revision_todo#:#Unreviewed Revisions
+scas_checkbox_revision_done#:#Completed Revisions
+scas_revision_show_all_todo#:#Show Revisions
+scas_revision_hide_all_todo#:#Hide Revisions
 scas_found_elements#:#Found Elements
 scas_revision_done#:#Revision done
 scas_revision_done_spf#:#Revision for PDF %s done

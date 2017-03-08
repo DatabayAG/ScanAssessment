@@ -37,8 +37,13 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 
 		$images = $this->getAnswerImages();
 		require_once 'Services/Accordion/classes/class.ilAccordionGUI.php';
-		$accordion = new ilAccordionGUI(); 
-		$accordion->setBehaviour('FirstOpen');
+
+		$accordion_todo = new ilAccordionGUI();
+        $accordion_todo->setAllowMultiOpened(true);
+
+        $accordion_done = new ilAccordionGUI();
+        $accordion_done->setAllowMultiOpened(true);
+
 		$pdf_id = '';
 		$files = $this->getProcessedFilesData();
 		foreach($images as $key => $folder)
@@ -82,7 +87,8 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 			}
 
 			$header_string = 'PDF ' . $pdf_id . ', ' . $pluginObject->txt('scas_found_elements') . ' (' . $counter . ')';
-			if($revision_state[$pdf_id] == self::DONE)
+            $is_revision_done = ($revision_state[$pdf_id] == self::DONE);
+			if($is_revision_done)
 			{
 				$template->touchBlock('checked');
 				$header_string .= ', ' . $pluginObject->txt('scas_revision_done');
@@ -97,12 +103,42 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 			$template->parseCurrentBlock();
 			$hidden = new ilHiddenInputGUI('pdf_id');
 			$hidden->setValue($pdf_id);
-			$accordion->addItem($header_string, $template->get());
+
+			if($is_revision_done)
+            {
+                $accordion_done->addItem($header_string, $template->get());
+            }
+            else
+            {
+                $accordion_todo->addItem($header_string, $template->get());
+            }
 		}
 
-		$custom = new ilCustomInputGUI($pluginObject->txt('scas_checkbox_revision'), '');
-		$custom->setHTML($accordion->getHTML());
-		$form->addItem($custom);
+        global $ilToolbar;
+        require_once 'Services/UIComponent/Button/classes/class.ilLinkButton.php';
+
+        $show_all_button = ilLinkButton::getInstance();
+        $show_all_button->setCaption($pluginObject->txt('scas_revision_show_all_todo'), false);
+        $show_all_button->setUrl('javascript:void(0);');
+        $show_all_button->setId('scas_revision_show_all_btn');
+        $ilToolbar->addButtonInstance($show_all_button);
+        $accordion_todo->setShowAllElement($show_all_button->getId());
+
+        $hide_all_button = ilLinkButton::getInstance();
+        $hide_all_button->setCaption($pluginObject->txt('scas_revision_hide_all_todo'), false);
+        $hide_all_button->setUrl('javascript:void(0);');
+        $hide_all_button->setId('scas_revision_hide_all_btn');
+        $ilToolbar->addButtonInstance($hide_all_button);
+        $accordion_todo->setHideAllElement($hide_all_button->getId());
+
+		$custom_todo = new ilCustomInputGUI($pluginObject->txt('scas_checkbox_revision_todo'), '');
+        $custom_todo->setHTML($accordion_todo->getHTML());
+        $form->addItem($custom_todo);
+
+        $custom_done = new ilCustomInputGUI($pluginObject->txt('scas_checkbox_revision_done'), '');
+        $custom_done->setHTML($accordion_done->getHTML());
+        $form->addItem($custom_done);
+
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
 		$select = new ilSelectInputGUI($pluginObject->txt('scas_revision_state'), 'all_revision_state');
 		$options = $shuffle_modes = array(self::NEUTRAL => '',

@@ -52,6 +52,7 @@ scas_complete_download_info#:#Sammeldownload
 scas_download_as_flag#:#Fahne
 scas_download_as_zip#:#Zip-Archiv
 scas_pdfs_created#:#PDF Erzeugung abgeschlossen.
+scas_pdfs_zero_count#:#Bitte konfigurieren Sie im Tab "Einstellungen" eine gültige PDF-Anzahl.
 scas_create_demo_pdf#:#Demo PDF erzeugen
 scas_steps#:#Schritt
 scas_is_activated#:#Ist aktiviert
@@ -114,7 +115,10 @@ scas_disable_manual_scan_no_cron_info#:#Der ScanAssessmentCron ist nicht install
 scas_least_one_participant#:#Es muss mindestens ein Teilnehmer eingetragen sein.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
-scas_checkbox_revision#:#Checkbox Revision
+scas_checkbox_revision_todo#:#Offene Revisionen
+scas_checkbox_revision_done#:#Abgeschlossene Revisionen
+scas_revision_show_all_todo#:#Revisionen anzeigen
+scas_revision_hide_all_todo#:#Revisionen verbergen
 scas_found_elements#:#Gefundene Elemente
 scas_revision_done#:#Revision abgeschlossen
 scas_revision_done_spf#:#Revision für PDF %s abgeschlossen
