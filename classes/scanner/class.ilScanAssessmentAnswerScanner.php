@@ -3,6 +3,7 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentCheckBoxElement.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
  * Class ilScanAssessmentAnswerScanner
@@ -212,7 +213,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 		}
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
-		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
+		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
 		$this->findMatriculation($im);
 
@@ -254,7 +255,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			}
 			$this->saveMatriculationNumber($matriculation);
 			$this->log->debug(sprintf('...done scanning matriculation checkboxes.'));
-			$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection.jpg');
+			$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection'  . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
 		}
 

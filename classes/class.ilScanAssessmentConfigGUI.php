@@ -104,7 +104,8 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				'min_value_black'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack(),
 				'min_marked_area'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea(),
 				'marked_area_checked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked(),
-				'marked_area_unchecked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked()
+				'marked_area_unchecked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked(),
+				'save_file_type'			=> ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -187,6 +188,16 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$marked_area_unchecked->setInfo($this->getPluginObject()->txt('scas_marked_area_unchecked_info'));
 		$form->addItem($marked_area_unchecked);
 
+		$save_file_type = new ilSelectInputGUI($this->getPluginObject()->txt('scas_save_file_type'), 'save_file_type');
+		$save_file_type->setInfo($this->getPluginObject()->txt('scas_save_file_type_info'));
+		$options = array(
+			'jpg' => 'jpg',
+			'gif' => 'gif',
+			'png' => 'png'
+		);
+		$save_file_type->setOptions($options);
+		$form->addItem($save_file_type);
+		
 		$enable_debug_export = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_enable_debug_export'), 'scas_enable_debug_export');
 		$enable_debug_export->setInfo($this->getPluginObject()->txt('scas_enable_debug_export_info'));
 		$form->addItem($enable_debug_export);
@@ -217,6 +228,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				ilScanAssessmentGlobalSettings::getInstance()->setMarkedAreaChecked($form->getInput('marked_area_checked'));
 				ilScanAssessmentGlobalSettings::getInstance()->setMarkedAreaUnchecked($form->getInput('marked_area_unchecked'));
 				ilScanAssessmentGlobalSettings::getInstance()->setEnableDebugExportTab($form->getInput('scas_enable_debug_export'));
+				ilScanAssessmentGlobalSettings::getInstance()->setSaveFileType($form->getInput('save_file_type'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}

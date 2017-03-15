@@ -19,7 +19,19 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function __construct($fn)
 	{
-		$img = imagecreatefromjpeg($fn);
+		$path_parts = pathinfo($fn);
+		if($path_parts['extension'] == 'jpg' || $path_parts['extension'] == 'jpeg')
+		{
+			$img = imagecreatefromjpeg($fn);
+		}
+		else if($path_parts['extension'] == 'png')
+		{
+			$img = imagecreatefrompng($fn);
+		}
+		else if($path_parts['extension'] == 'gif')
+		{
+			$img = imagecreatefromgif($fn);
+		}
 		$this->setImage($img);
 	}
 
@@ -80,7 +92,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function removeBlackBorder()
 	{
-		$img = $this->getImage();
+		$img2 = $this->getImage();
 
 		for($y = $this->getImageSizeY() - 1; $y > $this->getImageSizeY() - 100; $y--)
 		{
@@ -192,7 +204,20 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function drawTempImage($img, $fn)
 	{
-		imagejpeg($img, $fn, 100);
+		$path_parts = pathinfo($fn);
+
+		if($path_parts['extension'] == 'jpg' || $path_parts['extension'] == 'jpeg')
+		{
+			imagejpeg($img, $fn, 100);
+		}
+		else if($path_parts['extension'] == 'png')
+		{
+			imagepng($img, $fn);
+		}
+		else if($path_parts['extension'] == 'gif')
+		{
+			imagegif($img, $fn);
+		}
 	}
 
 	/**

@@ -29,7 +29,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 	 */
 	protected function doesQuestionFileExist($pdf_id, $page, $qid)
 	{
-		$file = $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . '.jpg';
+		$file = $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType();
 		return file_exists($file);
 	}
 	/**
@@ -75,7 +75,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 							{
 								$this->addAnswersToTemplate($pdf_id, $page, $data['answers'], $checked_answers, $template);
 								$template->setCurrentBlock('checkbox');
-								$template->setVariable('IMAGE', $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . '.jpg');
+								$template->setVariable('IMAGE', $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/whole/' . $page . '_' . $qid . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 								$template->parseCurrentBlock();
 							}
 							else

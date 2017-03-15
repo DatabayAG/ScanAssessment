@@ -72,6 +72,16 @@ class ilScanAssessmentGlobalSettings
 	protected $marked_area_unchecked = 0.90;
 
 	/**
+	 * @var string
+	 */
+	protected $intern_file_type = 'png';
+
+	/**
+	 * @var string
+	 */
+	protected $save_file_type = 'gif';
+
+	/**
 	 *
 	 */
 	private function __construct()
@@ -110,7 +120,8 @@ class ilScanAssessmentGlobalSettings
 		$min_value_black			= $this->settings->get('min_value_black') ? $this->settings->get('min_value_black') : $this->min_value_black;
 		$min_marked_area			= $this->settings->get('min_marked_area') ? $this->settings->get('min_marked_area') : $this->min_marked_area;
 		$marked_area_checked		= $this->settings->get('marked_area_checked') ? $this->settings->get('marked_area_checked') : $this->marked_area_checked;
-		$marked_area_unchecked		=$this->settings->get('marked_area_unchecked') ? $this->settings->get('marked_area_unchecked') : $this->marked_area_unchecked;
+		$marked_area_unchecked		= $this->settings->get('marked_area_unchecked') ? $this->settings->get('marked_area_unchecked') : $this->marked_area_unchecked;
+		$save_file_type				= $this->settings->get('save_file_type') ? $this->settings->get('save_file_type') : $this->save_file_type;
 
 		if(strlen($institution))
 		{
@@ -129,6 +140,7 @@ class ilScanAssessmentGlobalSettings
 		$this->setMinMarkedArea($min_marked_area);
 		$this->setMarkedAreaChecked($marked_area_checked);
 		$this->setMarkedAreaUnchecked($marked_area_unchecked);
+		$this->setSaveFileType($save_file_type);
 	}
 
 	/**
@@ -165,6 +177,7 @@ class ilScanAssessmentGlobalSettings
 		$this->settings->set('min_marked_area',			$this->getMinMarkedArea());
 		$this->settings->set('marked_area_checked',		$this->getMarkedAreaChecked());
 		$this->settings->set('marked_area_unchecked',	$this->getMarkedAreaUnchecked());
+		$this->settings->set('save_file_type',			$this->getSaveFileType());
 	}
 
 	/**
@@ -362,5 +375,29 @@ class ilScanAssessmentGlobalSettings
 	public function setMarkedAreaUnchecked($marked_area_unchecked)
 	{
 		$this->marked_area_unchecked = $marked_area_unchecked;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getInternFileType()
+	{
+		return '.' . $this->intern_file_type;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getSaveFileType()
+	{
+		return $this->save_file_type;
+	}
+
+	/**
+	 * @param string $save_file_type
+	 */
+	public function setSaveFileType($save_file_type)
+	{
+		$this->save_file_type = $save_file_type;
 	}
 }

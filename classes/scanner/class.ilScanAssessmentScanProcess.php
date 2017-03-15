@@ -6,7 +6,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentRevision.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('../libs/php-qrcode-detector-decoder/lib/QrReader.php');
-
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 /**
  * Class ilScanAssessmentScanProcess
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -46,6 +46,9 @@ class ilScanAssessmentScanProcess
 	 * @var array
 	 */
 	protected $files_not_for_this_test = array();
+	
+	
+	protected $internal_file_type = '.png';
 
 	/**
 	 * ilScanAssessmentScanProcess constructor.
@@ -54,10 +57,11 @@ class ilScanAssessmentScanProcess
 	 */
 	public function __construct(ilScanAssessmentFileHelper $file_helper, $test_obj_id)
 	{
-		$this->file_helper	= $file_helper;
-		$this->log			= ilScanAssessmentLog::getInstance();
-		$this->test 		= ilObjectFactory::getInstanceByObjId((int) $test_obj_id);
-		$this->rescale		= 0;
+		$this->file_helper		= $file_helper;
+		$this->log				= ilScanAssessmentLog::getInstance();
+		$this->test 			= ilObjectFactory::getInstanceByObjId((int) $test_obj_id);
+		$this->rescale			= 0;
+		$this->internal_file_type = ilScanAssessmentGlobalSettings::getInstance()->getInternFileType();
 	}
 
 	/**
@@ -89,7 +93,7 @@ class ilScanAssessmentScanProcess
 	{
 		$this->log->debug(sprintf('Marker not found retrying after cropping...'));
 		$image  = new ilScanAssessmentGDWrapper($scanner->getFn());
-		$scaled = $image->imageCropWithSource($image, $image->getImageSizeX() / 10, $image->getImageSizeY() / 100, 0, 0, $this->file_helper->getScanTempPath() . '/new_file.jpg');
+		$scaled = $image->imageCropWithSource($image, $image->getImageSizeX() / 10, $image->getImageSizeY() / 100, 0, 0, $this->file_helper->getScanTempPath() . '/new_file'  . $this->internal_file_type);
 		$scanner->setTempImage($scaled);
 		$scanner->image_helper->setImage($scaled);
 		$scanner->setImage($scaled);
@@ -144,8 +148,8 @@ class ilScanAssessmentScanProcess
 		}
 		if( $this->rescale < 2 && ($x3 > 2 || $y3 > 2))
 		{
-			$image = new ilScanAssessmentGDWrapper($this->file_helper->getScanTempPath() . 'new_file.jpg');
-			$image->imageCropWithSource($image, $x3, $y3, $x4, $y4, $this->file_helper->getScanTempPath() . 'rescaled.jpg');
+			$image = new ilScanAssessmentGDWrapper($this->file_helper->getScanTempPath() . 'new_file' . $this->internal_file_type);
+			$image->imageCropWithSource($image, $x3, $y3, $x4, $y4, $this->file_helper->getScanTempPath() . 'rescaled'  . $this->internal_file_type);
 			return true;
 		}
 
@@ -159,7 +163,7 @@ class ilScanAssessmentScanProcess
 	protected function detectQrCode($log)
 	{
 		$time_start = microtime(true);
-		$qr			= new ilScanAssessmentQrCode($this->file_helper->getScanTempPath() . 'new_file.jpg');
+		$qr			= new ilScanAssessmentQrCode($this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
 		$qr_pos		= $qr->getQRPosition();
 		$time_end   = microtime(true);
 		$time       = $time_end - $time_start;
@@ -178,7 +182,7 @@ class ilScanAssessmentScanProcess
 	protected function detectAnswers($marker, $qr_pos, $log, $qr_ident)
 	{
 		$time_start = microtime(true);
-		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file.jpg', $this->path_to_done, $qr_ident);
+		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type, $this->path_to_done, $qr_ident);
 		$val = $ans->scanImage($marker, $qr_pos);
 		#$log->debug($val);
 		$time_end = microtime(true);
@@ -227,9 +231,7 @@ class ilScanAssessmentScanProcess
         $n_images = $img->getNumberImages();
         $log->debug('Preparing TIFF ' . $org . ' with ' . $n_images . ' images');
 
-        // we want something lossless like png here, but the analysis pipeline
-        // only works with jpg currently.
-        $target_file_type = 'jpg';
+        $target_file_type = 'png';
 
         for($i = 0; $i < $n_images; $i++) {
             if(!$img->setImageIndex($i)) {
@@ -291,18 +293,18 @@ class ilScanAssessmentScanProcess
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
 		$not_cropped = true;
-		copy($org, $this->file_helper->getScanTempPath() . 'new_file.jpg');
+		copy($org, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
 		$log->debug('Start with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 		$marker = $this->detectMarker($scanner, $log);
 		if($marker != false)
 		{
-			$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file.jpg';
+			$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file'  . $this->internal_file_type;
 			if(file_exists($rotate_file))
 			{
 				$log->debug('Rotated file found, using that for further processing.');
-				copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file.jpg');
+				copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
 				unlink($rotate_file);
 				$this->rescale = 0;
 			}
@@ -314,7 +316,7 @@ class ilScanAssessmentScanProcess
 				{
 					$this->rescale++;
 					$not_cropped = false;
-					$this->analyseImage($this->file_helper->getScanTempPath() , 'rescaled.jpg');
+					$this->analyseImage($this->file_helper->getScanTempPath() , 'rescaled'  . $this->internal_file_type);
 				}
 			}
 
@@ -326,7 +328,7 @@ class ilScanAssessmentScanProcess
 					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
 					if($im2 !== false)
 					{
-						$path = $this->file_helper->getScanTempPath() . 'qr.jpg';
+						$path = $this->file_helper->getScanTempPath() . 'qr' . $this->internal_file_type;
 						$scanner->image_helper->drawTempImage($im2, $path);
 						$qr_code = $this->processQrCode($path, $org);
 						if(! $qr_code)
@@ -341,7 +343,7 @@ class ilScanAssessmentScanProcess
 						return false;
 					}
 				}
-				$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker.jpg');
+				$scanner->drawTempImage($scanner->getTempImage(), $this->path_to_done . '/test_marker' . $this->internal_file_type);
 				$scan_answer_object = $this->detectAnswers($marker, $qr_pos, $log, $qr_code);
 				$this->processAnswers($scan_answer_object, $qr_code, $scanner);
 			}
@@ -350,11 +352,12 @@ class ilScanAssessmentScanProcess
 				$done = $this->path_to_done . '/' . $entry;
 				$log->debug('Moving file: ' . $org . ' to ' .$done );
 				$this->file_helper->moveFile($org, $done);
+				$this->convertFilesAfterScanning($this->path_to_done);
 				return true;
 			}
 			else
 			{
-				if($entry != 'rescaled.jpg')
+				if($entry != 'rescaled' . $this->internal_file_type)
 				{
 					$this->files_not_for_this_test[] = $entry;
 				}
@@ -418,14 +421,14 @@ class ilScanAssessmentScanProcess
 
 			if($qid != $value['qid'])
 			{
-				$answer_image = new ilScanAssessmentGDWrapper($this->path_to_done . '/answer_detection.jpg');
+				$answer_image = new ilScanAssessmentGDWrapper($this->path_to_done . '/answer_detection' . $this->internal_file_type);
 				$whole_answer = $scanner->image_helper->imageCropByPoints($answer_image->getImage(), $value['start'], $value['end']);
-				$file_whole_path = $whole_path . $qr_code->getPageNumber() . '_' . $value['qid'] . '.jpg';
+				$file_whole_path = $whole_path . $qr_code->getPageNumber() . '_' . $value['qid'] . $this->internal_file_type;
 				$scanner->image_helper->drawTempImage($whole_answer, $file_whole_path);
 				$qid = $value['qid'];
 			}
 
-			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']  .'.jpg';
+			$file_path = $path . $qr_code->getPageNumber() . '_' . $value['qid'] . '_' . $value['aid'] . '_' . $pos . '_' . $value['marked']   . $this->internal_file_type;
 
 			$scanner->image_helper->drawTempImage($checkbox, $file_path);
 		}
@@ -448,7 +451,7 @@ class ilScanAssessmentScanProcess
 			{
 				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
 				$file = basename($org);
-				if($file != 'rescaled.jpg')
+				if($file != 'rescaled'  . $this->internal_file_type)
 				{
 					$this->files_not_for_this_test[] = $file;
 				}
@@ -461,7 +464,7 @@ class ilScanAssessmentScanProcess
 			return false;
 		}
 
-		$this->file_helper->moveFile($path, $this->path_to_done . '/qr.jpg');
+		$this->file_helper->moveFile($path, $this->path_to_done . '/qr' . $this->internal_file_type);
 		return $identification;
 	}
 
@@ -483,66 +486,68 @@ class ilScanAssessmentScanProcess
 		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
-    private function traverse($path, $callback)
-    {
-        $return_value = self::NOT_FOUND;
+	private function traverse($path, $callback)
+	{
+		$return_value = self::NOT_FOUND;
 
-        if($handle = opendir($path))
-        {
-            while(false !== ($entry = readdir($handle)))
-            {
-                if(is_dir($path . '/' . $entry) === false)
-                {
-                    if($entry !== 'scan_assessment.lock')
-                    {
-                        if(call_user_func(array($this, $callback), $path, $entry)) {
-                            $return_value = self::FOUND;
-                        }
-                    }
-                }
-            }
-            closedir($handle);
-        }
+		if($handle = opendir($path))
+		{
+			while(false !== ($entry = readdir($handle)))
+			{
+				if(is_dir($path . '/' . $entry) === false)
+				{
+					if($entry !== 'scan_assessment.lock')
+					{
+						if(call_user_func(array($this, $callback), $path, $entry))
+						{
+							$return_value = self::FOUND;
+						}
+					}
+				}
+			}
+			closedir($handle);
+		}
 
-        return $return_value;
-    }
+		return $return_value;
+	}
 
-    /**
-     * @return int
-     */
-    public function analyse()
-    {
-        $path = $this->file_helper->getScanPath();
-        $return_value	= self::NOT_FOUND;
+	/**
+	 * @return int
+	 * @throws Exception
+	 */
+	public function analyse()
+	{
+		$path         = $this->file_helper->getScanPath();
+		$return_value = self::NOT_FOUND;
 
-        if($this->acquireScanLock())
-        {
-            $this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
+		if($this->acquireScanLock())
+		{
+			$this->log->info(sprintf('Created lock file: %s', $this->getScanLockFilePath()));
 
-            try
-            {
-                if(ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled())
-                {
-                    $this->traverse($path, 'prepareTIFF');
-                }
+			try
+			{
+				if(ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled())
+				{
+					$this->traverse($path, 'prepareTIFF');
+				}
 
-                $return_value = $this->traverse($path, 'analyseImage');
-            }
-            catch(Exception $e)
-            {
-                $this->releaseScanLock();
-                throw $e;
-            }
+				$return_value = $this->traverse($path, 'analyseImage');
+			}
+			catch(Exception $e)
+			{
+				$this->releaseScanLock();
+				throw $e;
+			}
 
-            $this->releaseScanLock();
-        }
-        else
-        {
-            $return_value = self::LOCKED;
-        }
+			$this->releaseScanLock();
+		}
+		else
+		{
+			$return_value = self::LOCKED;
+		}
 
-        return $return_value;
-    }
+		return $return_value;
+	}
 
 	/**
 	 * @param $path
@@ -558,6 +563,24 @@ class ilScanAssessmentScanProcess
 			return $txt;
 		}
 		return false;
+	}
+	
+	protected function convertFilesAfterScanning($path)
+	{
+		/** @var splfileinfo $filename */
+		foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path)) as $filename)
+		{
+			if(! is_dir($filename->getFilename()))
+			{
+				if(file_exists($filename) && $filename->getExtension() != ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType() )
+				{
+					$img = new ilScanAssessmentGDWrapper($filename);
+					$name = $filename->getPath() . '/' . $filename->getBasename('.' . $filename->getExtension());
+					$img->drawTempImage($img->getImage(), $name . '.' . ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType());
+					unlink($filename);
+				}
+			}
+		}
 	}
 
 	/**

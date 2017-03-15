@@ -1,7 +1,7 @@
 <?php
 
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
-
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
 
 /**
  * Class ilScanAssessmentMarkerDetection
@@ -59,7 +59,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$im = $this->image_helper->rotate(180);
 				$this->log->debug(sprintf('Rotation done, rescanning...'));
 				$this->image_helper->setImage($im);
-				$this->drawTempImage($im, $path . '/new_file.jpg');
+				$this->drawTempImage($im, $path . '/new_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 			}
 			$scan_top_left = $this->probeMarkerPosition('top', $threshold);
 		}
@@ -90,7 +90,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 					$im = $this->image_helper->rotate($rad * -1 );
 					$this->setTempImage($im);
 					$this->setImage($im);
-					$this->image_helper->drawTempImage($im, $path . '/rotate_file.jpg');
+					$this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 					return $this->findMarker($im, true, $threshold, $path);
 				}
 				else 
@@ -146,7 +146,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		}
 		$this->image_helper->drawSquareFromTwoPoints($this->temp_image,$first,  $last, $this->image_helper->getBlue());
 		$this->image_helper->drawSquareFromVector($this->temp_image,new ilScanAssessmentVector($point, 5), $this->image_helper->getGreen());
-		$this->image_helper->drawTempImage($this->temp_image, 'detection.jpg');
+		$this->image_helper->drawTempImage($this->temp_image, 'detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 		return $point;
 	}
 

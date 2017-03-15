@@ -103,7 +103,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		$upload = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
 		$upload->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
 
-        $suffixes = array('zip', 'jpg', 'jpeg');
+        $suffixes = array('zip', 'jpg', 'jpeg', 'png');
 
         if(ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled())
         {

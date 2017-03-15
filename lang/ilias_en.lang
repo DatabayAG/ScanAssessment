@@ -163,3 +163,5 @@ scas_marked_area_checked#:#Checked
 scas_marked_area_checked_info#:#Value when a checkbox is seen as checked. Between 0.00 and 1.00
 scas_marked_area_unchecked#:#Unchecked
 scas_marked_area_unchecked_info#:#Value when a checkbox is seen as unchecked again. Between 0.00 and 1.00
+scas_save_file_type#:#Filetype
+scas_save_file_type_info#:#Filetype into which the images are converted after analysing. 
