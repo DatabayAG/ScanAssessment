@@ -26,14 +26,28 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 		}
 		else if($path_parts['extension'] == 'png')
 		{
-			$img = imagecreatefrompng($fn);
-		}
+			$img = self::toTrueColor(imagecreatefrompng($fn));
+        }
 		else if($path_parts['extension'] == 'gif')
 		{
-			$img = imagecreatefromgif($fn);
+			$img = self::toTrueColor(imagecreatefromgif($fn));
 		}
+		else
+        {
+            throw new ilException(sprintf(
+                'Unsupported image file type %s', $path_parts['extension']));
+        }
 		$this->setImage($img);
 	}
+
+    private static function toTrueColor($img)
+    {
+        $width = imagesx($img);
+        $height = imagesy($img);
+        $truecolor = imagecreatetruecolor($width, $height);
+        imagecopy($truecolor, $img, 0, 0, 0, 0, $width, $height);
+        return $truecolor;
+    }
 
 	/**
 	 * @return mixed
