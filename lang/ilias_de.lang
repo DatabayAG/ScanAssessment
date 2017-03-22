@@ -146,6 +146,7 @@ scas_none_shuffle#:#Keine Randomisierung
 scas_non_conform_files_found#:#In folgenden Dateien konnten keine Marker gefunden werden:
 scas_not_for_this_test#:#Folgenden Dateien gehören nicht zu diesem Test:
 scas_internal_error#:#Ein unvorhergesehener Fehler hat den Vorgang unterbrochen. Details finden Sie in den ScanAssessment Plugin Logdateien.
+scas_tiff_no_imagemagick_info#:#TIFF-Unterstützung ist nicht verfügbar, da kein PHP-ImageMagick installiert ist.
 scas_tiff_enabled#:#TIFF erlauben
 scas_tiff_enabled_info#:#Erlaubt das Hochladen gescannter Bögen als TIFF.
 scas_tiff_dpi_minimum#:#Minimaler DPI-Wert für TIFF-Verarbeitung
