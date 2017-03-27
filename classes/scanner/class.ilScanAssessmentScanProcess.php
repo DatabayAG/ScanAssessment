@@ -293,10 +293,11 @@ class ilScanAssessmentScanProcess
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
 		$not_cropped = true;
-		copy($org, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
+
 		$log->debug('Start with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
+		$scanner->image_helper->drawTempImage($scanner->getImage(), $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
 		$marker = $this->detectMarker($scanner, $log);
 		if($marker != false)
 		{
@@ -304,7 +305,9 @@ class ilScanAssessmentScanProcess
 			if(file_exists($rotate_file))
 			{
 				$log->debug('Rotated file found, using that for further processing.');
-				copy($rotate_file, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
+				$img = $scanner->image_helper->createNewImageInstanceFromFileName($rotate_file);
+				$scanner->image_helper->drawTempImage($img, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
+
 				unlink($rotate_file);
 				$this->rescale = 0;
 			}
