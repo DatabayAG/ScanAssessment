@@ -238,7 +238,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x']) * ($corrected->getX());
+					$answer_x = ($vector['x'] + 3) * ($corrected->getX());
 					$answer_y = ($vector['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
