@@ -13,6 +13,8 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 
 	protected $top_left_length;
 
+	protected $marker_names = array('top' => 'Top Left', 'bottom' => 'Bottom Left', 'right' => 'Top Right');
+
 	/**
 	 * ilScanAssessmentMarkerDetection constructor.
 	 * @param $fn
@@ -33,9 +35,43 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('Starting marker detection...'));
 		$this->setThreshold(self::LOWER_THRESHOLD);
 		$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
+		if (!marker) {
+            $this->log->warn(sprintf('Could not detect Marker!'));
+        }
 		$this->log->debug(sprintf('Marker detection done.'));
 		return $marker;
 	}
+
+	private function locateMarker($where, $threshold) {
+        $scan = $this->probeMarkerPosition($where, $threshold);
+        if($scan === false) {
+            return false;
+        }
+
+        $name = $this->marker_names[$where];
+
+        $this->log->debug(sprintf('%s Marker found Start[%s, %s], End[%s, %s] starting to detect exact position.',
+            $name,
+            $scan->getStart()->getX(), $scan->getStart()->getY(),
+            $scan->getEnd()->getX(), $scan->getEnd()->getY()));
+
+        $locate = $this->detectExactMarkerPosition($scan, $threshold);
+        $this->log->debug(sprintf('Exact %s Marker found at [%s, %s] with length %s.',
+            $name, $locate->getPosition()->getX(), $locate->getPosition()->getY(), $locate->getLength()));
+
+        return $locate;
+    }
+
+    private function rotate(&$im, $rotated, $path) {
+        $this->log->debug(sprintf('Probing found nothing trying to rotate...'));
+        if(!$rotated)
+        {
+            $im = $this->image_helper->rotate(180);
+            $this->log->debug(sprintf('Rotation done, rescanning...'));
+            $this->image_helper->setImage($im);
+            $this->drawTempImage($im, $path . '/new_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
+        }
+    }
 
 	/**
 	 * @param      $im
@@ -50,65 +86,43 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$locate_top_left = null;
 		$locate_bottom_left = null;
 
-		$scan_top_left = $this->probeMarkerPosition('top', $threshold);
-		if($scan_top_left === false)
+        $locate_top_left = $this->locateMarker('top', $threshold);
+		if($locate_top_left === false)
 		{
-			$this->log->debug(sprintf('Probing found nothing trying to rotate...'));
-			if(!$rotated) 
-			{
-				$im = $this->image_helper->rotate(180);
-				$this->log->debug(sprintf('Rotation done, rescanning...'));
-				$this->image_helper->setImage($im);
-				$this->drawTempImage($im, $path . '/new_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
-			}
-			$scan_top_left = $this->probeMarkerPosition('top', $threshold);
+		    rotate($im, $rotated, $path);
+            $locate_top_left = $this->locateMarker('top', $threshold);
 		}
 
-		if($scan_top_left !== false) 
-		{
-			$this->log->debug(sprintf('Top Left Marker found Start[%s, %s], End[%s, %s] starting to detect exact position.', $scan_top_left->getStart()->getX(), $scan_top_left->getStart()->getY(),  $scan_top_left->getEnd()->getX(), $scan_top_left->getEnd()->getY()));
-			$locate_top_left = $this->detectExactMarkerPosition($scan_top_left, $threshold);
-			$this->log->debug(sprintf('Exact Top Left Marker found at [%s, %s] with length %s.', $locate_top_left->getPosition()->getX(), $locate_top_left->getPosition()->getY(), $locate_top_left->getLength()));
-			$scan_bottom_left = $this->probeMarkerPosition('bottom', $threshold);
+		if($locate_top_left === false) {
+		    return false;
+        }
 
-			if($scan_bottom_left !== false) 
-			{
-				$this->log->debug(sprintf('Bottom Left Marker found Start[%s, %s], End[%s, %s] starting to detect exact position.', $scan_bottom_left->getStart()->getX(), $scan_bottom_left->getStart()->getY(),  $scan_bottom_left->getEnd()->getX(), $scan_bottom_left->getEnd()->getY()));
+        $locate_bottom_left = $this->locateMarker('bottom', $threshold);
 
-				$locate_bottom_left = $this->detectExactMarkerPosition($scan_bottom_left, $threshold);
-				$this->log->debug(sprintf('Exact Bottom Left Marker found at [%s, %s] with length %s.', $locate_bottom_left->getPosition()->getX(), $locate_bottom_left->getPosition()->getY(), $locate_bottom_left->getLength()));
+        if($locate_bottom_left === false) {
+            return false;
+        }
 
-				$dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
-				$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
-				$this->log->debug(sprintf('dX,dY [%s, %s] => atan %s.', $dx, $dy, atan2($dx, $dy)));
+        $dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
+        $dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
+        $this->log->debug(sprintf('dX,dY [%s, %s] => atan %s.', $dx, $dy, atan2($dx, $dy)));
 
-				$rad = rad2deg(atan2($dx, $dy));
-				$this->log->debug(sprintf('Rotation (%s).', $rad));
-				if($rotated==false && abs($rad) > 0.05) 
-				{
-					$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
-					$im = $this->image_helper->rotate($rad * -1 );
-					$this->setTempImage($im);
-					$this->setImage($im);
-					$this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
-					return $this->findMarker($im, true, $threshold, $path);
-				}
-				else 
-				{
-					$this->drawDebugSquareFromVector($locate_top_left);
-					$this->drawDebugSquareFromVector($locate_bottom_left);
-					return array($locate_top_left, $locate_bottom_left);
-				}
-			}
-		} 
-		else 
-		{
-			$this->log->warn(sprintf('Could not detect Marker!'));
-			return false;
-		}
-		$this->log->warn(sprintf('Could not detect Marker!'));
-		return false;
-		
+        $rad = rad2deg(atan2($dx, $dy));
+        $this->log->debug(sprintf('Rotation (%s).', $rad));
+        if($rotated==false && abs($rad) > 0.05)
+        {
+            $this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
+            $im = $this->image_helper->rotate($rad * -1 );
+            $this->setTempImage($im);
+            $this->setImage($im);
+            $this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
+            return $this->findMarker($im, true, $threshold, $path);
+        }
+
+        $this->drawDebugSquareFromVector($locate_top_left);
+        $this->drawDebugSquareFromVector($locate_bottom_left);
+        return array($locate_top_left, $locate_bottom_left);
+
 		#$a = $this->findTopLeftMarker(new ilScanAssessmentPoint(10,10));
 		#echo $a->getX() . ' ' . $a->getY(); exit();
 		#$b = 0;
