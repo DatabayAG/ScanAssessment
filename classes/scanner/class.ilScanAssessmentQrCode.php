@@ -39,7 +39,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 	/**
 	 * @param      $im
 	 * @param bool $rotate
-	 * @return bool|ilScanAssessmentVector
+	 * @return array|bool
 	 */
 	protected function findQR(&$im, $rotate = false) {
 
@@ -145,7 +145,7 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 
 		} else return false;
 
-		return $vec;
+		return array('crop' => $vec, 'end' => new ilScanAssessmentPoint($foundX, $foundY));
 	}
 
 

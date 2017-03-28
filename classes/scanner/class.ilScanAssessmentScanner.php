@@ -91,9 +91,26 @@ class ilScanAssessmentScanner
 		}
 	}
 
+	/**
+	 * @return ilScanAssessmentPoint
+	 */
 	public function getCorrectedPosition()
 	{
 		return new ilScanAssessmentPoint($this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297);
+	}
+
+	/**
+	 * @param $marker_positions
+	 * @param $qr_position
+	 * @return ilScanAssessmentPoint
+	 */
+	public function getCorrectedPositionFromMarker($marker_positions, $qr_position)
+	{
+		$x_end = ($qr_position['end']->getX() + $qr_position['crop']->getPosition()->getX()) / 2;
+		$corrected_x = ($x_end - ($marker_positions[1]->getPosition()->getX()) ) / 180;
+		$corrected_y = (($marker_positions[1]->getPosition()->getY() -  $marker_positions[0]->getPosition()->getY()) ) / 277;
+		$this->log->debug(sprintf('Position correction from marker detection (%s, %s), original was (%s, %s)', $corrected_x, $corrected_y, $this->image_helper->getImageSizeX() / 210, $this->image_helper->getImageSizeY() / 297));
+		return new ilScanAssessmentPoint($corrected_x, $corrected_y);
 	}
 	
 	/**

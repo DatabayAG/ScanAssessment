@@ -71,7 +71,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 */
 	protected function findAnswers(&$im, $marker_positions, $qr_position)
 	{
-		$corrected = $this->getCorrectedPosition();
+		$corrected = $this->getCorrectedPositionFromMarker($marker_positions, $qr_position);
 		$im2 = $im;
 		$this->log->debug(sprintf('Starting to scan checkboxes...'));
 		$answers = $this->getAnswerPositions();
@@ -79,10 +79,10 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		{
 			if($this->getPdfMode())
 			{
-				$x1 = ($answer['start_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX();
-				$y1 = ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
-				$x2 = ($answer['end_x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * $corrected->getX();
-				$y2 = ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$x1 = ($answer['start_x']) * $corrected->getX();
+				$y1 = ($answer['start_y']) * $corrected->getY();
+				$x2 = ($answer['end_x']) * $corrected->getX();
+				$y2 = ($answer['end_y']) * $corrected->getY();
 				$question_start = new ilScanAssessmentPoint($x1, $y1);
 				$question_end = new ilScanAssessmentPoint($x2 , $y2);
 				$this->log->debug(sprintf('Crop points for question [%s, %s], [%s, %s]', $x1, $y1, $x2, $y2));
@@ -90,9 +90,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			else
 			{
 				$x1 = 1;
-				$y1 = ($answer['start_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$y1 = ($answer['start_y']) * $corrected->getY();
 				$x2 = $this->image_helper->getImageSizeX();
-				$y2 = ($answer['end_y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * $corrected->getY();
+				$y2 = ($answer['end_y']) * $corrected->getY();
 				$question_start = new ilScanAssessmentPoint($x1, $y1);
 				$question_end = new ilScanAssessmentPoint($x2 , $y2);
 				$this->log->debug(sprintf('Crop points for question [%s, %s], [%s, %s]', $x1, $y1, $x2, $y2));
@@ -102,11 +102,11 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			{
 				if($value['type'] == 'ilScanAssessment_assSingleChoice' || $value['type'] == 'ilScanAssessment_assMultipleChoice')
 				{
-					$answer_x = ($value['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
-					$answer_y = ($value['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+					$answer_x = ($value['x']) * ($corrected->getX());
+					$answer_y = ($value['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
-					$second_point = new ilScanAssessmentPoint($answer_x + (2.5 * $corrected->getX()), $answer_y + (2.5 * $corrected->getY()));
+					$second_point = new ilScanAssessmentPoint($answer_x + (PDF_ANSWERBOX_W * $corrected->getX()), $answer_y + (PDF_ANSWERBOX_H * $corrected->getY()));
 					$aid = $value['aid'];
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
@@ -121,14 +121,13 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 														'start' => $question_start,
 														'end' => $question_end
 														);
-
 				}
 				else if ($value['type'] == 'ilScanAssessment_assKprimChoice')
 				{
-					$answer_correct_x = ($value['correct']['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
-					$answer_correct_y = ($value['correct']['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
-					$answer_wrong_x = ($value['wrong']['x'] - self::I_STILL_DO_NOT_KNOW_WHY_1) * ($corrected->getX());
-					$answer_wrong_y = ($value['wrong']['y'] - self::I_STILL_DO_NOT_KNOW_WHY_2) * ($corrected->getY());
+					$answer_correct_x = ($value['correct']['x']) * ($corrected->getX());
+					$answer_correct_y = ($value['correct']['y']) * ($corrected->getY());
+					$answer_wrong_x = ($value['wrong']['x']) * ($corrected->getX());
+					$answer_wrong_y = ($value['wrong']['y']) * ($corrected->getY());
 
 					$first_point_correct  = new ilScanAssessmentPoint($answer_correct_x, $answer_correct_y);
 					$second_point_correct = new ilScanAssessmentPoint($answer_correct_x + (2.5 * $corrected->getX()), $answer_correct_y + (2.5 * $corrected->getY()));
@@ -215,19 +214,19 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
-		$this->findMatriculation($im);
+		$this->findMatriculation($im, $corrected);
 
 		return $this->checkbox_container;
 	}
 
 	/**
 	 * @param $im
+	 * @param ilScanAssessmentPoint $corrected
 	 */
-	protected function findMatriculation(&$im)
+	protected function findMatriculation(&$im, $corrected)
 	{
 		if($this->qr_identification->getPageNumber() == $this->getPageForMatriculation())
 		{
-			$corrected = $this->getCorrectedPosition();
 
 			$im2 = $im;
 			$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
@@ -238,13 +237,16 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x'] + 3) * ($corrected->getX());
+					$answer_x = ($vector['x']) * ($corrected->getX());
 					$answer_y = ($vector['y']) * ($corrected->getY());
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
 					$second_point = new ilScanAssessmentPoint($answer_x + ($vector['w'] * $corrected->getX()), $answer_y + ($vector['w'] * $corrected->getY()));
 
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
+					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s] %s.', $vector['x'], $vector['y'], $answer_y));
+					$this->log->debug(sprintf('Checkbox for at [%s, %s], [%s, %s].', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY()));
+
 					$marked = $checkbox->isMarked($im, true);
 					#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 					if($marked == 2)

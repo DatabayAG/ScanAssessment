@@ -134,13 +134,13 @@ class ilScanAssessmentScanProcess
 		$x4 = $x2 - $marker_should_be_at_x;
 		$y4 = $marker_should_be_at_y_2 - $y2;
 		$log->debug('Crop would start at ' . $x3 .' ' . $y3. ' ' . $x4 .' ' . $y4);
-		$max_cut_x = $qr_pos->getPosition()->getX() + $qr_pos->getLength();
+		$max_cut_x = $qr_pos['crop']->getPosition()->getX() + $qr_pos['crop']->getLength();
 		if($max_cut_x > $image_x - $x4)
 		{
 			$log->debug('Crop would destroy qr_code on the left reducing width.');
 			$x4 = 0;
 		}
-		$max_cut_y = $qr_pos->getPosition()->getY() + $qr_pos->getLength();
+		$max_cut_y = $qr_pos['crop']->getPosition()->getY() + $qr_pos['crop']->getLength();
 		if($max_cut_y > $image_y - $y4)
 		{
 			$log->debug('Crop would destroy qr_code on the left reducing height.');
@@ -328,7 +328,7 @@ class ilScanAssessmentScanProcess
 				#$qr_pos = $this->detectQrCode($log);
 				if($qr_pos !== false)
 				{
-					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos);
+					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos['crop']);
 					if($im2 !== false)
 					{
 						$path = $this->file_helper->getScanTempPath() . 'qr' . $this->internal_file_type;

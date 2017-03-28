@@ -43,8 +43,8 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$x = $this->pdf_helper->pdf->GetX() + 34;
-			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+			$x = 34;
+			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8;
 			$this->pdf_helper->writeHTML($answer->getAnswertext());
 			$answer_positions[] = $this->appendAnswer($question, $answer->getOrder(), $answer->getAnswertext(), $x, $y);
 		}
@@ -85,8 +85,8 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$this->pdf_helper->pdf->Rect($columns * 25, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$x = $this->pdf_helper->pdf->GetX() + ($columns * 25);
-			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+			$x = ($columns * 25);
+			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN  + 0.8;
 			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
 			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x, $y, $x + 25);
