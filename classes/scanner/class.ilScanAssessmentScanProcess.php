@@ -558,7 +558,7 @@ class ilScanAssessmentScanProcess
 	 */
 	protected function readQrCode($path)
 	{
-		$qr_code = new QrReader($path);
+		$qr_code = new QrReader($path, 'file', false);
 		$txt = $qr_code->text();
 		if($txt != '')
 		{
