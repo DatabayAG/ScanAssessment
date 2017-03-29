@@ -312,6 +312,11 @@ class ilScanAssessmentScanProcess
 				$this->rescale = 0;
 			}
 			$qr_pos = $this->detectQrCode($log);
+            if ($qr_pos === false) {
+                $this->log->warn('No QR Code found!');
+                $this->getAnalysingFolder();
+                return false;
+            }
 			if($this->checkIfMustBeCropped($scanner, $log, $marker, $qr_pos))
 			{
 				$log->debug('Image was scaled re-detecting marker positions.');
