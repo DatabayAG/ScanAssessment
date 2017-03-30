@@ -153,20 +153,28 @@ class ilScanAssessmentQrCode extends ilScanAssessmentScanner
 	protected function isSquareFree(&$im, $sx, $sy, $sq) {
 		$threshold = 150;
 		$s         = 1;
-		for($x = $sx; $x > $sx - $sq; $x -= $s)
+		$max_x = $this->image_helper->getImageSizeX();
+		$max_y = $this->image_helper->getImageSizeY();
+		if($sx < $max_x)
 		{
-			$c = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $sy - $sq));
-			if($c < $threshold)
+			for($x = $sx; $x > $sx - $sq; $x -= $s)
 			{
-				return false;
+				$c = $this->image_helper->getGrey(new ilScanAssessmentPoint($x -10, $sy - $sq));
+				if($c < $threshold)
+				{
+					return false;
+				}
 			}
 		}
-		for($y = $sy; $y > $sy - $sq; $y -= $s)
+		if($sy < $max_y)
 		{
-			$c = $this->image_helper->getGrey(new ilScanAssessmentPoint($sx - $sq, $y));
-			if($c < $threshold)
+			for($y = $sy; $y > $sy - $sq; $y -= $s)
 			{
-				return false;
+				$c = $this->image_helper->getGrey(new ilScanAssessmentPoint($sx - $sq, $y));
+				if($c < $threshold)
+				{
+					return false;
+				}
 			}
 		}
 		return true;
