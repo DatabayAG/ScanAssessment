@@ -157,7 +157,7 @@ class ilScanAssessmentCheckBoxElement
 					$black++;
 					if($mark)
 					{
-						$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getBlack());
+						#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getBlack());
 					}
 				}
 				else
@@ -170,12 +170,61 @@ class ilScanAssessmentCheckBoxElement
 		return new ilScanAssessmentArea($total, $white, $black);
 	}
 
+	protected function detectBox($im, $x, $y, $threshold)
+	{
+		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentCheckBoxAnalyser.php';
+		while (true) {
+				// echo "@" . $x . ", " . $y . "<br>";
+
+				$x = $this->scanline($im, $x, $y, $threshold);
+				if ($x === false) {
+					break;
+				}
+
+				$pixels = new ilScanAssessmentCheckBoxAnalyser($im, $x, $y, $threshold);
+
+				$r = $pixels->detectRectangle();
+				if ($r) {
+					return $r;
+				}
+
+				list($x, $y) = $pixels->rightmost();
+				$x += 1;
+			}
+
+			return false;
+	}
+	
+	function scanline($image, $x0, $y, $threshold) {
+		$w = imagesx($image);
+		for ($x = $x0; $x < $w; $x++) {
+			if ($this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y)) < $threshold) {
+				return $x;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * @param $im
 	 */
 	protected function detectBorder($im)
 	{
 
+		$center_x	= ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
+		$center_y	= ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
+		$box = $this->detectBox($im, $center_x, $center_y, 100);
+		if ($box) 
+		{
+			list($min, $max) = $box;
+			list($x0, $y0) = $min;
+			list($x1, $y1) = $max;
+			imagerectangle($im, $x0, $y0, $x1, $y1, imagecolorallocate($im, 0, 255, 0));
+			ilScanAssessmentLog::getInstance()->debug(sprintf('Found Borders [%s, %s], [%s, %s].',
+				$x0, $y0, $x1, $y1));
+		}
+
+		/*return;
 		$center_x	= ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
 		$center_y	= ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
 		$length		= ($center_x - $this->getLeftTop()->getX());
@@ -234,6 +283,7 @@ class ilScanAssessmentCheckBoxElement
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
 		ilScanAssessmentLog::getInstance()->info(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
+	*/
 	}
 	
 	protected function probeCrossSection($im, $center_x, $center_y, $length)
@@ -300,7 +350,7 @@ class ilScanAssessmentCheckBoxElement
 		$y = 0;
 		foreach($point_store as $point)
 		{
-			#ilScanAssessmentLog::getInstance()->debug(sprintf('Found point [%s, %s]', $point->getX(), $point->getY()));
+			ilScanAssessmentLog::getInstance()->debug(sprintf('Found point [%s, %s]', $point->getX(), $point->getY()));
 			$found ++;
 			$x += $point->getX();
 			$y += $point->gety();
@@ -703,7 +753,7 @@ class ilScanAssessmentCheckBoxElement
 
 		if($mark)
 		{
-			$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
+			#$this->image_helper->drawSquareFromTwoPoints($im,  $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
 		}
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
 		return $value;
