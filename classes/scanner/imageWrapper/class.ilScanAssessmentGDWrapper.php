@@ -16,6 +16,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	/**
 	 * ilScanAssessmentGDWrapper constructor.
 	 * @param string $fn
+	 * @throws ilException
 	 */
 	public function __construct($fn)
 	{
