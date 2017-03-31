@@ -186,7 +186,7 @@ class ilScanAssessmentCheckBoxElement
 
 			$pixels = new ilScanAssessmentCheckBoxAnalyser($im, $x, $y, $threshold, $this->image_helper);
 
-			$r = $pixels->detectRectangle($threshold);
+			$r = $pixels->detectRectangle();
 			if($r)
 			{
 				return $r;
@@ -223,9 +223,7 @@ class ilScanAssessmentCheckBoxElement
 		$box      = $this->detectBox($im, $center_x, $center_y, 100);
 		if($box)
 		{
-			list($min, $max) = $box;
-			list($x0, $y0) = $min;
-			list($x1, $y1) = $max;
+			list($x0, $y0, $x1, $y1) = $box;
 			$new_center_x = ($x0 + $x1) / 2;
 			$new_center_y = ($y0 + $y1) / 2;
 			$this->setLeftTop(new ilScanAssessmentPoint($x0, $y0));
