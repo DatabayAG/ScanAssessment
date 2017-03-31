@@ -166,3 +166,5 @@ scas_marked_area_unchecked#:#Nicht Markiert
 scas_marked_area_unchecked_info#:#Wert wann eine wieder Checkbox als nicht markiert angesehen wird. Zwischen 0.00 und 1.00
 scas_save_file_type#:#Dateiformat
 scas_save_file_type_info#:#Dateiformat in welches die Bilder nach der Erkennung tranformiert werden. 
+scas_save_log_level#:#Loglevel
+scas_save_log_level_info#:#Loglevel

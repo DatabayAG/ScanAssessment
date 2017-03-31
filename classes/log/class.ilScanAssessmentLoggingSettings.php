@@ -1,8 +1,8 @@
 <?php
 /* Copyright (c) 1998-2016 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-include_once './Services/Logging/classes/public/class.ilLogLevel.php';
 include_once './Services/Logging/interfaces/interface.ilLoggingSettings.php';
+require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/class.ilScanAssessmentGlobalSettings.php';
 
 /**
  * Class ilScanAssessmentLoggingSettings
@@ -26,8 +26,8 @@ class ilScanAssessmentLoggingSettings implements ilLoggingSettings
 	{
 		$now				= new ilDateTime(time(), IL_CAL_UNIX);
 		$this->now			= $now->get(IL_CAL_FKT_DATE, 'Y_m_d-H_i_');
-		$this->level		= ilLogLevel::DEBUG;
-		$this->cache_level	= ilLogLevel::DEBUG;
+		$this->level		= ilScanAssessmentGlobalSettings::getInstance()->getLogLevel();
+		$this->cache_level	= ilScanAssessmentGlobalSettings::getInstance()->getLogLevel();
 	}
 
 	/**

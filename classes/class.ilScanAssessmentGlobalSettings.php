@@ -1,5 +1,5 @@
 <?php
-
+include_once './Services/Logging/classes/public/class.ilLogLevel.php';
 /**
  * Class ilScanAssessmentGlobalSettings
  * @author Guido Vollbach <gvollbach@databay.de>
@@ -82,6 +82,11 @@ class ilScanAssessmentGlobalSettings
 	protected $save_file_type = 'gif';
 
 	/**
+	 * @var int
+	 */
+	private $log_level = ilLogLevel::DEBUG;
+
+	/**
 	 *
 	 */
 	private function __construct()
@@ -122,6 +127,7 @@ class ilScanAssessmentGlobalSettings
 		$marked_area_checked		= $this->settings->get('marked_area_checked') ? $this->settings->get('marked_area_checked') : $this->marked_area_checked;
 		$marked_area_unchecked		= $this->settings->get('marked_area_unchecked') ? $this->settings->get('marked_area_unchecked') : $this->marked_area_unchecked;
 		$save_file_type				= $this->settings->get('save_file_type') ? $this->settings->get('save_file_type') : $this->save_file_type;
+		$log_level					= $this->settings->get('log_level') ? $this->settings->get('log_level') : $this->log_level;
 
 		if(strlen($institution))
 		{
@@ -141,6 +147,7 @@ class ilScanAssessmentGlobalSettings
 		$this->setMarkedAreaChecked($marked_area_checked);
 		$this->setMarkedAreaUnchecked($marked_area_unchecked);
 		$this->setSaveFileType($save_file_type);
+		$this->setLogLevel($log_level);
 	}
 
 	/**
@@ -178,8 +185,15 @@ class ilScanAssessmentGlobalSettings
 		$this->settings->set('marked_area_checked',		$this->getMarkedAreaChecked());
 		$this->settings->set('marked_area_unchecked',	$this->getMarkedAreaUnchecked());
 		$this->settings->set('save_file_type',			$this->getSaveFileType());
+		$this->settings->set('log_level',				$this->getLogLevel());
 	}
 
+	public function getConfiguredLengthOfMatriculationNumber()
+	{
+		return substr_count($this->getMatriculationStyle(), 'X');
+	}
+
+	
 	/**
 	 * @return ilDB
 	 */
@@ -399,5 +413,21 @@ class ilScanAssessmentGlobalSettings
 	public function setSaveFileType($save_file_type)
 	{
 		$this->save_file_type = $save_file_type;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getLogLevel()
+	{
+		return $this->log_level;
+	}
+
+	/**
+	 * @param $log_level
+	 */
+	public function setLogLevel($log_level)
+	{
+		$this->log_level = $log_level;
 	}
 }

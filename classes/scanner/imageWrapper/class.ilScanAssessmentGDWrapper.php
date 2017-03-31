@@ -61,6 +61,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	/**
 	 * @param $filename
 	 * @return resource
+	 * @throws ilException
 	 */
 	public function createNewImageInstanceFromFileName($filename)
 	{

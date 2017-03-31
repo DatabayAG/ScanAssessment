@@ -91,21 +91,22 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		if(!$form instanceof ilPropertyFormGUI)
 		{
 			$form = $this->getConfigurationForm();
-            $dpi_limits = ilScanAssessmentGlobalSettings::getInstance()->getTiffDpiLimits();
-            $form->setValuesByArray(array(
+			$dpi_limits = ilScanAssessmentGlobalSettings::getInstance()->getTiffDpiLimits();
+			$form->setValuesByArray(array(
 				'institution'				=> ilScanAssessmentGlobalSettings::getInstance()->getInstitution(),
 				'matriculation_style'		=> ilScanAssessmentGlobalSettings::getInstance()->getMatriculationStyle(),
 				'disable_manual_scan'		=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan(),
 				'disable_manual_pdf'		=> ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf(),
-                'tiff_enabled'				=> ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
-                'tiff_dpi_minimum'			=> $dpi_limits[0],
-                'tiff_dpi_maximum'			=> $dpi_limits[1],
+				'tiff_enabled'				=> ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled(),
+				'tiff_dpi_minimum'			=> $dpi_limits[0],
+				'tiff_dpi_maximum'			=> $dpi_limits[1],
 				'scas_enable_debug_export'	=> ilScanAssessmentGlobalSettings::getInstance()->isEnableDebugExportTab(),
 				'min_value_black'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack(),
 				'min_marked_area'			=> ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea(),
 				'marked_area_checked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked(),
 				'marked_area_unchecked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked(),
-				'save_file_type'			=> ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType()
+				'save_file_type'			=> ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType(),
+				'log_level'					=> ilScanAssessmentGlobalSettings::getInstance()->getLogLevel()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -200,11 +201,26 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		);
 		$save_file_type->setOptions($options);
 		$form->addItem($save_file_type);
-		
+
+		$log_level = new ilSelectInputGUI($this->getPluginObject()->txt('scas_save_log_level'), 'log_level');
+		$log_level->setInfo($this->getPluginObject()->txt('scas_save_log_level_info'));
+		$options = array(
+			'100' => 'DEBUG',
+			'200' => 'INFO',
+			'250' => 'NOTICE',
+			'300' => 'WARNING',
+			'400' => 'ERROR',
+			'500' => 'CRITICAL',
+			'550' => 'ALERT',
+			'600' => 'EMERGENCY'
+		);
+		$log_level->setOptions($options);
+		$form->addItem($log_level);
+
 		$enable_debug_export = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_enable_debug_export'), 'scas_enable_debug_export');
 		$enable_debug_export->setInfo($this->getPluginObject()->txt('scas_enable_debug_export_info'));
 		$form->addItem($enable_debug_export);
-        
+
 		$form->addCommandButton('saveConfigurationForm', $this->lng->txt('save'));
 
 		return $form;
@@ -232,6 +248,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				ilScanAssessmentGlobalSettings::getInstance()->setMarkedAreaUnchecked($form->getInput('marked_area_unchecked'));
 				ilScanAssessmentGlobalSettings::getInstance()->setEnableDebugExportTab($form->getInput('scas_enable_debug_export'));
 				ilScanAssessmentGlobalSettings::getInstance()->setSaveFileType($form->getInput('save_file_type'));
+				ilScanAssessmentGlobalSettings::getInstance()->setLogLevel($form->getInput('log_level'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}

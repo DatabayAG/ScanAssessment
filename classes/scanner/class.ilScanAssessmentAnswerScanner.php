@@ -258,9 +258,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			$this->saveMatriculationNumber($matriculation);
 			$this->log->debug(sprintf('...done scanning matriculation checkboxes.'));
 			$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection'  . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
-
 		}
-
 	}
 
 	/**
@@ -268,22 +266,34 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	 */
 	protected function saveMatriculationNumber($matriculation)
 	{
-		$matriculation_string = '';
-		foreach($matriculation as $pos => $value)
+		if(ilScanAssessmentGlobalSettings::getInstance()->getConfiguredLengthOfMatriculationNumber() == count($matriculation))
 		{
-			$matriculation_string .= $value;
-		}
-		
-		if($matriculation_string != '')
-		{
-			$this->log->debug('Detected matriculation number : '. $matriculation_string);
-			$usr_id = $this->getUserIdByMatriculationNumber($matriculation_string);
-			if($usr_id)
+			$matriculation_string = '';
+			foreach($matriculation as $pos => $value)
 			{
-				$this->saveDetectedUserIdToPdfData($usr_id);
-				$this->log->debug('Matriculation number : '. $matriculation_string . ' belongs to user with the id ' . $usr_id);
+				$matriculation_string .= $value;
+			}
+
+			if($matriculation_string != '')
+			{
+				$this->log->debug('Detected matriculation number : '. $matriculation_string);
+				$usr_id = $this->getUserIdByMatriculationNumber($matriculation_string);
+				if($usr_id)
+				{
+					$this->saveDetectedUserIdToPdfData($usr_id);
+					$this->log->debug('Matriculation number : '. $matriculation_string . ' belongs to user with the id ' . $usr_id);
+				}
+				else
+				{
+					$this->log->warn('No user found to this matriculation number');
+				}
 			}
 		}
+		else
+		{
+			$this->log->warn(sprintf('Detected matriculation number differs in length (%s), from configured length (%s), so user could not be identified.', count($matriculation) , ilScanAssessmentGlobalSettings::getInstance()->getConfiguredLengthOfMatriculationNumber()));
+		}
+
 	}
 
 	/**
