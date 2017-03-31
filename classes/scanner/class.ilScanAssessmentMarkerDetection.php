@@ -53,7 +53,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$scan_top_left = $this->probeMarkerPosition('top', $threshold);
 		if($scan_top_left === false)
 		{
-			$this->log->debug(sprintf('Probing found nothing trying to rotate...'));
+			$this->log->info(sprintf('Probing found nothing trying to rotate...'));
 			if(!$rotated) 
 			{
 				$im = $this->image_helper->rotate(180);
@@ -86,7 +86,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 				$this->log->debug(sprintf('Rotation (%s).', $rad));
 				if($rotated==false && abs($rad) > 0.05) 
 				{
-					$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
+					$this->log->info(sprintf('Image seems to be rotated (%s).', $rad));
 					$im = $this->image_helper->rotate($rad * -1 );
 					$this->setTempImage($im);
 					$this->setImage($im);
@@ -103,10 +103,10 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		} 
 		else 
 		{
-			$this->log->warn(sprintf('Could not detect Marker!'));
+			$this->log->err(sprintf('Could not detect Marker!'));
 			return false;
 		}
-		$this->log->warn(sprintf('Could not detect Marker!'));
+		$this->log->err(sprintf('Could not detect Marker!'));
 		return false;
 		
 		#$a = $this->findTopLeftMarker(new ilScanAssessmentPoint(10,10));

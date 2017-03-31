@@ -187,7 +187,7 @@ class ilScanAssessmentScanProcess
 		#$log->debug($val);
 		$time_end = microtime(true);
 		$time     = $time_end - $time_start;
-		$log->debug('Answer Calculation duration:  ' . $time);
+		$log->info('Answer Calculation duration:  ' . $time);
 
 		return $ans;
 	}
@@ -294,7 +294,7 @@ class ilScanAssessmentScanProcess
 		$org = $path . '/' . $entry;
 		$not_cropped = true;
 
-		$log->debug('Start with file: ' . $org);
+		$log->info('Starting with file: ' . $org);
 
 		$scanner = new ilScanAssessmentMarkerDetection($org);
 		$scanner->image_helper->drawTempImage($scanner->getImage(), $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
@@ -341,7 +341,7 @@ class ilScanAssessmentScanProcess
 					}
 					else
 					{
-						$this->log->warn('No QR Code found!');
+						$this->log->err('No QR Code found!');
 						$this->getAnalysingFolder();
 						return false;
 					}
@@ -353,7 +353,7 @@ class ilScanAssessmentScanProcess
 			if($qr_code != false || !$not_cropped)
 			{
 				$done = $this->path_to_done . '/' . $entry;
-				$log->debug('Moving file: ' . $org . ' to ' .$done );
+				$log->info('Moving file: ' . $org . ' to ' .$done );
 				$this->file_helper->moveFile($org, $done);
 				$this->convertFilesAfterScanning($this->path_to_done);
 				return true;
@@ -463,7 +463,7 @@ class ilScanAssessmentScanProcess
 		}
 		else
 		{
-			$this->log->warn('QR Code could not be read!');
+			$this->log->err('QR Code could not be read!');
 			return false;
 		}
 
@@ -562,7 +562,7 @@ class ilScanAssessmentScanProcess
 		$txt = $qr_code->text();
 		if($txt != '')
 		{
-			$this->log->debug(sprintf('Found id %s in qr code.', $txt));
+			$this->log->info(sprintf('Found id %s in qr code.', $txt));
 			return $txt;
 		}
 		return false;
@@ -635,12 +635,12 @@ class ilScanAssessmentScanProcess
 			}
 			else
 			{
-                $this->log->debug(sprintf('Failed to remove lock: %s', $this->getScanLockFilePath()));
+                $this->log->err(sprintf('Failed to remove lock: %s', $this->getScanLockFilePath()));
 			}
 		}
 		else
         {
-            $this->log->debug(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
+            $this->log->warn(sprintf('No lock to remove: %s', $this->getScanLockFilePath()));
         }
 	}
 

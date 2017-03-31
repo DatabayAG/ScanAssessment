@@ -290,7 +290,7 @@ class ilScanAssessmentCheckBoxElement
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
 
-		ilScanAssessmentLog::getInstance()->info(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
+		ilScanAssessmentLog::getInstance()->debug(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
 
 	}
 
