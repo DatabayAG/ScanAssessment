@@ -174,25 +174,25 @@ class ilScanAssessmentCheckBoxElement
 	{
 		require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment/classes/scanner/imageWrapper/class.ilScanAssessmentCheckBoxAnalyser.php';
 		while (true) {
-				// echo "@" . $x . ", " . $y . "<br>";
+            // echo "@" . $x . ", " . $y . "<br>";
 
-				$x = $this->scanline($im, $x, $y, $threshold);
-				if ($x === false) {
-					break;
-				}
+            $x = $this->scanline($im, $x, $y, $threshold);
+            if ($x === false) {
+                break;
+            }
 
-				$pixels = new ilScanAssessmentCheckBoxAnalyser($im, $x, $y, $threshold);
+            $pixels = new ilScanAssessmentCheckBoxAnalyser($im, $x, $y, $threshold);
 
-				$r = $pixels->detectRectangle();
-				if ($r) {
-					return $r;
-				}
+            $r = $pixels->detectRectangle($threshold);
+            if ($r) {
+                return $r;
+            }
 
-				list($x, $y) = $pixels->rightmost();
-				$x += 1;
-			}
+            list($x, $y) = $pixels->rightmost();
+            $x += 1;
+        }
 
-			return false;
+        return false;
 	}
 	
 	function scanline($image, $x0, $y, $threshold) {

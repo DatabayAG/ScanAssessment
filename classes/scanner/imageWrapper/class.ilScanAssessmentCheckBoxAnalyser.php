@@ -5,6 +5,7 @@
  */
 class ilScanAssessmentCheckBoxAnalyser
 {
+    private $image;
 	private $pixels;
 	private $bounding_box;
 
@@ -29,6 +30,8 @@ class ilScanAssessmentCheckBoxAnalyser
 		$this->pixels = $pixels;
 
 		$this->bounding_box = $this->calculateBoundingBox();
+
+		$this->image = $image;
 	}
 	
 	static function  grey($image, $x, $y) {
@@ -107,28 +110,34 @@ class ilScanAssessmentCheckBoxAnalyser
 		{
 			return array(array(min($x), min($y)), array(max($x), max($y)));
 		}
-
 	}
 
 	public function getBoundingBox() {
 		return $this->bounding_box;
 	}
 
-	public function detectRectangle() {
+	public function detectRectangle($threshold) {
 		list($min, $max) = $this->bounding_box;
 
 		list($x0, $y0) = $min;
 		list($x1, $y1) = $max;
 
+        // return array(array($x0, $y0), array($x1, $y1));
+
 		$w = 1 + $x1 - $x0;
 		$h = 1 + $y1 - $y0;
 
+        $err = 0.75;
+        $image = $this->image;
+
 		while (true) {
-			$d = 0;
+			$n = 0;
 			for ($y = $y0; $y <= $y1; $y++) {
-				$d += $this->distanceTo($x0, $y);
+			    if (self::grey($image, $x0, $y) < $threshold) {
+			        $n++;
+                }
 			}
-			if ($d / $h > 2) {
+			if ($n / (float)$h < $err) {
 				$x0 += 1;
 				if ($x0 >= $x1) {
 					return false;
@@ -139,11 +148,13 @@ class ilScanAssessmentCheckBoxAnalyser
 		}
 
 		while (true) {
-			$d = 0;
+            $n = 0;
 			for ($y = $y0; $y <= $y1; $y++) {
-				$d += $this->distanceTo($x1, $y);
+                if (self::grey($image, $x1, $y) < $threshold) {
+                    $n++;
+                }
 			}
-			if ($d / $h > 2) {
+            if ($n / (float)$h < $err) {
 				$x1 -= 1;
 				if ($x0 >= $x1) {
 					return false;
@@ -154,11 +165,13 @@ class ilScanAssessmentCheckBoxAnalyser
 		}
 
 		while (true) {
-			$d = 0;
+            $n = 0;
 			for ($x = $x0; $x <= $x1; $x++) {
-				$d += $this->distanceTo($x, $y0);
+                if (self::grey($image, $x, $y0) < $threshold) {
+                    $n++;
+                }
 			}
-			if ($d / $w > 2) {
+            if ($n / (float)$w < $err) {
 				$y0 += 1;
 				if ($y0 >= $y1) {
 					return false;
@@ -169,11 +182,13 @@ class ilScanAssessmentCheckBoxAnalyser
 		}
 
 		while (true) {
-			$d = 0;
+            $n = 0;
 			for ($x = $x0; $x <= $x1; $x++) {
-				$d += $this->distanceTo($x, $y1);
+                if (self::grey($image, $x, $y1) < $threshold) {
+                    $n++;
+                }
 			}
-			if ($d / $w > 2) {
+            if ($n / (float)$w < $err) {
 				$y1 -= 1;
 				if ($y0 >= $y1) {
 					return false;
@@ -185,30 +200,4 @@ class ilScanAssessmentCheckBoxAnalyser
 
 		return array(array($x0, $y0), array($x1, $y1));
 	}
-
-	public function distanceTo($x, $y) {
-		$coordinates = $x . '/' . $y;
-		if (isset($this->pixels[$coordinates])) {
-			return 0;
-		}
-
-		foreach (array(-1, 1) as $dx) {
-			foreach (array(-1, 1) as $dy) {
-				$coordinates = ($x + $dx) . '/' . ($y + $dy);
-				if (isset($this->pixels[$coordinates])) {
-					return 1;
-				}
-			}
-		}
-
-		return 1000; // FIXME
-	}
-
-
-
-
-
-
-
-
 }
