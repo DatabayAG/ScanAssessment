@@ -35,6 +35,14 @@ class ilScanAssessmentCheckBoxAnalyser
      */
     protected static $img_helper;
 
+	/**
+	 * ilScanAssessmentCheckBoxAnalyser constructor.
+	 * @param $image
+	 * @param $x
+	 * @param $y
+	 * @param $threshold
+	 * @param $image_helper
+	 */
     public function __construct($image, $x, $y, $threshold, $image_helper)
     {
         $this->threshold = $threshold;
@@ -131,9 +139,9 @@ class ilScanAssessmentCheckBoxAnalyser
         return $coordinates;
     }
 
-    /**
-     * @return array
-     */
+	/**
+	 * @return array|bool
+	 */
     private function calculateBoundingBox()
     {
         $x = array();
@@ -155,6 +163,12 @@ class ilScanAssessmentCheckBoxAnalyser
         }
     }
 
+	/**
+	 * @param $pixel
+	 * @param $k0
+	 * @param $k1
+	 * @return bool
+	 */
     private function testLine($pixel, $k0, $k1)
     {
         $threshold = $this->threshold;
@@ -184,6 +198,12 @@ class ilScanAssessmentCheckBoxAnalyser
         return $n / $total >= $coverage;
     }
 
+	/**
+	 * @param $x0
+	 * @param $x1
+	 * @param $y
+	 * @return bool
+	 */
     private function testHorizontalLine($x0, $x1, $y)
     {
         $pixel = function($k) use ($y)
@@ -194,6 +214,12 @@ class ilScanAssessmentCheckBoxAnalyser
         return $this->testLine($pixel, $x0, $x1);
     }
 
+	/**
+	 * @param $x
+	 * @param $y0
+	 * @param $y1
+	 * @return bool
+	 */
     private function testVerticalLine($x, $y0, $y1)
     {
         $pixel = function($k) use ($x)
@@ -204,13 +230,16 @@ class ilScanAssessmentCheckBoxAnalyser
         return $this->testLine($pixel, $y0, $y1);
     }
 
-    /**
-     * Detect which side of the rectangle is faulty (i.e. does not have a continuous
-     * line) and return the side's name. If the rectangle is good, return false (i.e.
-     * no faulty line).
-     *
-     * @return string|bool
-     */
+	/**
+	 * @param $x0
+	 * @param $y0
+	 * @param $x1
+	 * @param $y1
+	 * Detect which side of the rectangle is faulty (i.e. does not have a continuous
+	 * line) and return the side's name. If the rectangle is good, return false (i.e.
+	 * no faulty line).
+	 * @return bool|string
+	 */
 
     private function detectFaultySide($x0, $y0, $x1, $y1)
     {
@@ -236,6 +265,13 @@ class ilScanAssessmentCheckBoxAnalyser
         }
     }
 
+	/**
+	 * @param $x0
+	 * @param $y0
+	 * @param $x1
+	 * @param $y1
+	 * @return bool
+	 */
     private function clipLeft($x0, $y0, $x1, $y1)
     {
         while(++$x0 < $x1)
@@ -249,6 +285,13 @@ class ilScanAssessmentCheckBoxAnalyser
         return false;
     }
 
+	/**
+	 * @param $x0
+	 * @param $y0
+	 * @param $x1
+	 * @param $y1
+	 * @return bool
+	 */
     private function clipRight($x0, $y0, $x1, $y1)
     {
         while(--$x1 > $x0)
@@ -262,6 +305,13 @@ class ilScanAssessmentCheckBoxAnalyser
         return false;
     }
 
+	/**
+	 * @param $x0
+	 * @param $y0
+	 * @param $x1
+	 * @param $y1
+	 * @return bool
+	 */
     private function clipTop($x0, $y0, $x1, $y1)
     {
         while(++$y0 < $y1)
@@ -275,6 +325,13 @@ class ilScanAssessmentCheckBoxAnalyser
         return false;
     }
 
+	/**
+	 * @param $x0
+	 * @param $y0
+	 * @param $x1
+	 * @param $y1
+	 * @return bool
+	 */
     private function clipBottom($x0, $y0, $x1, $y1)
     {
         while(--$y1 > $y0)
@@ -288,10 +345,10 @@ class ilScanAssessmentCheckBoxAnalyser
         return false;
     }
 
-    /**
-     * @return array|bool
-     */
-
+	/**
+	 * @return array|bool
+	 * @throws Exception
+	 */
     public function detectRectangle()
     {
         $nodes = array();
