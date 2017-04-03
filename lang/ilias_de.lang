@@ -168,3 +168,7 @@ scas_save_file_type#:#Dateiformat
 scas_save_file_type_info#:#Dateiformat in welches die Bilder nach der Erkennung tranformiert werden. 
 scas_save_log_level#:#Loglevel
 scas_save_log_level_info#:#Loglevel
+scas_gd_must_installed#:#Sie müssen die GD Extension installiert und geladen haben, damit das Plugin funktioniert!
+scas_gd_installed#:#GD Extension gefunden.
+scas_gd_not_installed#:#GD ist nicht installiert.
+scas_gd_library#:#GD Extension

@@ -124,6 +124,18 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$form->setFormAction($this->ctrl->getFormAction($this, 'showConfigurationForm'));
 		$form->setShowTopButtons(true);
 
+		$info = new ilNonEditableValueGUI($this->getPluginObject()->txt('scas_gd_library'));
+		$info->setValue($this->getPluginObject()->txt('scas_gd_not_installed'));
+		if(extension_loaded('gd'))
+		{
+			$info->setValue($this->getPluginObject()->txt('scas_gd_installed'));
+		}
+		else
+		{
+			ilUtil::sendFailure($this->getPluginObject()->txt('scas_gd_must_installed'), true);
+		}
+		$form->addItem($info);
+
 		$institution = new ilTextInputGUI($this->getPluginObject()->txt('scas_institution'), 'institution');
 		$form->addItem($institution);
 
