@@ -106,7 +106,7 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function drawTempImage($img, $fn)
 	{
-		$img->writeImage('/tmp/' . $fn);
+		$img->writeImage($fn);
 	}
 
 	/**
@@ -251,30 +251,56 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	}
 
 	/**
-	 * @param $image
-	 * @param $rect
+	 * @param Imagick $image
+	 * @param ilScanAssessmentVector $vector
+	 * @return Imagick
 	 */
-	function imageCrop($image, $rect)
+	function imageCrop($image, $vector)
 	{
-		// TODO: Implement imageCrop() method.
+		$image->cropImage($vector->getLength(), $vector->getLength(), $vector->getPosition()->getX(), $vector->getPosition()->getY());
+		return $image;
 	}
 
 	/**
 	 * @param $filename
+	 * @return Imagick
 	 */
 	public function createNewImageInstanceFromFileName($filename)
 	{
-		// TODO: Implement createNewImageInstanceFromFileName() method.
+		return new Imagick($filename);
 	}
 
 	/**
-	 * @param                       $image
+	 * @param Imagick $image
 	 * @param ilScanAssessmentPoint $point1
 	 * @param ilScanAssessmentPoint $point2
+	 * @return Imagick
 	 */
 	function imageCropByPoints($image, $point1, $point2)
 	{
-		// TODO: Implement imageCropByPoints() method.
+		if($point1->getX() <= 0)
+		{
+			$point1->setX(1);
+		}
+		if($point1->getY() <= 0 || $point1->getY() > $point2->getY())
+		{
+			$point1->setY(1);
+		}
+
+		$width = $point2->getX() - $point1->getX();
+		$height = $point2->getY() - $point1->getY();
+
+		if($width <= 0)
+		{
+			$width = 1;
+		}
+		if($height <= 0)
+		{
+			$height = 1;
+		}
+
+		$image->cropImage($width, $height, $point1->getX(), $point1->getY());
+		return $image;
 	}
 
 	/**
@@ -284,10 +310,36 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	 * @param      $dest_x
 	 * @param      $dest_y
 	 * @param null $filename
+	 * @return Imagick
 	 */
 	function imageCropWithSource($image, $src_x, $src_y, $dest_x, $dest_y, $filename = null)
 	{
-		// TODO: Implement imageCropWithSource() method.
+		if($src_x < 0)
+		{
+			$src_x = 0;
+		}
+		if($src_y < 0)
+		{
+			$src_y = 0;
+		}
+		if($dest_x < 0)
+		{
+			$dest_x = 0;
+		}
+		if($dest_y < 0)
+		{
+			$dest_y = 0;
+		}
+		$height = $image->getImageSizeY() - $src_y - $dest_y;
+		$width = $image->getImageSizeX() - $src_x - $dest_x;
+		$scaled_image = new Imagick($width, $height);
+		$scaled_image->newImage(100, 100, new ImagickPixel('white'));
+		$scaled_image->compositeImage($image, Imagick::COMPOSITE_OVER, $src_x, $src_y);
+		if($filename != null)
+		{
+			$this->drawTempImage($scaled_image, $filename);
+		}
+		return $scaled_image;
 	}
 
 }
