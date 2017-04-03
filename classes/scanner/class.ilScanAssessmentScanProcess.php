@@ -293,6 +293,7 @@ class ilScanAssessmentScanProcess
 		$log = ilScanAssessmentLog::getInstance();
 		$org = $path . '/' . $entry;
 		$not_cropped = true;
+		$this->getAnalysingFolder();
 
 		$log->info('Starting with file: ' . $org);
 
@@ -314,7 +315,6 @@ class ilScanAssessmentScanProcess
 			$qr_pos = $this->detectQrCode($log);
             if ($qr_pos === false) {
                 $this->log->warn('No QR Code found!');
-                $this->getAnalysingFolder();
                 return false;
             }
 			if($this->checkIfMustBeCropped($scanner, $log, $marker, $qr_pos))
@@ -330,7 +330,6 @@ class ilScanAssessmentScanProcess
 
 			if($not_cropped)
 			{
-				#$qr_pos = $this->detectQrCode($log);
 				if($qr_pos !== false)
 				{
 					$im2 = $scanner->image_helper->imageCrop($scanner->image_helper->getImage(), $qr_pos['crop']);
@@ -347,7 +346,6 @@ class ilScanAssessmentScanProcess
 					else
 					{
 						$this->log->err('No QR Code found!');
-						$this->getAnalysingFolder();
 						return false;
 					}
 				}
