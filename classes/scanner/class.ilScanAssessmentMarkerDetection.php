@@ -34,7 +34,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('Starting marker detection...'));
 		$this->setThreshold(self::LOWER_THRESHOLD);
 		$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
-		if(!marker)
+		if(!$marker)
 		{
 			$this->log->warn(sprintf('Could not detect Marker!'));
 		}
