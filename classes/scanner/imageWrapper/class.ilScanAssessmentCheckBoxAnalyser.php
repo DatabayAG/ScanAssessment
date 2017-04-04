@@ -322,6 +322,64 @@ class ilScanAssessmentCheckBoxAnalyser
         return false;
     }
 
+    private function reduceRectangle($x0, $y0, $x1, $y1)
+    {
+        // detect if we actually ended up outlining two or more connected boxes
+        // and restrict our search box accordingly through clipping.
+
+        while($y1 - $y0 > $this->expected_size[1] * 1.75)
+        {
+            if(abs($this->origin[1] - $y0) < abs($this->origin[1] - $y1))
+            {
+                $y1 = $this->clipBottom($this->reliable_line, $x0, $y0, $x1, $y1);
+                if ($y1 === false)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                $y0 = $this->clipTop($this->reliable_line, $x0, $y0, $x1, $y1);
+                if ($y0 === false)
+                {
+                    return false;
+                }
+            }
+        }
+
+        while($x1 - $x0 > $this->expected_size[0] * 1.75)
+        {
+            if(abs($this->origin[0] - $x0) < abs($this->origin[0] - $x1))
+            {
+                $x1 = $this->clipRight($this->reliable_line, $x0, $y0, $x1, $y1);
+                if ($x1 === false)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                $x0 = $this->clipLeft($this->reliable_line, $x0, $y0, $x1, $y1);
+                if ($x0 === false)
+                {
+                    return false;
+                }
+            }
+        }
+
+        if($x1 - $x0 < $this->expected_size[0] * 0.75)
+        {
+            return false;
+        }
+
+        if($y1 - $y0 < $this->expected_size[1] * 0.75)
+        {
+            return false;
+        }
+
+        return array($x0, $y0, $x1, $y1);
+    }
+
 	/**
 	 * @return array|bool
 	 * @throws Exception
@@ -339,15 +397,14 @@ class ilScanAssessmentCheckBoxAnalyser
         {
             list($x0, $y0, $x1, $y1, $depth) = array_pop($nodes);
 
-            if($x1 - $x0 < $this->expected_size[0] * 0.5)
+            $reduced = $this->reduceRectangle($x0, $y0, $x1, $y1);
+
+            if($reduced === false)
             {
-                continue; // ignore if too small
+                continue;
             }
 
-            if($y1 - $y0 < $this->expected_size[1] * 0.5)
-            {
-                continue; // ignore if too small
-            }
+            list($x0, $y0, $x1, $y1) = $reduced;
 
             $faulty = $this->detectFaultySide($x0, $y0, $x1, $y1);
 
@@ -355,34 +412,6 @@ class ilScanAssessmentCheckBoxAnalyser
             {
                 return array($x0, $y0, $x1, $y1);
             }
-
-            // detect if we actually ended up outlining two or more connected
-            // boxes and restrict our search accordingly.
-
-            if($y1 - $y0 > $this->expected_size[1] * 1.75)
-            {
-                if(abs($this->origin[1] - $y0) < abs($this->origin[1] - $y1))
-                {
-                    $y1 = ($y0 + $y1) / 2;
-                }
-                else
-                {
-                    $y0 = ($y0 + $y1) / 2;
-                }
-            }
-
-            if($x1 - $x0 > $this->expected_size[0] * 1.75)
-            {
-                if(abs($this->origin[0] - $x0) < abs($this->origin[0] - $x1))
-                {
-                    $x1 = ($x0 + $x1) / 2;
-                }
-                else
-                {
-                    $x0 = ($x0 + $x1) / 2;
-                }
-            }
-
 
             // note that we add the nodes in inverse order of intended traversal, as
             // they are fetched via array_pop() for reasons of efficiency.
