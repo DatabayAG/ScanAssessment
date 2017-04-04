@@ -172,9 +172,11 @@ class ilScanAssessmentCheckBoxElement
 		return new ilScanAssessmentArea($total, $white, $black);
 	}
 
-	protected function detectBox($im, $x, $y, $threshold)
+	protected function detectBox($im, $x, $y, $size, $threshold)
 	{
-		while(true)
+	    $x0 = $x;
+
+		while($x - $x0 < $size[0] / 2)
 		{
 			// echo "@" . $x . ", " . $y . "<br>";
 
@@ -184,7 +186,8 @@ class ilScanAssessmentCheckBoxElement
 				break;
 			}
 
-			$pixels = new ilScanAssessmentCheckBoxAnalyser($im, $x, $y, $threshold, $this->image_helper);
+			$pixels = new ilScanAssessmentCheckBoxAnalyser(
+			    $im, $x, $y, $size, $threshold, $this->image_helper);
 
 			$r = $pixels->detectRectangle();
 			if($r)
@@ -220,7 +223,10 @@ class ilScanAssessmentCheckBoxElement
 
 		$center_x = ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
 		$center_y = ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
-		$box      = $this->detectBox($im, $center_x, $center_y, 100);
+		$size     = array(
+		    $this->getRightBottom()->getX() - $this->getLeftTop()->getX(),
+            $this->getRightBottom()->getY() - $this->getLeftTop()->getY());
+		$box      = $this->detectBox($im, $center_x, $center_y, $size, 100);
 		if($box)
 		{
 			list($x0, $y0, $x1, $y1) = $box;

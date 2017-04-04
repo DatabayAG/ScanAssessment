@@ -1,10 +1,22 @@
 <?php
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentReliableLineDetector.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentPotentialLineDetector.php');
 
 /**
  * Class ilScanAssessmentCheckBoxAnalyser
  */
 class ilScanAssessmentCheckBoxAnalyser
 {
+    /**
+     * @var array
+     */
+    private $origin;
+
+    /**
+     * @var array
+     */
+    private $expected_size;
+
     /**
      * @var
      */
@@ -21,14 +33,24 @@ class ilScanAssessmentCheckBoxAnalyser
     private $bounding_box;
 
     /**
+     * @var float
+     */
+    private $minimal;
+
+    /**
      * @var
      */
     private $threshold;
 
     /**
-     * @var
+     * @var ilScanAssessmentReliableLineDetector
      */
-    private $coverage;
+    private $reliable_line;
+
+    /**
+     * @var ilScanAssessmentPotentialLineDetector
+     */
+    private $potential_line;
 
     /**
      * @var ilScanAssessmentImageWrapper
@@ -43,10 +65,11 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $threshold
 	 * @param $image_helper
 	 */
-    public function __construct($image, $x, $y, $threshold, $image_helper)
+    public function __construct($image, $x, $y, $size, $threshold, $image_helper)
     {
+        $this->origin = array($x, $y);
+        $this->expected_size = $size;
         $this->threshold = $threshold;
-        $this->coverage = 0.75;
 
         $pixels = array();
         self::$img_helper = $image_helper;
@@ -56,6 +79,9 @@ class ilScanAssessmentCheckBoxAnalyser
         $this->bounding_box = $this->calculateBoundingBox();
 
         $this->image = $image;
+
+        $this->reliable_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold);
+        $this->potential_line = new ilScanAssessmentPotentialLineDetector($image_helper, $threshold);
     }
 
     /**
@@ -164,73 +190,6 @@ class ilScanAssessmentCheckBoxAnalyser
     }
 
 	/**
-	 * @param $pixel
-	 * @param $k0
-	 * @param $k1
-	 * @return bool
-	 */
-    private function testLine($pixel, $k0, $k1)
-    {
-        $threshold = $this->threshold;
-        $coverage = $this->coverage;
-
-        $total = (float)($k1 - $k0 + 1);
-
-        $n = 0;
-        for($k = $k0; $k <= $k1; $k++)
-        {
-            if($pixel($k) < $threshold)
-            {
-                $n++;
-            }
-            else
-            {
-                // early exit: even if all remaining pixels turn
-                // out to be good, can the coverage be reached?
-                $r = $k1 - $k;
-                if(($n + $r) / $total < $coverage)
-                {
-                    return false;
-                }
-            }
-        }
-
-        return $n / $total >= $coverage;
-    }
-
-	/**
-	 * @param $x0
-	 * @param $x1
-	 * @param $y
-	 * @return bool
-	 */
-    private function testHorizontalLine($x0, $x1, $y)
-    {
-        $pixel = function($k) use ($y)
-        {
-            return self::$img_helper->getGrey(new ilScanAssessmentPoint($k, $y));
-        };
-
-        return $this->testLine($pixel, $x0, $x1);
-    }
-
-	/**
-	 * @param $x
-	 * @param $y0
-	 * @param $y1
-	 * @return bool
-	 */
-    private function testVerticalLine($x, $y0, $y1)
-    {
-        $pixel = function($k) use ($x)
-        {
-            return self::$img_helper->getGrey(new ilScanAssessmentPoint($x, $k));
-        };
-
-        return $this->testLine($pixel, $y0, $y1);
-    }
-
-	/**
 	 * @param $x0
 	 * @param $y0
 	 * @param $x1
@@ -243,25 +202,43 @@ class ilScanAssessmentCheckBoxAnalyser
 
     private function detectFaultySide($x0, $y0, $x1, $y1)
     {
-        if(!$this->testHorizontalLine($x0, $x1, $y0))
+        if(!$this->reliable_line->horizontal($x0, $x1, $y0))
         {
             return 'top';
         }
-        else if(!$this->testHorizontalLine($x0, $x1, $y1))
+        else if(!$this->reliable_line->horizontal($x0, $x1, $y1))
         {
             return 'bottom';
         }
-        else if(!$this->testVerticalLine($x0, $y0, $y1))
+        else if(!$this->reliable_line->vertical($x0, $y0, $y1))
         {
             return 'left';
         }
-        else if(!$this->testVerticalLine($x1, $y0, $y1))
+        else if(!$this->reliable_line->vertical($x1, $y0, $y1))
         {
             return 'right';
         }
         else
         {
             return false;
+        }
+    }
+
+    /**
+     * @param $depth
+     * @return ilScanAssessmentLineDetector
+     */
+    private function lineDetectorForDepth($depth)
+    {
+        if($depth == 0)
+        {
+            // at level 1, we allow potential matches.
+
+            return $this->potential_line;
+        }
+        else
+        {
+            return $this->reliable_line;
         }
     }
 
@@ -272,11 +249,11 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $y1
 	 * @return bool
 	 */
-    private function clipLeft($x0, $y0, $x1, $y1)
+    private function clipLeft($test, $x0, $y0, $x1, $y1)
     {
         while(++$x0 < $x1)
         {
-            if($this->testVerticalLine($x0, $y0, $y1))
+            if($test->vertical($x0, $y0, $y1))
             {
                 return $x0;
             }
@@ -292,11 +269,11 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $y1
 	 * @return bool
 	 */
-    private function clipRight($x0, $y0, $x1, $y1)
+    private function clipRight($test, $x0, $y0, $x1, $y1)
     {
         while(--$x1 > $x0)
         {
-            if($this->testVerticalLine($x1, $y0, $y1))
+            if($test->vertical($x1, $y0, $y1))
             {
                 return $x1;
             }
@@ -312,11 +289,11 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $y1
 	 * @return bool
 	 */
-    private function clipTop($x0, $y0, $x1, $y1)
+    private function clipTop($test, $x0, $y0, $x1, $y1)
     {
         while(++$y0 < $y1)
         {
-            if($this->testHorizontalLine($x0, $x1, $y0))
+            if($test->horizontal($x0, $x1, $y0))
             {
                 return $y0;
             }
@@ -332,11 +309,11 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $y1
 	 * @return bool
 	 */
-    private function clipBottom($x0, $y0, $x1, $y1)
+    private function clipBottom($test, $x0, $y0, $x1, $y1)
     {
         while(--$y1 > $y0)
         {
-            if($this->testHorizontalLine($x0, $x1, $y1))
+            if($test->horizontal($x0, $x1, $y1))
             {
                 return $y1;
             }
@@ -355,12 +332,22 @@ class ilScanAssessmentCheckBoxAnalyser
 
         if($this->bounding_box)
         {
-            array_push($nodes, $this->bounding_box);
+            array_push($nodes, array_merge($this->bounding_box, array(0)));
         }
 
         while(!empty($nodes))
         {
-            list($x0, $y0, $x1, $y1) = array_pop($nodes);
+            list($x0, $y0, $x1, $y1, $depth) = array_pop($nodes);
+
+            if($x1 - $x0 < $this->expected_size[0] * 0.5)
+            {
+                continue; // ignore if too small
+            }
+
+            if($y1 - $y0 < $this->expected_size[1] * 0.5)
+            {
+                continue; // ignore if too small
+            }
 
             $faulty = $this->detectFaultySide($x0, $y0, $x1, $y1);
 
@@ -369,52 +356,82 @@ class ilScanAssessmentCheckBoxAnalyser
                 return array($x0, $y0, $x1, $y1);
             }
 
+            // detect if we actually ended up outlining two or more connected
+            // boxes and restrict our search accordingly.
+
+            if($y1 - $y0 > $this->expected_size[1] * 1.75)
+            {
+                if(abs($this->origin[1] - $y0) < abs($this->origin[1] - $y1))
+                {
+                    $y1 = ($y0 + $y1) / 2;
+                }
+                else
+                {
+                    $y0 = ($y0 + $y1) / 2;
+                }
+            }
+
+            if($x1 - $x0 > $this->expected_size[0] * 1.75)
+            {
+                if(abs($this->origin[0] - $x0) < abs($this->origin[0] - $x1))
+                {
+                    $x1 = ($x0 + $x1) / 2;
+                }
+                else
+                {
+                    $x0 = ($x0 + $x1) / 2;
+                }
+            }
+
+
             // note that we add the nodes in inverse order of intended traversal, as
             // they are fetched via array_pop() for reasons of efficiency.
+
+            $detector = $this->lineDetectorForDepth($depth);
 
             switch($faulty)
             {
                 case 'left':
                 case 'right':
-                    $y0_clipped = $this->clipTop($x0, $y0, $x1, $y1);
+                    $y0_clipped = $this->clipTop($detector, $x0, $y0, $x1, $y1);
 
-                    $y1_clipped = $this->clipBottom($x0, $y0, $x1, $y1);
+                    $y1_clipped = $this->clipBottom($detector, $x0, $y0, $x1, $y1);
 
                     if($y0_clipped !== false && $y1_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1_clipped));
+                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1_clipped, $depth + 1));
                     }
 
                     if($y1_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0, $x1, $y1_clipped));
+                        array_push($nodes, array($x0, $y0, $x1, $y1_clipped, $depth + 1));
                     }
 
                     if($y0_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1));
+                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1, $depth + 1));
                     }
                     break;
 
                 case 'top':
                 case 'bottom':
-                    $x0_clipped = $this->clipLeft($x0, $y0, $x1, $y1);
+                    $x0_clipped = $this->clipLeft($detector, $x0, $y0, $x1, $y1);
 
-                    $x1_clipped = $this->clipRight($x0, $y0, $x1, $y1);
+                    $x1_clipped = $this->clipRight($detector, $x0, $y0, $x1, $y1);
 
                     if($x0_clipped !== false && $x1_clipped !== false)
                     {
-                        array_push($nodes, array($x0_clipped, $y0, $x1_clipped, $y1));
+                        array_push($nodes, array($x0_clipped, $y0, $x1_clipped, $y1, $depth + 1));
                     }
 
                     if($x1_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0, $x1_clipped, $y1));
+                        array_push($nodes, array($x0, $y0, $x1_clipped, $y1, $depth + 1));
                     }
 
                     if($x0_clipped !== false)
                     {
-                        array_push($nodes, array($x0_clipped, $y0, $x1, $y1));
+                        array_push($nodes, array($x0_clipped, $y0, $x1, $y1, $depth + 1));
                     }
                     break;
 
@@ -425,34 +442,34 @@ class ilScanAssessmentCheckBoxAnalyser
             switch ($faulty)
             {
                 case 'left':
-                    $x0_clipped = $this->clipLeft($x0, $y0, $x1, $y1);
+                    $x0_clipped = $this->clipLeft($detector, $x0, $y0, $x1, $y1);
                     if($x0_clipped !== false)
                     {
-                        array_push($nodes, array($x0_clipped, $y0, $x1, $y1));
+                        array_push($nodes, array($x0_clipped, $y0, $x1, $y1, $depth + 1));
                     }
                     break;
 
                 case 'right':
-                    $x1_clipped = $this->clipRight($x0, $y0, $x1, $y1);
+                    $x1_clipped = $this->clipRight($detector, $x0, $y0, $x1, $y1);
                     if($x1_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0, $x1_clipped, $y1));
+                        array_push($nodes, array($x0, $y0, $x1_clipped, $y1, $depth + 1));
                     }
                     break;
 
                 case 'top':
-                    $y0_clipped = $this->clipTop($x0, $y0, $x1, $y1);
+                    $y0_clipped = $this->clipTop($detector, $x0, $y0, $x1, $y1);
                     if($y0_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1));
+                        array_push($nodes, array($x0, $y0_clipped, $x1, $y1, $depth + 1));
                     }
                     break;
 
                 case 'bottom':
-                    $y1_clipped = $this->clipBottom($x0, $y0, $x1, $y1);
+                    $y1_clipped = $this->clipBottom($detector, $x0, $y0, $x1, $y1);
                     if($y1_clipped !== false)
                     {
-                        array_push($nodes, array($x0, $y0, $x1, $y1_clipped));
+                        array_push($nodes, array($x0, $y0, $x1, $y1_clipped, $depth + 1));
                     }
                     break;
 
