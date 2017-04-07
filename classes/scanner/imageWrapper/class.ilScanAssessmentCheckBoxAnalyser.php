@@ -279,7 +279,7 @@ class ilScanAssessmentCheckBoxAnalyser
 	/**
      * Increase $x0 until we hit a vertical line as defined by $test.
      *
-     * @param class.ilScanAssessmentLineDetector $test
+     * @param ilScanAssessmentLineDetector $test
 	 * @param integer $x0
 	 * @param integer $y0
 	 * @param integer $x1
@@ -302,7 +302,7 @@ class ilScanAssessmentCheckBoxAnalyser
 	/**
      * Decrease $x1 until we hit a vertical line as defined by $test.
      *
-     * @param class.ilScanAssessmentLineDetector $test
+     * @param ilScanAssessmentLineDetector $test
      * @param integer $x0
      * @param integer $y0
      * @param integer $x1
@@ -325,7 +325,7 @@ class ilScanAssessmentCheckBoxAnalyser
 	/**
      * Increase $y0 until we hit a horizontal line as defined by $test.
      *
-     * @param class.ilScanAssessmentLineDetector $test
+     * @param ilScanAssessmentLineDetector $test
 	 * @param integer $x0
 	 * @param integer $y0
 	 * @param integer $x1
@@ -348,7 +348,7 @@ class ilScanAssessmentCheckBoxAnalyser
 	/**
      * Decrease $y1 until we hit a horizontal line as defined by $test.
      *
-     * @param class.ilScanAssessmentLineDetector $test
+     * @param ilScanAssessmentLineDetector $test
 	 * @param integer $x0
 	 * @param integer $y0
 	 * @param integer $x1
