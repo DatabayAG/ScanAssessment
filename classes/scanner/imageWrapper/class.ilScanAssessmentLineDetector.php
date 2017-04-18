@@ -22,11 +22,11 @@ abstract class ilScanAssessmentLineDetector
      */
     protected $img_helper;
 
-    public function __construct($img_helper, $threshold)
+    public function __construct($img_helper, $threshold, $coverage = 0.95)
     {
         $this->img_helper = $img_helper;
         $this->threshold = $threshold;
-        $this->coverage = 0.95;
+        $this->coverage = $coverage;
     }
 
     /**

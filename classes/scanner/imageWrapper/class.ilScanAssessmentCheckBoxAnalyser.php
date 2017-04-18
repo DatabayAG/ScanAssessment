@@ -58,6 +58,8 @@ class ilScanAssessmentCheckBoxAnalyser
      */
     private $potential_line;
 
+    private $border_line;
+
     /**
      * @var ilScanAssessmentImageWrapper
      */
@@ -88,6 +90,7 @@ class ilScanAssessmentCheckBoxAnalyser
 
         $this->reliable_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold);
         $this->potential_line = new ilScanAssessmentPotentialLineDetector($image_helper, $threshold);
+        $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold, 0.4);
     }
 
     /**
@@ -482,6 +485,38 @@ class ilScanAssessmentCheckBoxAnalyser
 
             if($faulty === false)
             {
+                // removing borders seems to make detection thresholds more resilient to noise.
+                // ignoring the black borders of a checkbox and using only inner pixels for
+                // calculating the blackness ratio of a checkbox, is a good idea as the border
+                // pixels might be jagged or contain varying noise; thus, one empty checkbox's
+                // blackness ratio might be higher than another empty one's due to slightly
+                // different border pixels and thus skew the detected blackness levels.
+
+                $s = 0.1; // maximum factor to remove
+                $max_dx = intval($s * ($x1 - $x0));
+                $max_dy = intval($s * ($y1 - $y0));
+                $max_x0 = $x0 + $max_dx;
+                $min_x1 = $x1 - $max_dx;
+                $max_y0 = $y0 + $max_dy;
+                $min_y1 = $y1 - $max_dy;
+
+                while($y0 < $max_y0 && $this->border_line->horizontal($x0, $x1, $y0))
+                {
+                    $y0++;
+                }
+                while($y1 > $min_y1 && $this->border_line->horizontal($x0, $x1, $y1))
+                {
+                    $y1--;
+                }
+                while($x0 < $max_x0 && $this->border_line->vertical($x0, $y0, $y1))
+                {
+                    $x0++;
+                }
+                while($x1 > $min_x1 && $this->border_line->vertical($x1, $y0, $y1))
+                {
+                    $x1--;
+                }
+
                 return array($x0, $y0, $x1, $y1);
             }
 
