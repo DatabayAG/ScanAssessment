@@ -1,6 +1,7 @@
 <?php
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentReliableLineDetector.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentPotentialLineDetector.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentRegion.php');
 
 /**
  * Class ilScanAssessmentCheckBoxAnalyser
@@ -23,9 +24,9 @@ class ilScanAssessmentCheckBoxAnalyser
     private $image;
 
     /**
-     * @var array
+     * @var ilScanAssessmentRegion
      */
-    private $pixels;
+    private $region;
 
     /**
      * @var array
@@ -60,11 +61,6 @@ class ilScanAssessmentCheckBoxAnalyser
 
     private $border_line;
 
-    /**
-     * @var ilScanAssessmentImageWrapper
-     */
-    protected static $img_helper;
-
 	/**
 	 * ilScanAssessmentCheckBoxAnalyser constructor.
 	 * @param $image
@@ -79,12 +75,9 @@ class ilScanAssessmentCheckBoxAnalyser
         $this->expected_size = $size;
         $this->threshold = $threshold;
 
-        $pixels = array();
-        self::$img_helper = $image_helper;
-        $this->gatherPixels($image, $x, $y, $threshold, $pixels);
-        $this->pixels = $pixels;
+        $this->region = new ilScanAssessmentRegion($image_helper, new ilScanAssessmentPoint($x, $y), $threshold);
 
-        $this->bounding_box = $this->calculateBoundingBox();
+        $this->bounding_box = $this->region->bbox();
 
         $this->image = $image;
 
@@ -98,106 +91,7 @@ class ilScanAssessmentCheckBoxAnalyser
      */
     public function rightmost()
     {
-        $x = PHP_INT_MIN;
-        $y = 0;
-
-        foreach($this->coordinates() as $pixel)
-        {
-            if($pixel[0] > $x)
-            {
-                list($x, $y) = $pixel;
-            }
-        }
-
-        return array($x, $y);
-    }
-
-    /**
-     * @param $image
-     * @param $x
-     * @param $y
-     * @param $threshold
-     * @param $pixels
-     */
-    private static function gatherPixels($image, $x, $y, $threshold, &$pixels)
-    {
-        // essentially a flood fill that detects all black marker pixels.
-
-        $stack = array(array($x, $y));
-
-        array_push($stack, array($x - 1, $y - 1));
-        array_push($stack, array($x - 1, $y + 1));
-        array_push($stack, array($x + 1, $y - 1));
-        array_push($stack, array($x + 1, $y + 1));
-
-        $w = imagesx($image);
-        $h = imagesy($image);
-
-        while(count($stack) > 0)
-        {
-            list($x, $y) = array_pop($stack);
-
-            if($x < 0 || $y < 0 || $x >= $w || $y >= $h)
-            {
-                continue;
-            }
-
-            $coordinates = $x . '/' . $y;
-
-            if(isset($pixels[$coordinates]))
-            {
-                continue;
-            }
-
-            if(self::$img_helper->getGrey(new ilScanAssessmentPoint($x, $y)) < $threshold) // black?
-            {
-                $pixels[$coordinates] = true;
-                array_push($stack, array($x + 1, $y));
-                array_push($stack, array($x - 1, $y));
-                array_push($stack, array($x, $y + 1));
-                array_push($stack, array($x, $y - 1));
-            }
-        }
-    }
-
-    /**
-     * @return array an array of all coordinates in $this->pixels.
-     */
-    private function coordinates()
-    {
-        $coordinates = array();
-        foreach(array_keys($this->pixels) as $xy)
-        {
-            list($x, $y) = explode('/', $xy);
-            array_push($coordinates, array(intval($x), intval($y)));
-        }
-        return $coordinates;
-    }
-
-	/**
-     * Compute the bounding box of $this->pixels.
-     *
-	 * @return array|bool bounding box or false, if there are no pixels.
-	 */
-    private function calculateBoundingBox()
-    {
-        $x = array();
-        $y = array();
-
-        foreach($this->coordinates() as $pixel)
-        {
-            array_push($x, $pixel[0]);
-            array_push($y, $pixel[1]);
-        }
-
-        if(count($x) > 0 && count($y) > 0)
-        {
-            return array(min($x), min($y), max($x), max($y));
-        }
-        else
-        {
-            return false;
-        }
+        return $this->region->rightmost();
     }
 
 	/**
