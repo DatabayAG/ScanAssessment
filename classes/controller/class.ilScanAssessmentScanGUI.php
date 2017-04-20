@@ -90,7 +90,10 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 
 		if(! $this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan())
 		{
-			$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+			if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getScanPath()))
+			{
+				$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
+			}
 		}
 		else
 		{
@@ -103,7 +106,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		$upload = new ilFileInputGUI($this->getCoreController()->getPluginObject()->txt('scas_upload'), 'upload');
 		$upload->setInfo($this->getCoreController()->getPluginObject()->txt('scas_upload_info'));
 
-        $suffixes = array('zip', 'jpg', 'jpeg', 'png');
+        $suffixes = array('zip', 'jpg', 'jpeg', 'png', 'gif');
 
         if(ilScanAssessmentGlobalSettings::getInstance()->isTiffEnabled())
         {
