@@ -2,6 +2,7 @@
 
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentRegion.php');
 
 /**
  * Class ilScanAssessmentMarkerDetection
@@ -183,50 +184,34 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function detectExactMarkerPosition($find, $threshold)
 	{
-		$i1 = 0;
-		$i2 = 0;
-
 		$dx = $find->getEnd()->getX() - $find->getStart()->getX();
 		$dy = $find->getEnd()->getY() - $find->getStart()->getY();
 
 		$mx = $find->getStart()->getX() + $dx / 2;
 		$my = $find->getStart()->getY() + $dy / 2;
 
-		$dx2 = $dy; // Rotation um 90 Grad in 2D
-		$dy2 = -$dx;
-
-		for($i = 0.1; $i < 2; $i += 0.1)
+        $d = 1.0 / max(abs($dx), abs($dy));
+		for($i = $d; $i < 2; $i += $d)
 		{
-			$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($mx + $dx2 * $i, $my + $dy2 * $i));
-			if($gray > $threshold)
-			{
-				$i1 = $i;
-				break;
-			}
+		    foreach(array(-1, 1) as $s)
+            {
+                $p = new ilScanAssessmentPoint($mx + $s * $dx * $i, $my + $s * $dy * $i);
+                $gray = $this->image_helper->getGrey($p);
+                if($gray < $threshold)
+                {
+                    $region = new ilScanAssessmentRegion($this->image_helper, $p, $threshold);
+
+                    // make sure we got the actual marker and not some random dirt by checking
+                    // the overall size is reasonable.
+
+                    if($region->size() > 0.1 * dx * dy)
+                    {
+                        $len2 = sqrt($dx * $dx + $dy * $dy);
+                        return new ilScanAssessmentVector($region->centre(), $len2);
+                    }
+                }
+            }
 		}
-
-		for($i = 0.1; $i < 2; $i += 0.1)
-		{
-			$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($mx - $dx2 * $i, $my - $dy2 * $i));
-			if($gray > $threshold)
-			{
-				$i2 = $i;
-				break;
-			}
-		}
-
-		$x2 = $mx + $dx2 * $i1;
-		$y2 = $my + $dy2 * $i1;
-
-		$dx2 = -$x2 + ($mx - $dx2 * $i2);
-		$dy2 = -$y2 + ($my - $dy2 * $i2);
-
-		$len2 = sqrt($dx2 * $dx2 + $dy2 * $dy2);
-
-		$this->drawDebugLine(new ilScanAssessmentLine(new ilScanAssessmentPoint($x2, $y2), new ilScanAssessmentPoint($x2 + $dx2, $y2 + $dy2)), $this->image_helper->getPink());
-
-		return new ilScanAssessmentVector(new ilScanAssessmentPoint($x2 + $dx2 / 2, $y2 + $dy2 / 2), $len2);
-
 	}
 
 	/**
