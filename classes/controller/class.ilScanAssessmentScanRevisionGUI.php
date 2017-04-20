@@ -206,9 +206,10 @@ class ilScanAssessmentScanRevisionGUI extends ilScanAssessmentScanGUI
 	}
 
 	/**
+	 * @param bool $show_analyse
 	 * @return ilPropertyFormGUI
 	 */
-	protected function getForm()
+	protected function getForm($show_analyse = false)
 	{
 
 		$pluginObject = $this->getCoreController()->getPluginObject();
