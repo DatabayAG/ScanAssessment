@@ -116,6 +116,7 @@ scas_disable_manual_scan_no_cron_info#:#The ScanAssessmentCron is not installed 
 scas_least_one_participant#:#At least one participant is needed.
 scas_scan#:#Scan
 scas_scan_revision#:#Revision
+scas_checkbox_revision#:#Checkbox Revision
 scas_checkbox_revision_todo#:#Unreviewed Revisions
 scas_checkbox_revision_done#:#Completed Revisions
 scas_revision_show_all_todo#:#Show Revisions
