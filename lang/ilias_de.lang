@@ -173,3 +173,4 @@ scas_gd_must_installed#:#Sie müssen die GD Extension installiert und geladen ha
 scas_gd_installed#:#GD Extension gefunden.
 scas_gd_not_installed#:#GD ist nicht installiert.
 scas_gd_library#:#GD Extension
+scas_pages_missing#:#Fehlende Seiten

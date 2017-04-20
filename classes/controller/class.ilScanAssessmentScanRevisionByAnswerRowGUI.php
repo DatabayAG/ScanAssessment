@@ -56,6 +56,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 		$checked_answers = ilScanAssessmentRevision::getAnswerDataForTest($this->test->getId());
 		foreach($pdf_objects as $pdf_id => $pdf_data)
 		{
+			$pages_missing = false;
 			$page_accordion = new ilAccordionGUI();
 			$page_accordion->setBehaviour('FirstOpen');
 			foreach($pdf_data as $page => $question_data)
@@ -92,11 +93,16 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 						$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
 						$template->parseCurrentBlock();
 						$info = ' (' . $pluginObject->txt('scas_not_found') . ')';
+						$pages_missing = true;
 					}
 					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page . $info, $template->get());
 				}
 			}
 			$header_string = 'PDF ' . $pdf_id;
+			if($pages_missing)
+			{
+				$header_string .= ' (' .$pluginObject->txt('scas_pages_missing') .')'; 
+			}
 			$pdf_accordion->addItem($header_string, $page_accordion->getHTML());
 		}
 
