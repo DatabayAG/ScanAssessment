@@ -91,7 +91,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 						$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
 						$template->parseCurrentBlock();
 					}
-					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page, $template->get());
+					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page . ' (' . $pluginObject->txt('scas_not_found') . ')', $template->get());
 				}
 			}
 			$header_string = 'PDF ' . $pdf_id;
