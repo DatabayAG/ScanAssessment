@@ -85,13 +85,15 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 						}
 
 					}
+					$info = '';
 					if($not_found)
 					{
 						$template->setCurrentBlock('not_found');
 						$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
 						$template->parseCurrentBlock();
+						$info = ' (' . $pluginObject->txt('scas_not_found') . ')';
 					}
-					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page . ' (' . $pluginObject->txt('scas_not_found') . ')', $template->get());
+					$page_accordion->addItem($pluginObject->txt('scas_page') . ' ' . $page . $info, $template->get());
 				}
 			}
 			$header_string = 'PDF ' . $pdf_id;
