@@ -75,9 +75,10 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	}
 
 	/**
+	 * @param bool $show_analyse
 	 * @return ilPropertyFormGUI
 	 */
-	protected function getForm()
+	protected function getForm($show_analyse = false)
 	{
 		require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 
@@ -90,7 +91,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 
 		if(! $this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualScan())
 		{
-			if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getScanPath()))
+			if($show_analyse || $this->file_helper->doFilesExistsInDirectory($this->file_helper->getScanPath()))
 			{
 				$form->addCommandButton(__CLASS__ . '.analyse', 'Analyse');
 			}
@@ -177,7 +178,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	{
 		$disable = false;
 
-		$form = $this->getForm();
+		$form = $this->getForm(true);
 		if($form->checkInput())
 		{
 			try
