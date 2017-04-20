@@ -282,6 +282,48 @@ class ilScanAssessmentScanProcess
         return true;
     }
 
+    /**
+     * @param $path
+     */
+    protected function cleanupFolder($path)
+    {
+        if(file_exists($path))
+        {
+            $log = ilScanAssessmentLog::getInstance();
+            $files = glob($path . '/*', GLOB_MARK);
+            foreach($files as $file)
+            {
+                if(!is_dir($file))
+                {
+                    $log->info("deleting file " . $file);
+                    if(!unlink($file))
+                    {
+                        throw new \Exception("could not delete scan tmp dir file ". $file);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Ensure that we start in a defined state for each new image (i.e. nothing from the analysis state
+     * of the old image is left over and affects the new analysis).
+     *
+     * @param $path
+     * @param $entry
+     * @return bool
+     */
+    protected function cleanupAndAnalyseImage($path, $entry)
+    {
+        $this->rescale = 0;
+
+        $this->cleanupFolder($this->file_helper->getScanTempPath());
+        $this->getAnalysingFolder('');
+        $this->cleanupFolder($this->path_to_done);
+
+        return $this->analyseImage($path, $entry);
+    }
+
 	/**
 	 * @param $path
 	 * @param $entry
@@ -537,7 +579,7 @@ class ilScanAssessmentScanProcess
 					$this->traverse($path, 'prepareTIFF');
 				}
 
-				$return_value = $this->traverse($path, 'analyseImage');
+				$return_value = $this->traverse($path, 'cleanupAndAnalyseImage');
 			}
 			catch(Exception $e)
 			{
