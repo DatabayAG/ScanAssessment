@@ -282,28 +282,32 @@ class ilScanAssessmentScanProcess
         return true;
     }
 
-    /**
-     * @param $path
-     */
-    protected function cleanupFolder($path)
-    {
-        if(file_exists($path))
-        {
-            $log = ilScanAssessmentLog::getInstance();
-            $files = glob($path . '/*', GLOB_MARK);
-            foreach($files as $file)
-            {
-                if(!is_dir($file))
-                {
-                    $log->info("deleting file " . $file);
-                    if(!unlink($file))
-                    {
-                        throw new \Exception("could not delete scan tmp dir file ". $file);
-                    }
-                }
-            }
-        }
-    }
+	/**
+	 * @param $path
+	 * @throws Exception
+	 */
+	protected function cleanupFolder($path)
+	{
+		if(file_exists($path))
+		{
+			$log   = ilScanAssessmentLog::getInstance();
+			$files = glob($path . '/*', GLOB_MARK);
+			if(is_array($files))
+			{
+				foreach($files as $file)
+				{
+					if(!is_dir($file))
+					{
+						$log->info("deleting file " . $file);
+						if(!unlink($file))
+						{
+							throw new \Exception("could not delete scan tmp dir file " . $file);
+						}
+					}
+				}
+			}
+		}
+	}
 
     /**
      * Ensure that we start in a defined state for each new image (i.e. nothing from the analysis state
