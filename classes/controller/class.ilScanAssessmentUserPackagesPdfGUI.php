@@ -69,6 +69,12 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getPdfPath()))
 		{
 			$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
+			$number = $this->configuration->getCountDocuments();
+			$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
+			if($actual < $number)
+			{
+				$form->addCommandButton(__CLASS__ . '.createMissingPdfs', $pluginObject->txt('scas_create_missing'));
+			}
 			$form->addCommandButton(__CLASS__ . '.deleteQuestion', $pluginObject->txt('scas_remove_all'));
 		}
 		else
@@ -81,8 +87,8 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 			{
 				ilUtil::sendInfo($this->getCoreController()->getPluginObject()->txt('scas_manual_pdf_disabled'));
 			}
+			$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		}
-		$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		#$form->addCommandButton(__CLASS__ . '.createDemoPdfAndCutToImages', 'Create Example Scans');
 
 		return $form;
@@ -187,6 +193,18 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
             } else {
                 $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_zero_count'));
             }
+		}
+	}
+	
+	public function createMissingPdfsCmd()
+	{
+		$number = $this->configuration->getCountDocuments();
+		$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
+		if($actual < $number)
+		{
+			$pdf_builder = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+			$pdf_builder->createNonPersonalisedPdf($number);
+			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 		}
 	}
 
