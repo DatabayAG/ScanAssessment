@@ -77,17 +77,17 @@ class ilScanAssessmentScanTableUnprocessedGUI extends ilTable2GUI
 			{
 				$link = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentScanGUI' . '.downloadScanImage',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
 				$this->tpl->setVariable('VAL_LINK', $link);
+				$current_selection_list = new ilAdvancedSelectionListGUI();
+				$current_selection_list->setListTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'));
+				$current_selection_list->setId('act_' . $a_set['file_id']);
+
+				#$this->ctrl->setParameter($this->parent_obj, 'comment_id', $a_set['comment_id']);
+
+				$delete_target = ilScanAssessmentPlugin::getInstance()->getLinkTarget('ilScanAssessmentScanGUI' . '.removeFile',	array('ref_id' => (int)$_GET['ref_id'], 'file_name' => $value));
+				$current_selection_list->addItem(ilScanAssessmentPlugin::getInstance()->txt('scas_delete'), '', $delete_target);
+				$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
 			}
 			$this->tpl->setVariable('VAL_'.strtoupper($key), $value);
 		}
-
-		$current_selection_list = new ilAdvancedSelectionListGUI();
-		$current_selection_list->setListTitle(ilScanAssessmentPlugin::getInstance()->txt('scas_actions'));
-		$current_selection_list->setId('act_' . $a_set['file_id']);
-
-		#$this->ctrl->setParameter($this->parent_obj, 'comment_id', $a_set['comment_id']);
-		
-		$current_selection_list->addItem(ilScanAssessmentPlugin::getInstance()->txt('scas_edit'), '', '$link_target');
-	#	$this->tpl->setVariable('VAL_ACTIONS', $current_selection_list->getHTML());
 	}
 }

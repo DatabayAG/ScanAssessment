@@ -340,6 +340,20 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 	}
 
 	/**
+	 *
+	 */
+	public function removeFileCmd()
+	{
+		$file_name = ilUtil::stripSlashes($_GET['file_name']);
+		$file_path = $this->file_helper->getScanPath() . $file_name;
+		if(file_exists($file_path))
+		{
+			unlink($file_path);
+		}
+		return $this->defaultCmd();
+	}
+
+	/**
 	 * 
 	 */
 	public function downloadProcessedImageCmd()
