@@ -64,10 +64,14 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			$scan->getEnd()->getX(), $scan->getEnd()->getY()));
 
 		$locate = $this->detectExactMarkerPosition($scan, $threshold);
-		$this->log->debug(sprintf('Exact %s Marker found at [%s, %s] with length %s.',
-			$name, $locate->getPosition()->getX(), $locate->getPosition()->getY(), $locate->getLength()));
+		if($locate !== null)
+		{
+			$this->log->debug(sprintf('Exact %s Marker found at [%s, %s] with length %s.',
+				$name, $locate->getPosition()->getX(), $locate->getPosition()->getY(), $locate->getLength()));
 
-		return $locate;
+			return $locate;
+		}
+		return false;
 	}
 
 	/**
@@ -204,7 +208,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
                     // make sure we got the actual marker and not some random dirt by checking
                     // the overall size is reasonable.
 
-                    if($region->size() > 0.1 * $dx * $dy)
+                    if($region->size() > 0.1 * dx * dy)
                     {
                         $len2 = sqrt($dx * $dx + $dy * $dy);
                         return new ilScanAssessmentVector($region->centre(), $len2);
