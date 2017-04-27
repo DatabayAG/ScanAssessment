@@ -54,6 +54,17 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$form->setTitle($pluginObject->txt('scas_user_packages'));
 
+		$this->appendFormButtons($pluginObject, $form);
+
+		return $form;
+	}
+
+	/**
+	 * @param $pluginObject
+	 * @param ilPropertyFormGUI $form
+	 */
+	protected function appendFormButtons($pluginObject, $form)
+	{
 		$complete_download = new ilSelectInputGUI($pluginObject->txt('scas_complete_download'), 'complete_download');
 		$complete_download->setInfo($pluginObject->txt('scas_complete_download_info'));
 		$options = array(
@@ -68,18 +79,11 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 
 		if($this->file_helper->doFilesExistsInDirectory($this->file_helper->getPdfPath()))
 		{
-			$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
-			$number = $this->configuration->getCountDocuments();
-			$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
-			if($actual < $number)
-			{
-				$form->addCommandButton(__CLASS__ . '.createMissingPdfs', $pluginObject->txt('scas_create_missing'));
-			}
-			$form->addCommandButton(__CLASS__ . '.deleteQuestion', $pluginObject->txt('scas_remove_all'));
+			$this->appendDownloadCreateOrDeleteButtons($pluginObject, $form);
 		}
 		else
 		{
-			if(! $this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf())
+			if(!$this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || !ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf())
 			{
 				$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $pluginObject->txt('scas_create'));
 				$complete_download->setDisabled(true);
@@ -91,14 +95,29 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 			$form->addCommandButton(__CLASS__ . '.createDemoPdf', $pluginObject->txt('scas_create_demo_pdf'));
 		}
 		#$form->addCommandButton(__CLASS__ . '.createDemoPdfAndCutToImages', 'Create Example Scans');
+	}
 
-		return $form;
+	/**
+	 * @param $pluginObject
+	 * @param ilPropertyFormGUI $form
+	 */
+	protected function appendDownloadCreateOrDeleteButtons($pluginObject, $form)
+	{
+		$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
+
+		$number = $this->configuration->getCountDocuments();
+		$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
+		if($actual < $number)
+		{
+			$form->addCommandButton(__CLASS__ . '.createMissingPdfs', $pluginObject->txt('scas_create_missing'));
+		}
+		$form->addCommandButton(__CLASS__ . '.deletePDFs', $pluginObject->txt('scas_remove_all'));
 	}
 
 	/**
 	 * @return string
 	 */
-	public function deleteQuestionCmd()
+	public function deletePDFsCmd()
 	{
 		require_once 'Services/Utilities/classes/class.ilConfirmationGUI.php';
 		$pluginObject = $this->getCoreController()->getPluginObject();
