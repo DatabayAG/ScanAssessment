@@ -208,11 +208,15 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
                     // make sure we got the actual marker and not some random dirt by checking
                     // the overall size is reasonable.
 
-                    if($region->size() > 0.1 * dx * dy)
+                    if($region->size() > 0.1 * $dx * $dy)
                     {
                         $len2 = sqrt($dx * $dx + $dy * $dy);
                         return new ilScanAssessmentVector($region->centre(), $len2);
                     }
+                    else
+                    {
+                    	$this->log->debug(sprintf('Found Region (%s) is not large enough (%s), dx (%s), dy (%s).', $region->size(), 0.1 * $dx * $dy, $dx, $dy ));
+					}
                 }
             }
 		}
