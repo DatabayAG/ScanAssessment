@@ -214,6 +214,23 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 	}
 
 	/**
+	 * @return string
+	 */
+	public function resetReturnResultsCmd()
+	{
+		global $ilDB;
+		$ilDB->update('pl_scas_pdf_data',
+			array(
+				'results_exported' => array('integer', 0)
+			),
+			array(
+				'obj_id' => array('integer', $this->test->getId())
+			));
+		$form = $this->getForm();
+		return $this->defaultCmd($form);
+	}
+
+	/**
 	 * @param ilPropertyFormGUI $form
 	 */
 	protected function bindModelToForm(ilPropertyFormGUI $form)
@@ -241,6 +258,7 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		{
 			$form->addCommandButton(__CLASS__ . '.saveForm', $this->getCoreController()->getPluginObject()->txt('scas_return_results'));
 		}
+		$form->addCommandButton(__CLASS__ . '.resetReturnResults', $this->getCoreController()->getPluginObject()->txt('scas_reset_return_results'));
 
 		$tpl->setVariable('FORM', $form->getHTML());
 		$tbl = $this->displayUserTable();
