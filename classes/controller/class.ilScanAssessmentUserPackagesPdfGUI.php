@@ -178,6 +178,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 				$files[] = array('file_id' => $filename, 'file_name' => $filename->getBaseName(), 'file_size' => $size . 'K', 'file_date' => $date);
 			}
 		}
+		sort($files);
 		return $files;
 	}
 
