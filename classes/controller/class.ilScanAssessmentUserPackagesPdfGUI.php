@@ -82,6 +82,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 			if(! $this->getCoreController()->getPluginObject()->checkIfScanAssessmentCronExists() || ! ilScanAssessmentGlobalSettings::getInstance()->isDisableManualPdf())
 			{
 				$form->addCommandButton(__CLASS__ . '.createPdfDocuments', $pluginObject->txt('scas_create'));
+				$complete_download->setDisabled(true);
 			}
 			else
 			{
