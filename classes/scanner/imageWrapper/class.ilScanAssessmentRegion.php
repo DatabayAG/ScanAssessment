@@ -25,8 +25,8 @@ class ilScanAssessmentRegion
     {
         // essentially a flood fill that detects all black marker pixels.
 
-        $x = $p->getX();
-        $y = $p->getY();
+        $x = intval($p->getX());
+        $y = intval($p->getY());
         $pixels = array();
 
         $stack = array(array($x, $y));
@@ -162,5 +162,18 @@ class ilScanAssessmentRegion
     public function size()
     {
         return count($this->pixels);
+    }
+
+    public function dump($clip = 7)
+    {
+        $centre = $this->centre();
+        $s = sprintf("region: size: %s, centre: [%s, %s ], pixels: ",
+            $this->size(), $centre->getX(), $centre->getY());
+        $s .= var_export(array_slice($this->pixels, 0, $clip), true);
+        if($this->size() > $clip)
+        {
+            $s .= " [too many pixels]";
+        }
+        return $s;
     }
 }

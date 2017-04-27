@@ -188,18 +188,25 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function detectExactMarkerPosition($find, $threshold)
 	{
-		$dx = $find->getEnd()->getX() - $find->getStart()->getX();
-		$dy = $find->getEnd()->getY() - $find->getStart()->getY();
+		$sdx = $find->getEnd()->getX() - $find->getStart()->getX();
+		$sdy = $find->getEnd()->getY() - $find->getStart()->getY();
 
-		$mx = $find->getStart()->getX() + $dx / 2;
-		$my = $find->getStart()->getY() + $dy / 2;
+		$mx = $find->getStart()->getX() + $sdx / 2;
+		$my = $find->getStart()->getY() + $sdy / 2;
 
-        $d = 1.0 / max(abs($dx), abs($dy));
-		for($i = $d; $i < 2; $i += $d)
+		$dx = abs($sdx);
+        $dy = abs($sdy);
+
+        $this->log->debug(sprintf('Estimated marker position [%s, %s], size: [%s, %s]', $mx, $my, $dx, $dy));
+
+        $d = 1.0 / max($dx, $dy);
+        $min_size = 0.1 * $dx * $dy;
+
+		for($i = 0; $i < 2; $i += $d)
 		{
 		    foreach(array(-1, 1) as $s)
             {
-                $p = new ilScanAssessmentPoint($mx + $s * $dx * $i, $my + $s * $dy * $i);
+                $p = new ilScanAssessmentPoint(intval($mx + $s * $dx * $i), intval($my + $s * $dy * $i));
                 $gray = $this->image_helper->getGrey($p);
                 if($gray < $threshold)
                 {
@@ -208,15 +215,16 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
                     // make sure we got the actual marker and not some random dirt by checking
                     // the overall size is reasonable.
 
-                    if($region->size() > 0.1 * $dx * $dy)
+                    if($region->size() > $min_size)
                     {
                         $len2 = sqrt($dx * $dx + $dy * $dy);
                         return new ilScanAssessmentVector($region->centre(), $len2);
                     }
                     else
                     {
-                    	$this->log->debug(sprintf('Found Region (%s) is not large enough (%s), dx (%s), dy (%s), we are at %s/%s.', $region->size(), 0.1 * $dx * $dy, $dx, $dy, $region->centre()->getX(), $region->centre()->getY()));
-					}
+                        $this->log->debug(sprintf('Region at [%s, %s] smaller than %s, details: %s',
+                            $p->getX(), $p->getY(), $min_size, $region->dump()));
+                    }
                 }
             }
 		}
