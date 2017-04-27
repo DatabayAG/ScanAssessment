@@ -215,7 +215,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
                     }
                     else
                     {
-                    	$this->log->debug(sprintf('Found Region (%s) is not large enough (%s), dx (%s), dy (%s).', $region->size(), 0.1 * $dx * $dy, $dx, $dy ));
+                    	$this->log->debug(sprintf('Found Region (%s) is not large enough (%s), dx (%s), dy (%s), we are at %s/%s.', $region->size(), 0.1 * $dx * $dy, $dx, $dy, $region->centre()->getX(), $region->centre()->getY()));
 					}
                 }
             }
