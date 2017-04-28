@@ -169,8 +169,8 @@ class ilScanAssessmentRegion
         $centre = $this->centre();
         $s = sprintf("region: size: %s, centre: [%s, %s ], pixels: ",
             $this->size(),
-            $centre ? $centre->getX() : "n/a",
-            $centre ? $centre->getY() : "n/a");
+            $centre !== false ? $centre->getX() : "n/a",
+            $centre !== false ? $centre->getY() : "n/a");
         $s .= var_export(array_slice($this->pixels, 0, $clip), true);
         if($this->size() > $clip)
         {
