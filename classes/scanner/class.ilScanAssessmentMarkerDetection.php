@@ -134,7 +134,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		{
 			$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
 			$im = $this->image_helper->rotate($rad * -1);
-			$this->setTempImage($im);
 			$this->setImage($im);
 			$this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 			return $this->findMarker($im, true, $threshold, $path);
