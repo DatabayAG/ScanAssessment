@@ -109,7 +109,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$this->pdf_helper->pdf->Rect($pos_x, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$this->pdf_helper->pdf->Rect($pos_x + 5, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
-			$pos_y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN;
+			$pos_y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN  - 0.2;
 			$x1 = $this->pdf_helper->pdf->GetX() + $pos_x;
 			$x2 = $x1 + 5;
 			$y	= $this->pdf_helper->pdf->GetY();
