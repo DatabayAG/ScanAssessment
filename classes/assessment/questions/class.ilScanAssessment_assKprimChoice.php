@@ -46,8 +46,12 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 		$this->pdf_helper->pdf->Ln();
 		$y_after_labels =  $this->pdf_helper->pdf->GetY();
 		$y_diff = $y_after_labels - $y_before_labels;
-
-		foreach($question->getAnswers() as $key => $answer)
+		$answers_org = $question->getAnswers();
+		if($question->getShuffle() == 1)
+		{
+			shuffle($answers_org);
+		}
+		foreach($answers_org as $key => $answer)
 		{
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
@@ -73,8 +77,12 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	{
 		$answer_counter	= 0;
 		$answers = array();
-
-		foreach($question->getAnswers() as $key => $answer)
+		$answers_org = $question->getAnswers();
+		if($question->getShuffle() == 1)
+		{
+			shuffle($answers_org);
+		}
+		foreach($answers_org as $key => $answer)
 		{
 			$ident_string = $counter . $this->getLetterFromNumber($answer_counter);
 			/** @var ASS_AnswerSimple $answer */

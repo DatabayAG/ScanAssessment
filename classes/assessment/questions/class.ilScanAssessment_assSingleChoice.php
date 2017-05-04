@@ -33,12 +33,18 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 
 	/**
 	 * @param assSingleChoice | assMultipleChoice $question
+	 * @param             $counter
 	 * @return array
 	 */
 	public function writeAnswersWithCheckboxToPdf($question, $counter)
 	{
 		$answer_positions = array();
-		foreach($question->getAnswers() as $key => $answer)
+		$answers = $question->getAnswers();
+		if($question->getShuffle() == 1)
+		{
+			shuffle($answers);
+		}
+		foreach($answers as $key => $answer)
 		{
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
@@ -60,7 +66,12 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 	{
 		$answers	= array();
 		$answer_counter	= 0;
-		foreach($question->getAnswers() as $key => $answer)
+		$answers_org = $question->getAnswers();
+		if($question->getShuffle() == 1)
+		{
+			shuffle($answers_org);
+		}
+		foreach($answers_org as $key => $answer)
 		{
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
