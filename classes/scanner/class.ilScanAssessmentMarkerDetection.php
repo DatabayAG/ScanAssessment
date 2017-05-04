@@ -10,6 +10,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.
  */
 class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 {
+	const MARKER_START_SHOULD_BE_AWAY_FROM_IMAGE_START = 5;
 
 	protected $top_left_length;
 
@@ -281,7 +282,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			}
 			else
 			{
-				if($found == true)
+				if($found == true  && $found_start->getX() > self::MARKER_START_SHOULD_BE_AWAY_FROM_IMAGE_START)
 				{
 					$found_line = new ilScanAssessmentLine($found_start, $found_end);
 					$length     = sqrt(
