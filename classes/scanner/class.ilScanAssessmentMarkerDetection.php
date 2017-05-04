@@ -308,6 +308,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 					}
 				}
 				$found = false;
+				$beginD    = -1;
 			}
 		}
 		return false;

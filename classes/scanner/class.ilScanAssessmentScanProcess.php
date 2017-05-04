@@ -93,8 +93,7 @@ class ilScanAssessmentScanProcess
 	{
 		$this->log->debug(sprintf('Marker not found retrying after cropping...'));
 		$image  = new ilScanAssessmentGDWrapper($scanner->getFn());
-		$scaled = $image->imageCropWithSource($image, $image->getImageSizeX() / 10, $image->getImageSizeY() / 100, 0, 0, $this->file_helper->getScanTempPath() . '/new_file'  . $this->internal_file_type);
-		$scanner->setTempImage($scaled);
+		$scaled = $image->imageCropWithSource($image, $image->getImageSizeX() / 100, $image->getImageSizeY() / 100, 0, 0, $this->file_helper->getScanTempPath() . '/new_file'  . $this->internal_file_type);
 		$scanner->image_helper->setImage($scaled);
 		$scanner->setImage($scaled);
 		$marker = $scanner->getMarkerPosition($this->file_helper->getScanTempPath());
