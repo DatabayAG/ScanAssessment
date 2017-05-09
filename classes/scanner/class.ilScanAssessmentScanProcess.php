@@ -553,6 +553,10 @@ class ilScanAssessmentScanProcess
 						{
 							$return_value = self::FOUND;
 						}
+						else if(count($this->getFilesNotForThisTest()) > 0 || count($this->getNonConformFiles()) > 0)
+						{
+							$return_value = self::FOUND;
+						}
 					}
 				}
 			}
