@@ -8,15 +8,16 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 {
 
 	/**
-	 * @param     $question
-	 * @param     $answer_position
-	 * @param     $answer_text
-	 * @param     $x
-	 * @param     $y
-	 * @param int $end_x
+	 * @param      $question
+	 * @param      $answer_position
+	 * @param      $answer_text
+	 * @param      $x
+	 * @param      $y
+	 * @param int  $end_x
+	 * @param null $ident_string
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y, $end_x = 0)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y, $end_x = 0, $ident_string = null)
 	{
 		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to [%s, %s] question type %s', $question->getId(), $answer_position, $answer_text, $x, $y, __CLASS__));
 
@@ -27,7 +28,8 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			'x'    => $x,
 			'y'    => $y,
 			'type' => __CLASS__,
-			'end_x'=> $end_x
+			'end_x'=> $end_x,
+			'ident' => $ident_string
 		);
 	}
 
@@ -100,7 +102,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN - 0.2;
 			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x, $y, $x + 25);
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x, $y, $x + 25, $answer['identifier']);
 			$this->pdf_helper->pdf->Ln();
 		}
 		return $answer_positions;

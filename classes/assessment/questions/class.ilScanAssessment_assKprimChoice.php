@@ -17,7 +17,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	 * @param int $end_x
 	 * @return array
 	 */
-	protected function appendAnswer($question, $answer_position, $answer_text, $x1, $x2, $y, $end_x = 0)
+	protected function appendAnswer($question, $answer_position, $answer_text, $x1, $x2, $y, $end_x = 0, $ident_string = null)
 	{
 		$this->log->debug(sprintf('Answer checkbox for Question with id %s, answer order %s and text %s was added to correct => [%s, %s], wrong => [%s, %s]', $question->getId(), $answer_position, $answer_text, $x1 , $y, $x2 , $y));
 
@@ -25,7 +25,8 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 					  'wrong' => array('qid' => $question->getId()  , 'position' => $answer_position , 'a_text' => $answer_text, 'x' => $x2 , 'y' => $y, 'correctness' => 0),
 					  'type' => __CLASS__,
 					  'end_x'=> $end_x,
-					  'x' => $x1);
+					  'x' => $x1,
+					  'ident' => $ident_string);
 	}
 
 	/**
@@ -123,7 +124,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$y	= $this->pdf_helper->pdf->GetY();
 			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 15, $pos_y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getPosition(), $answer['answer']->getAnswerText(), $x1, $x2, $y, $x2 + 15);
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getPosition(), $answer['answer']->getAnswerText(), $x1, $x2, $y, $x2 + 15, $answer['identifier']);
 			$this->pdf_helper->pdf->Ln();
 		}
 

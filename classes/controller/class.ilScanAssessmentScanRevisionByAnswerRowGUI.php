@@ -135,7 +135,12 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 				$this->answerIsChecked($checked_answers, $name, $template, $data['type']);
 				$template->setCurrentBlock($data['type']);
 				$answer = $this->getSingleOrMultipleAnswerTexts($data['qid']);
-				$template->setVariable('VALUE', $answer[$data['aid']]);
+				$answer_value = $answer[$data['aid']];
+				if(array_key_exists('ident', $data) && $data['ident'] != null)
+				{
+					$answer_value = '(' . $data['ident'] . ') ' . $answer_value;
+				}
+				$template->setVariable('VALUE', $answer_value);
 				$template->setVariable('ANSWER_ID', 'revision[' . $name . ']');
 				$template->parseCurrentBlock();
 			}
@@ -155,7 +160,12 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 				$template->setCurrentBlock($data['type']);
 				$template->setVariable('ANSWER_ID', 'revision[' . $name_l .']');
 				$template->setVariable('ANSWER_ID_2', 'revision[' . $name_r .']');
-				$template->setVariable('VALUE', $answer[$data['correct']['position']]);
+				$answer_value = $answer[$data['correct']['position']];
+				if(array_key_exists('ident', $data) && $data['ident'] != null)
+				{
+					$answer_value = '(' . $data['ident'] . ') ' . $answer_value;
+				}
+				$template->setVariable('VALUE', $answer_value);
 				$template->parseCurrentBlock();
 			}
 		}
