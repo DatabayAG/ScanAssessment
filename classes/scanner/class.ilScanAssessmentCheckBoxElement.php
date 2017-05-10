@@ -65,7 +65,9 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected $search_rounds;
 
-	/**
+    private $border_line;
+
+    /**
 	 * ilScanAssessmentCheckBoxElement constructor.
 	 * @param ilScanAssessmentPoint        $left_top
 	 * @param ilScanAssessmentPoint        $right_bottom
@@ -87,6 +89,7 @@ class ilScanAssessmentCheckBoxElement
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
+        $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold, 0.4);
 	}
 
 	/**
@@ -215,6 +218,59 @@ class ilScanAssessmentCheckBoxElement
 		return false;
 	}
 
+	protected function trimBorder($what)
+    {
+        // removing borders seems to make detection thresholds more resilient to noise.
+        // ignoring the black borders of a checkbox and using only inner pixels for
+        // calculating the blackness ratio of a checkbox, is a good idea as the border
+        // pixels might be jagged or contain varying noise; thus, one empty checkbox's
+        // blackness ratio might be higher than another empty one's due to slightly
+        // different border pixels and thus skew the detected blackness levels.
+
+        $x0 = $this->getLeftTop()->getX();
+        $y0 = $this->getLeftTop()->getY();
+        $x1 = $this->getRightBottom()->getX();
+        $y1 = $this->getRightBottom()->getY();
+
+        $s = 0.1; // maximum factor to remove
+        $max_dx = intval($s * ($x1 - $x0));
+        $max_dy = intval($s * ($y1 - $y0));
+        $max_x0 = $x0 + $max_dx;
+        $min_x1 = $x1 - $max_dx;
+        $max_y0 = $y0 + $max_dy;
+        $min_y1 = $y1 - $max_dy;
+
+        while($y0 < $max_y0 && $this->border_line->horizontal($x0, $x1, $y0) === $what)
+        {
+            $y0++;
+        }
+        while($y1 > $min_y1 && $this->border_line->horizontal($x0, $x1, $y1) === $what)
+        {
+            $y1--;
+        }
+        while($x0 < $max_x0 && $this->border_line->vertical($x0, $y0, $y1) === $what)
+        {
+            $x0++;
+        }
+        while($x1 > $min_x1 && $this->border_line->vertical($x1, $y0, $y1) === $what)
+        {
+            $x1--;
+        }
+
+        $this->setLeftTop(new ilScanAssessmentPoint($x0, $y0));
+        $this->setRightBottom(new ilScanAssessmentPoint($x1, $y1));
+    }
+
+    protected function trimBorderBlack()
+    {
+        $this->trimBorder(true);
+    }
+
+    protected function trimBorderWhite()
+    {
+        $this->trimBorder(false);
+    }
+
 	/**
 	 * @param $im
 	 */
@@ -230,8 +286,6 @@ class ilScanAssessmentCheckBoxElement
 		if($box)
 		{
 			list($x0, $y0, $x1, $y1) = $box;
-			$new_center_x = ($x0 + $x1) / 2;
-			$new_center_y = ($y0 + $y1) / 2;
 			$this->setLeftTop(new ilScanAssessmentPoint($x0, $y0));
 			$this->setRightBottom(new ilScanAssessmentPoint($x1, $y1));
 		}
@@ -286,12 +340,21 @@ class ilScanAssessmentCheckBoxElement
 
 					$this->setLeftTop(new ilScanAssessmentPoint($value->getX() - $length, $value->getY() - $length));
 					$this->setRightBottom(new ilScanAssessmentPoint($value->getX() + $length, $value->getY() + $length));
-					$new_center_x = $value->getX();
-					$new_center_y = $value->getY();
 				}
 			}
+
+			// the current check estimation is usually not directly on the border lines, i.e. there is some white
+            // that needs to be trimmed first until the rectangle corresponds to a tight bounding box for the rectangle.
+
+			$this->trimBorderWhite();
 		}
-		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
+
+		$this->trimBorderBlack();
+
+        $new_center_x = ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
+        $new_center_y = ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
+
+        $this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
 
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
