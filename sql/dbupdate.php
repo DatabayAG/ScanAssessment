@@ -353,7 +353,7 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data_qpl', 'has_checkboxes'))
 ?>
 <#20>
 <?php
-
+//removed step
 ?>
 <#21>
 <?php
