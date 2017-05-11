@@ -84,17 +84,20 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 			$parser->startParsing();
 			$this->test->recalculateScores(true);
 			unlink($xml_file);
-			foreach($results as $usr_id)
+			if(is_array($results))
 			{
-				$ilDB->update('pl_scas_pdf_data',
-					array(
-						'results_exported' => array('integer', 1)
-					),
-					array(
-						'usr_id' => array('integer', $usr_id),
-						'obj_id' => array('integer', $this->test->getId())
-					));
-				ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
+				foreach($results as $usr_id)
+				{
+					$ilDB->update('pl_scas_pdf_data',
+						array(
+							'results_exported' => array('integer', 1)
+						),
+						array(
+							'usr_id' => array('integer', $usr_id),
+							'obj_id' => array('integer', $this->test->getId())
+						));
+					ilLPStatusWrapper::_updateStatus($this->test->getId(), $usr_id);
+				}
 			}
 		}
 		
