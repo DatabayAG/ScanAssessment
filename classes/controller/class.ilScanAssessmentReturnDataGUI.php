@@ -83,7 +83,7 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 
 			$parser->startParsing();
 			$this->test->recalculateScores(true);
-			#unlink($xml_file);
+			unlink($xml_file);
 			foreach($results as $usr_id)
 			{
 				$ilDB->update('pl_scas_pdf_data',

@@ -11,6 +11,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	private $anonymized = false;
 	private $active_ids;
 	private $test;
+	private $pdf_ids = array();
 
 	/**
 	 * ilScanAssessmentXMLResultCreator constructor.
@@ -68,6 +69,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 		}
 		$this->xmlEndTag("tst_active");
 
+		$this->pdf_ids = $pdf_ids;
 		$this->exportPassResult($pdf_ids);
 		$this->exportTestSequence($pdf_ids);
 
@@ -161,7 +163,8 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	{
 		global $ilDB;
 
-		$res = $ilDB->queryF('SELECT * FROM pl_scas_scan_data WHERE test_id = %s',
+		$in = $ilDB->in('pdf_id', $this->pdf_ids, false, 'integer');
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_scan_data WHERE test_id = %s AND ' . $in,
 			array('integer'), array($this->test_id));
 		$test_results = array();
 		$this->xmlStartTag("tst_solutions", NULL);
