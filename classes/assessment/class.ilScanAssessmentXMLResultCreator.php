@@ -31,7 +31,7 @@ class ilScanAssessmentXMLResultCreator extends ilXmlWriter
 	protected function exportActiveIDs()
 	{
 		global $ilDB;
-		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 0 AND usr_id IS NOT NULL',
+		$res = $ilDB->queryF('SELECT * FROM pl_scas_pdf_data WHERE obj_id = %s AND results_exported = 0 AND revision_done = 1 AND usr_id IS NOT NULL',
 			array('integer'), array($this->test_id));
 		$pdf_ids = array();
 		$user_ids = array();
