@@ -4,6 +4,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessm
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentCheckBoxElement.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAssessmentIdentification.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentFileHelper.php');
 
 /**
  * Class ilScanAssessmentAnswerScanner
@@ -215,6 +216,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
 		$this->findMatriculation($im, $corrected);
+		$this->cropHeader($im, $corrected);
 
 		return $this->checkbox_container;
 	}
@@ -262,6 +264,32 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
+	 * @param $im
+	 * @param ilScanAssessmentPoint $corrected
+	 */
+	protected function cropHeader(&$im, $corrected)
+	{
+		$header = $this->getPageAndHeightForHeader();
+		if($this->qr_identification->getPageNumber() == $header['page'])
+		{
+			$head_x = $this->image_helper->getImageSizeX();
+			$head_y = $header['height'] * ($corrected->getY());
+
+			$this->log->debug(sprintf('Cropping header on (0,0) and (%s, %s).', $head_x, $head_y));
+			
+			$first_point  = new ilScanAssessmentPoint(0, 0);
+			$second_point = new ilScanAssessmentPoint($head_x, $head_y);
+
+			$im2 = $this->image_helper->imageCropByPoints( $this->image_helper->getImage(),$first_point, $second_point);
+
+			$file_helper = new ilScanAssessmentFileHelper($this->qr_identification->getTestId());
+			$path = $file_helper->getRevisionPath() . '/qpl/' . $this->qr_identification->getPdfId() . '/head/';
+			$file_helper->ensurePathExists($path);
+			$this->image_helper->drawTempImage($im2, $path . '/header'  . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
+		}
+	}
+
+	/**
 	 * @param $matriculation
 	 */
 	protected function saveMatriculationNumber($matriculation)
@@ -287,6 +315,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				{
 					$this->log->warn('No user found to this matriculation number');
 				}
+
+				$this->saveDetectedMatriculationToPdfData($matriculation_string);
 			}
 		}
 		else
@@ -306,6 +336,22 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$ilDB->update('pl_scas_pdf_data',
 			array(
 				'usr_id' => array('integer', $usr_id),
+			),
+			array(
+				'pdf_id' => array('integer',$this->qr_identification->getPdfId())
+			));
+	}
+
+	/**
+	 * @param $matriculation
+	 */
+	protected function saveDetectedMatriculationToPdfData($matriculation)
+	{
+		global $ilDB;
+
+		$ilDB->update('pl_scas_pdf_data',
+			array(
+				'matriculation_number' => array('text', ilUtil::stripSlashes($matriculation)),
 			),
 			array(
 				'pdf_id' => array('integer',$this->qr_identification->getPdfId())
@@ -436,6 +482,35 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			return $matriculation_matrix['page'];
 		}
 		return -1;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getPageAndHeightForHeader()
+	{
+		$header = array('height' => -1, 'page' => -1);
+		if($this->qr_identification)
+		{
+			global $ilDB;
+			$res = $ilDB->queryF(
+				'SELECT header_height, header_page FROM pl_scas_pdf_data
+					WHERE pdf_id = %s',
+				array('integer'),
+				array($this->qr_identification->getPdfId())
+			);
+
+			while($row = $ilDB->fetchAssoc($res))
+			{
+				if(array_key_exists('header_height', $row))
+				{
+					$header['height'] = $row['header_height'];
+					$header['page'] = $row['header_page'];
+				}
+			}
+		}
+
+		return $header;
 	}
 
 	/**

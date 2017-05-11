@@ -89,6 +89,8 @@ class ilScanAssessmentCheckBoxElement
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
+		
+		//Todo: fix $threshold
         $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold, 0.4);
 	}
 

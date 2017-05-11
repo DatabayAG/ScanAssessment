@@ -2,8 +2,10 @@
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 ilScanAssessmentPlugin::getInstance()->includeClass('controller/class.ilScanAssessmentScanGUI.php');
+ilScanAssessmentPlugin::getInstance()->includeClass('model/class.ilScanAssessmentUserPackagesConfiguration.php');
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 require_once 'Services/User/classes/class.ilUserAutoComplete.php';
+require_once 'Services/Accordion/classes/class.ilAccordionGUI.php';
 
 /**
  * Class ilScanAssessmentScanUserMappingGUI
@@ -63,7 +65,11 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 	protected function getForm($show_analyse = false)
 	{
 		$pluginObject = $this->getCoreController()->getPluginObject();
+		
+		$package_config = new ilScanAssessmentUserPackagesConfiguration($this->test->getId());
 
+		$matriculation_activated = $package_config->isMatriculationCode();
+		
 		$form = new ilPropertyFormGUI();
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm', array('ref_id' => (int)$_GET['ref_id'])));
 		$mapping = $this->getMappings($this->test->getId());
@@ -75,7 +81,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 			$user->setDataSource($dsDataLink);
 			$user->setMaxLength(null);
 			$user->setMulti(false);
-			$user->setInfo($pluginObject->txt('scas_user_info'));
+			$user->setInfo($pluginObject->txt('scas_user_info') );
 			$user->setValue(ilObjUser::_lookupLogin($values['usr_id']));
 			if((int) $values['revision'] == 0)
 			{
@@ -87,6 +93,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 				$user->setAlert($pluginObject->txt('scas_user_already_assigned'));
 			}
 			$form->addItem($user);
+			$this->addAccordionWithDetails($form, $pdf_id,  $values['matriculation'], $matriculation_activated);
 
 		}
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('save'));
@@ -110,7 +117,47 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 	{
 		return 'ilScanAssessmentScanUserMappingGUI.default';
 	}
-	
+
+	protected function addAccordionWithDetails($form, $pdf_id, $detected_matriculation, $matriculation_activated)
+	{
+		$pluginObject = $this->getCoreController()->getPluginObject();
+
+		$accordion_identification = new ilAccordionGUI();
+		if($matriculation_activated == 1)
+		{
+			if($detected_matriculation != null && $detected_matriculation != 0)
+			{
+				$acor_title = $pluginObject->txt('scas_first_page') . ' (' . $pluginObject->txt('scas_matriculation_detected') . ': ' . $detected_matriculation . ')';
+			}
+			else
+			{
+				$acor_title = $pluginObject->txt('scas_first_page');
+			}
+		}
+		else
+		{
+			$acor_title = $pluginObject->txt('scas_first_page');
+		}
+
+		$file = $this->file_helper->getRevisionPath() . '/qpl/' . $pdf_id . '/head/header' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType();
+		/** @var ilTemplate $template */
+		$template = $pluginObject->getTemplate('default/tpl.revision_header.html', true, true);
+		
+		if(file_exists($file))
+		{
+			$template->setVariable('IMAGE', $file);
+		}
+		else
+		{
+			$template->setVariable('NOT_FOUND', $pluginObject->txt('scas_not_found'));
+		}
+
+		$accordion_identification->addItem( $acor_title , $template->get());
+		
+		$custom_todo = new ilCustomInputGUI('', '');
+		$custom_todo->setHTML($accordion_identification->getHTML());
+		$form->addItem($custom_todo);
+	}
 
 	const pdf_data_table = 'pl_scas_pdf_data';
 	/**
@@ -125,7 +172,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 		 */
 		global $ilDB;
 		$res = $ilDB->queryF(
-			'SELECT pdf_id, revision_done, usr_id
+			'SELECT pdf_id, revision_done, usr_id, matriculation_number
 			FROM '.self::pdf_data_table.'
 			WHERE obj_id = %s',
 			array('integer'),
@@ -145,7 +192,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 				}
 				$state	= false;
 			}
-			$mappings[$row['pdf_id']] = array('revision' => $row['revision_done'], 'usr_id' => $usr_id, 'double' => $state);
+			$mappings[$row['pdf_id']] = array('revision' => $row['revision_done'], 'usr_id' => $usr_id, 'double' => $state, 'matriculation' => $row['matriculation_number']);
 		}
 		ksort($mappings);
 		return $mappings;

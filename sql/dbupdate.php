@@ -351,3 +351,49 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data_qpl', 'has_checkboxes'))
 	);
 }
 ?>
+<#20>
+<?php
+
+?>
+<#21>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'matriculation_number'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'matriculation_number',
+		array(
+			'notnull'=> false,
+			'type'   => 'text',
+			'length' => '400',
+			'default' => 0
+		)
+	);
+}
+?>
+<#22>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'header_height'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'header_height',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '4',
+			'default' => 0
+		)
+	);
+}
+?>
+<#23>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'header_page'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data', 'header_page',
+		array(
+			'notnull'=> false,
+			'type'   => 'integer',
+			'length' => '4',
+			'default' => 0
+		)
+	);
+}
+?>

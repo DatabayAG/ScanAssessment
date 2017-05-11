@@ -177,6 +177,7 @@ class ilScanAssessmentPdfHeaderForm
 		{
 			$this->insertIdentificationHead();
 		}
+		$this->saveHeaderHeightAndPage($this->pdf->GetY(), $this->pdf->getPage());
 	}
 
 	/**
@@ -257,6 +258,25 @@ class ilScanAssessmentPdfHeaderForm
 				'pdf_id' => array('integer', $this->metadata->getIdentificationObject()->getPdfId())
 			));
 		
+	}
+
+	/**
+	 * @param $height
+	 * @param $page
+	 */
+	protected function saveHeaderHeightAndPage($height, $page)
+	{
+		global $ilDB;
+
+		$ilDB->update('pl_scas_pdf_data',
+			array(
+				'header_height'	=> array('integer', (int)$height),
+				'header_page'	=> array('integer', (int)$page),
+			),
+			array(
+				'pdf_id' => array('integer', $this->metadata->getIdentificationObject()->getPdfId())
+			));
+
 	}
 
 	/**
