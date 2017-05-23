@@ -89,9 +89,8 @@ class ilScanAssessmentCheckBoxElement
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
-		
-		//Todo: fix $threshold
-        $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $threshold, 0.4);
+
+        $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $this->min_value_black, 0.4);
 	}
 
 	/**
@@ -234,7 +233,7 @@ class ilScanAssessmentCheckBoxElement
         $x1 = $this->getRightBottom()->getX();
         $y1 = $this->getRightBottom()->getY();
 
-        $s = 0.1; // maximum factor to remove
+        $s = 0.2; // maximum factor to remove
         $max_dx = intval($s * ($x1 - $x0));
         $max_dy = intval($s * ($y1 - $y0));
         $max_x0 = $x0 + $max_dx;
