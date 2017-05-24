@@ -59,12 +59,12 @@ class ilScanAssessmentGlobalSettings
 	/**
 	 * @var float
 	 */
-	protected $min_marked_area = 0.1;
+	protected $min_marked_area = 0.05;
 
 	/**
 	 * @var float
 	 */
-	protected $marked_area_checked = 0.2;
+	protected $marked_area_checked = 0.15;
 
 	/**
 	 * @var float
