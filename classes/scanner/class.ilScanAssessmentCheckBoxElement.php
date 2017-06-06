@@ -23,12 +23,12 @@ class ilScanAssessmentCheckBoxElement
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
-	protected $left_top;
+	protected $first_point;
 
 	/**
 	 * @var ilScanAssessmentPoint
 	 */
-	protected $right_bottom;
+	protected $second_point;
 
 	/**
 	 * @var ilScanAssessmentImageWrapper
@@ -69,23 +69,23 @@ class ilScanAssessmentCheckBoxElement
 
     /**
 	 * ilScanAssessmentCheckBoxElement constructor.
-	 * @param ilScanAssessmentPoint        $left_top
-	 * @param ilScanAssessmentPoint        $right_bottom
+	 * @param ilScanAssessmentPoint        $first_point
+	 * @param ilScanAssessmentPoint        $second_point
 	 * @param ilScanAssessmentImageWrapper $image_helper
 	 */
-	public function __construct($left_top, $right_bottom, $image_helper)
+	public function __construct($first_point, $second_point, $image_helper)
 	{
-		$this->left_top              = $left_top;
-		$this->right_bottom          = $right_bottom;
-		$this->image_helper          = $image_helper;
-		$this->color_mapping         = array(
+		$this->first_point       = $first_point;
+		$this->second_point      = $second_point;
+		$this->image_helper      = $image_helper;
+		$this->color_mapping     = array(
 			self::UNTOUCHED => $this->image_helper->getYellow(),
 			self::UNCHECKED => $this->image_helper->getPink(),
 			self::CHECKED   => $this->image_helper->getGreen()
 		);
-		$this->correction_length     = ($this->image_helper->getImageSizeY() / 297) * 1.43846153846;
-		$this->search_rounds         = ($this->image_helper->getImageSizeY() / 297);
-		$this->min_value_black       = ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack();
+		$this->correction_length = ($this->image_helper->getImageSizeY() / 297) * 1.43846153846;
+		$this->search_rounds     = ($this->image_helper->getImageSizeY() / 297);
+		$this->min_value_black   = ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack();
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
@@ -98,7 +98,7 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	public function getLeftBottom()
 	{
-		return new ilScanAssessmentPoint($this->getLeftTop()->getX(), $this->getRightBottom()->getY());
+		return new ilScanAssessmentPoint($this->getFirstPoint()->getX(), $this->getSecondPoint()->getY());
 	}
 
 	/**
@@ -106,39 +106,39 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	public function getRightTop()
 	{
-		return new ilScanAssessmentPoint($this->getRightBottom()->getX(), $this->getLeftTop()->getY());
+		return new ilScanAssessmentPoint($this->getSecondPoint()->getX(), $this->getFirstPoint()->getY());
 	}
 
 	/**
 	 * @return ilScanAssessmentPoint
 	 */
-	public function getLeftTop()
+	public function getFirstPoint()
 	{
-		return $this->left_top;
+		return $this->first_point;
 	}
 
 	/**
-	 * @param ilScanAssessmentPoint $left_top
+	 * @param ilScanAssessmentPoint $first_point
 	 */
-	public function setLeftTop($left_top)
+	public function setFirstPoint($first_point)
 	{
-		$this->left_top = $left_top;
+		$this->first_point = $first_point;
 	}
 
 	/**
 	 * @return ilScanAssessmentPoint
 	 */
-	public function getRightBottom()
+	public function getSecondPoint()
 	{
-		return $this->right_bottom;
+		return $this->second_point;
 	}
 
 	/**
-	 * @param ilScanAssessmentPoint $right_bottom
+	 * @param ilScanAssessmentPoint $second_point
 	 */
-	public function setRightBottom($right_bottom)
+	public function setSecondPoint($second_point)
 	{
-		$this->right_bottom = $right_bottom;
+		$this->second_point = $second_point;
 	}
 
 	/**
@@ -152,9 +152,9 @@ class ilScanAssessmentCheckBoxElement
 		$white = 0;
 		$total = 0;
 		$this->detectBorder($im);
-		for($x = $this->getLeftTop()->getX(); $x < $this->getRightBottom()->getX(); $x++)
+		for($x = $this->getFirstPoint()->getX(); $x < $this->getSecondPoint()->getX(); $x++)
 		{
-			for($y = $this->getLeftTop()->getY(); $y < $this->getRightBottom()->getY(); $y++)
+			for($y = $this->getFirstPoint()->getY(); $y < $this->getSecondPoint()->getY(); $y++)
 			{
 				$total++;
 				$gray = $this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y));
@@ -228,10 +228,10 @@ class ilScanAssessmentCheckBoxElement
         // blackness ratio might be higher than another empty one's due to slightly
         // different border pixels and thus skew the detected blackness levels.
 
-        $x0 = $this->getLeftTop()->getX();
-        $y0 = $this->getLeftTop()->getY();
-        $x1 = $this->getRightBottom()->getX();
-        $y1 = $this->getRightBottom()->getY();
+        $x0 = $this->getFirstPoint()->getX();
+        $y0 = $this->getFirstPoint()->getY();
+        $x1 = $this->getSecondPoint()->getX();
+        $y1 = $this->getSecondPoint()->getY();
 
         $s = 0.2; // maximum factor to remove
         $max_dx = intval($s * ($x1 - $x0));
@@ -258,8 +258,8 @@ class ilScanAssessmentCheckBoxElement
             $x1--;
         }
 
-        $this->setLeftTop(new ilScanAssessmentPoint($x0, $y0));
-        $this->setRightBottom(new ilScanAssessmentPoint($x1, $y1));
+        $this->setFirstPoint(new ilScanAssessmentPoint($x0, $y0));
+        $this->setSecondPoint(new ilScanAssessmentPoint($x1, $y1));
     }
 
     protected function trimBorderBlack()
@@ -277,22 +277,22 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected function detectBorder($im)
 	{
-
-		$center_x = ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
-		$center_y = ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
+		$center_x = $this->getFirstPoint()->getX();
+		$center_y = $this->getFirstPoint()->getY();
+		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));
 		$size     = array(
-		    $this->getRightBottom()->getX() - $this->getLeftTop()->getX(),
-            $this->getRightBottom()->getY() - $this->getLeftTop()->getY());
+			$this->getSecondPoint()->getX() - $this->getFirstPoint()->getX(),
+			$this->getSecondPoint()->getY() - $this->getFirstPoint()->getY());
 		$box      = $this->detectBox($im, $center_x, $center_y, $size, 100);
 		if($box)
 		{
 			list($x0, $y0, $x1, $y1) = $box;
-			$this->setLeftTop(new ilScanAssessmentPoint($x0, $y0));
-			$this->setRightBottom(new ilScanAssessmentPoint($x1, $y1));
+			$this->setFirstPoint(new ilScanAssessmentPoint($x0, $y0));
+			$this->setSecondPoint(new ilScanAssessmentPoint($x1, $y1));
 		}
 		else
 		{
-			$length = ($center_x - $this->getLeftTop()->getX());
+			$length = ($center_x - $this->getFirstPoint()->getX());
 
 			$left_border   = $this->getLeftBorderPosition($im, $center_x, $center_y, $length);
 			$right_border  = $this->getRightBorderPosition($im, $center_x, $center_y, $length);
@@ -339,8 +339,8 @@ class ilScanAssessmentCheckBoxElement
 						$length = $this->correction_length;
 					}
 
-					$this->setLeftTop(new ilScanAssessmentPoint($value->getX() - $length, $value->getY() - $length));
-					$this->setRightBottom(new ilScanAssessmentPoint($value->getX() + $length, $value->getY() + $length));
+					$this->setFirstPoint(new ilScanAssessmentPoint($value->getX() - $length, $value->getY() - $length));
+					$this->setSecondPoint(new ilScanAssessmentPoint($value->getX() + $length, $value->getY() + $length));
 				}
 			}
 
@@ -352,8 +352,8 @@ class ilScanAssessmentCheckBoxElement
 
 		$this->trimBorderBlack();
 
-        $new_center_x = ($this->getLeftTop()->getX() + $this->getRightBottom()->getX()) / 2;
-        $new_center_y = ($this->getLeftTop()->getY() + $this->getRightBottom()->getY()) / 2;
+        $new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
+        $new_center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
 
         $this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
 		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
@@ -529,8 +529,8 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$new_top_left     = new ilScanAssessmentPoint($left_x, $top_y);
 			$new_bottom_right = new ilScanAssessmentPoint($right_x, $bottom_y);
-			$this->setLeftTop($new_top_left);
-			$this->setRightBottom($new_bottom_right);
+			$this->setFirstPoint($new_top_left);
+			$this->setSecondPoint($new_bottom_right);
 			return true;
 		}
 		return false;
@@ -551,7 +551,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$bottom      = false;
 			$black_pixel = 0;
-			for($y = $center_y; $y < $this->getRightBottom()->getY() + ($length * $length_multiplier); $y++)
+			for($y = $center_y; $y < $this->getSecondPoint()->getY() + ($length * $length_multiplier); $y++)
 			{
 				$x = $center_x - $i;
 				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getRed());
@@ -620,7 +620,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$top         = false;
 			$black_pixel = 0;
-			for($y = $center_y; $y > $this->getLeftTop()->getY() - ($length * $length_multiplier); $y--)
+			for($y = $center_y; $y > $this->getFirstPoint()->getY() - ($length * $length_multiplier); $y--)
 			{
 				$x = $center_x - $i;
 				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getBlue());
@@ -686,7 +686,7 @@ class ilScanAssessmentCheckBoxElement
 			$black       = false;
 			$black_pixel = 0;
 			$border      = false;
-			for($x = $center_x; $x > $this->getLeftTop()->getX() - ($length * $length_multiplier); $x--)
+			for($x = $center_x; $x > $this->getFirstPoint()->getX() - ($length * $length_multiplier); $x--)
 			{
 				$y = $center_y - $i;
 				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getGreen());
@@ -754,7 +754,7 @@ class ilScanAssessmentCheckBoxElement
 		{
 			$black       = false;
 			$black_pixel = 0;
-			for($x = $center_x; $x < $this->getRightBottom()->getX() + ($length * $length_multiplier); $x++)
+			for($x = $center_x; $x < $this->getSecondPoint()->getX() + ($length * $length_multiplier); $x++)
 			{
 				$y = $center_y - $i;
 				#$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($x,$y), $this->image_helper->getPink());
@@ -830,7 +830,7 @@ class ilScanAssessmentCheckBoxElement
 
 		if($mark)
 		{
-			$this->image_helper->drawSquareFromTwoPoints($im, $this->getLeftTop(), $this->getRightBottom(), $this->color_mapping[$value]);
+			$this->image_helper->drawSquareFromTwoPoints($im, $this->getFirstPoint(), $this->getSecondPoint(), $this->color_mapping[$value]);
 		}
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox black %s, white %s.', $area->percentBlack(), $area->percentWhite()));
 		return $value;

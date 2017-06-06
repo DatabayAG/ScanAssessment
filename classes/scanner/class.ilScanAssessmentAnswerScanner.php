@@ -106,19 +106,20 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					$answer_x = ($value['x']) * ($corrected->getX());
 					$answer_y = ($value['y']) * ($corrected->getY());
 
+					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s], corrected at [%s, $s].', $value['x'], $value['y'], $answer_x, $answer_y));
+
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
 					$second_point = new ilScanAssessmentPoint($answer_x + (PDF_ANSWERBOX_W * $corrected->getX()), $answer_y + (PDF_ANSWERBOX_H * $corrected->getY()));
 					$aid = $value['aid'];
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point, $second_point, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
-					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s] %s.', $value['x'], $value['y'], $answer_y));
 					$this->log->debug(sprintf('Checkbox for at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
-					$this->checkbox_container[] = array('element' => $checkbox, 
-														'marked' => $marked, 
-														'qid' => $answer['question'], 
-														'aid' => $aid, 
-														'value2' => null, 
-														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
+					$this->checkbox_container[] = array('element' => $checkbox,
+														'marked' => $marked,
+														'qid' => $answer['question'],
+														'aid' => $aid,
+														'value2' => null,
+														'vector' => new ilScanAssessmentVector($checkbox->getFirstPoint(), $checkbox->getSecondPoint()->getY() - $checkbox->getFirstPoint()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -136,13 +137,13 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point_correct, $second_point_correct, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
 					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point_correct->getX(), $first_point_correct->getY(), $second_point_correct->getX(), $second_point_correct->getY(), $this->translate_mark[$marked]));
-					$this->checkbox_container[] = array('element' => $checkbox, 
-														'marked' => $marked, 
-														'qid' => $answer['question'], 
-														'aid' => $aid_correct, 
-														'value2' => null, 
-														'correctness' => $value['correct']['correctness'],  
-														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
+					$this->checkbox_container[] = array('element' => $checkbox,
+														'marked' => $marked,
+														'qid' => $answer['question'],
+														'aid' => $aid_correct,
+														'value2' => null,
+														'correctness' => $value['correct']['correctness'],
+														'vector' => new ilScanAssessmentVector($checkbox->getFirstPoint(), $checkbox->getSecondPoint()->getY() - $checkbox->getFirstPoint()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);
@@ -153,13 +154,13 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point_wrong, $second_point_wrong, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
 					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point_wrong->getX(), $first_point_wrong->getY(), $second_point_wrong->getX(), $second_point_wrong->getY(), $this->translate_mark[$marked]));
-					$this->checkbox_container[] = array('element' => $checkbox, 
-														'marked' => $marked, 
-														'qid' => $answer['question'], 
-														'aid' => $aid_wrong, 
-														'value2' => null, 
-														'correctness' => $value['wrong']['correctness'], 
-														'vector' => new ilScanAssessmentVector($checkbox->getLeftTop(), $checkbox->getRightBottom()->getY() - $checkbox->getLeftTop()->getY()),
+					$this->checkbox_container[] = array('element' => $checkbox,
+														'marked' => $marked,
+														'qid' => $answer['question'],
+														'aid' => $aid_wrong,
+														'value2' => null,
+														'correctness' => $value['wrong']['correctness'],
+														'vector' => new ilScanAssessmentVector($checkbox->getFirstPoint(), $checkbox->getSecondPoint()->getY() - $checkbox->getFirstPoint()->getY()),
 														'start' => $question_start,
 														'end' => $question_end
 														);

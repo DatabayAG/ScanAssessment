@@ -100,7 +100,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 * @var ilScanAssessmentVector $locate_bottom_left
 	 * @return array|bool
 	 */
-	public function findMarker(&$im, $rotated = false, $threshold = 150, $path)
+	public function findMarker($im, $rotated = false, $threshold = 150, $path)
 	{
 
 		$locate_top_left    = null;
@@ -135,7 +135,9 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		{
 			$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
 			$im = $this->image_helper->rotate($rad * -1);
+			$this->image_helper->setImage($im);
 			$this->setImage($im);
+			$this->setTempImage($im);
 			$this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 			return $this->findMarker($im, true, $threshold, $path);
 		}
