@@ -432,6 +432,7 @@ class ilScanAssessmentScanProcess
 
 		ilScanAssessmentRevision::removeOldPdfData($qr_code);
 		$path = $this->file_helper->getRevisionPath() . '/qpl/' . $qr_code->getPdfId() . '/';
+		ilScanAssessmentRevision::removeOldQuestionData($qr_code, $path);
 		$whole_path = $path . '/whole/';
 		$this->file_helper->ensurePathExists($path);
 		$this->file_helper->ensurePathExists($whole_path);

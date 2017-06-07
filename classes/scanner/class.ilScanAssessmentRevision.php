@@ -174,6 +174,23 @@ class ilScanAssessmentRevision
 	}
 
 	/**
+	 * @param ilScanAssessmentIdentification $qr_code
+	 * @param $path
+	 */
+	public static function removeOldQuestionData($qr_code, $path)
+	{
+		$part_name = $qr_code->getPageNumber() . '_*';
+		$find = $path . $part_name;
+		foreach (glob("$find") as $filename) 
+		{
+			if(file_exists($filename))
+			{
+				unlink($filename);
+			}
+		}
+	}
+
+	/**
 	 * @param     $pdf_id
 	 * @param     $test_id
 	 * @param int $page_id
