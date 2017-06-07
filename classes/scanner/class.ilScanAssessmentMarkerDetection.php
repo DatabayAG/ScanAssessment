@@ -31,8 +31,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	public function getMarkerPosition($path)
 	{
-
-		$im = $this->getTempImage();
+		$im = $this->getImage();
 		$this->log->debug(sprintf('Starting marker detection...'));
 		$this->setThreshold(self::LOWER_THRESHOLD);
 		$marker = $this->findMarker($im, false, $this->getThreshold(), $path);
@@ -54,6 +53,7 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 		$scan = $this->probeMarkerPosition($where, $threshold);
 		if($scan === false)
 		{
+			$this->log->debug(sprintf('Probing found nothing.'));
 			return false;
 		}
 
@@ -82,9 +82,9 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 	 */
 	private function rotate(&$im, $rotated, $path)
 	{
-		$this->log->debug(sprintf('Probing found nothing trying to rotate...'));
 		if(!$rotated)
 		{
+			$this->log->debug(sprintf('Trying to rotate...'));
 			$im = $this->image_helper->rotate(180);
 			$this->log->debug(sprintf('Rotation done, rescanning...'));
 			$this->image_helper->setImage($im);
@@ -137,7 +137,6 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			$im = $this->image_helper->rotate($rad * -1);
 			$this->image_helper->setImage($im);
 			$this->setImage($im);
-			$this->setTempImage($im);
 			$this->image_helper->drawTempImage($im, $path . '/rotate_file' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 			return $this->findMarker($im, true, $threshold, $path);
 		}
