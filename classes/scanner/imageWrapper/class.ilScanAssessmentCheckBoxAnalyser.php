@@ -294,7 +294,7 @@ class ilScanAssessmentCheckBoxAnalyser
         {
             if(abs($this->origin[1] - $y0) < abs($this->origin[1] - $y1))
             {
-                $y1 = $this->clipBottom($this->reliable_line, $x0, $y0, $x1, $y1);
+                $y1 = $this->clipBottom($this->potential_line, $x0, $y0, $x1, $y1);
                 if ($y1 === false)
                 {
                     return false;
@@ -302,7 +302,7 @@ class ilScanAssessmentCheckBoxAnalyser
             }
             else
             {
-                $y0 = $this->clipTop($this->reliable_line, $x0, $y0, $x1, $y1);
+                $y0 = $this->clipTop($this->potential_line, $x0, $y0, $x1, $y1);
                 if ($y0 === false)
                 {
                     return false;
@@ -314,7 +314,7 @@ class ilScanAssessmentCheckBoxAnalyser
         {
             if(abs($this->origin[0] - $x0) < abs($this->origin[0] - $x1))
             {
-                $x1 = $this->clipRight($this->reliable_line, $x0, $y0, $x1, $y1);
+                $x1 = $this->clipRight($this->potential_line, $x0, $y0, $x1, $y1);
                 if ($x1 === false)
                 {
                     return false;
@@ -322,7 +322,7 @@ class ilScanAssessmentCheckBoxAnalyser
             }
             else
             {
-                $x0 = $this->clipLeft($this->reliable_line, $x0, $y0, $x1, $y1);
+                $x0 = $this->clipLeft($this->potential_line, $x0, $y0, $x1, $y1);
                 if ($x0 === false)
                 {
                     return false;
