@@ -277,8 +277,10 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected function detectBorder($im)
 	{
-		$center_x = $this->getFirstPoint()->getX();
-		$center_y = $this->getFirstPoint()->getY();
+
+		$center_x = ($this->getSecondPoint()->getX() + $this->getFirstPoint()->getX()) / 2;
+		$center_y = ($this->getSecondPoint()->getY() + $this->getFirstPoint()->getY()) / 2;
+		
 		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));
 		$size     = array(
 			$this->getSecondPoint()->getX() - $this->getFirstPoint()->getX(),
@@ -355,8 +357,8 @@ class ilScanAssessmentCheckBoxElement
         $new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
         $new_center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
 
-        $this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
-		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
+        #$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
+		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getBlue());
 
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
 
