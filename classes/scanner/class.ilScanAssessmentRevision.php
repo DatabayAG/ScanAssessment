@@ -181,11 +181,15 @@ class ilScanAssessmentRevision
 	{
 		$part_name = $qr_code->getPageNumber() . '_*';
 		$find = $path . $part_name;
-		foreach (glob("$find") as $filename) 
+		$files = glob("$find");
+		if(is_array($files) && count($files) > 0)
 		{
-			if(file_exists($filename))
+			foreach ($files as $filename)
 			{
-				unlink($filename);
+				if(file_exists($filename))
+				{
+					unlink($filename);
+				}
 			}
 		}
 	}
