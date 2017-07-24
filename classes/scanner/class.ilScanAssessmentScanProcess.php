@@ -46,9 +46,16 @@ class ilScanAssessmentScanProcess
 	 * @var array
 	 */
 	protected $files_not_for_this_test = array();
-	
-	
+
+	/**
+	 * @var string
+	 */
 	protected $internal_file_type = '.png';
+
+	/**
+	 * @var int
+	 */
+	protected $rescale;
 
 	/**
 	 * ilScanAssessmentScanProcess constructor.
@@ -182,8 +189,7 @@ class ilScanAssessmentScanProcess
 	{
 		$time_start = microtime(true);
 		$ans = new ilScanAssessmentAnswerScanner($this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type, $this->path_to_done, $qr_ident);
-		$val = $ans->scanImage($marker, $qr_pos);
-		#$log->debug($val);
+		$ans->scanImage($marker, $qr_pos);
 		$time_end = microtime(true);
 		$time     = $time_end - $time_start;
 		$log->info('Answer Calculation duration:  ' . $time);
@@ -202,7 +208,7 @@ class ilScanAssessmentScanProcess
         $pathinfo = pathinfo($org);
 
         if (!in_array(strtolower($pathinfo['extension']), array('tif', 'tiff'))) {
-            return;
+            return false;
         }
 
         $log = ilScanAssessmentLog::getInstance();
@@ -419,6 +425,7 @@ class ilScanAssessmentScanProcess
 			$this->non_conform_files[] = $entry;
 			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -501,23 +508,11 @@ class ilScanAssessmentScanProcess
 			$this->getAnalysingFolder($identification->getSavePathName());
 			if($identification->getTestId() != $this->test->getId())
 			{
-				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $org, $this->test->getId()));
 				$file = basename($org);
+				$this->log->warn(sprintf('This img %s does not belong to this test id %s', $file, $this->test->getId()));
 				if($file != 'rescaled'  . $this->internal_file_type)
 				{
-					try
-					{
-						$test = new ilObjTest($identification->getTestId(), false);
-						$this->log->warn(sprintf('Found test with this id (%s) on this platform, trying to move file to correct folder.', $identification->getTestId()));
-						$new_path = $this->file_helper->getScanPathByTestId($identification->getTestId());
-						$this->file_helper->moveFile($org, $new_path . basename($org));
-					}
-					catch(ilObjectNotFoundException $e )
-					{
-						$this->log->warn(sprintf('No test with this id (%s) found on this platform.', $identification->getTestId()));
-						$this->files_not_for_this_test[] = $file;
-					}
-
+					$this->validateImageReallyBelongsToThisTest($org, $identification);
 				}
 				return false;
 			}
@@ -548,6 +543,42 @@ class ilScanAssessmentScanProcess
 			$this->path_to_done	= $path . $identifier;
 		}
 		$this->file_helper->ensurePathExists($this->path_to_done);
+	}
+
+	/**
+	 * @param $path_to_file
+	 * @param ilScanAssessmentIdentification $identification
+	 */
+	protected function validateImageReallyBelongsToThisTest($path_to_file, $identification)
+	{
+		if(ilScanAssessmentGlobalSettings::getInstance()->getAutoMoveFiles() == 1)
+		{
+			$file = basename($path_to_file);
+			if($identification->getTestId() != null)
+			{
+				try
+				{
+					$test = new ilObjTest($identification->getTestId(), false);
+					$this->log->warn(sprintf('Found test with this id (%s) with title (%s) on this platform, trying to move file to correct folder.', $identification->getTestId(), $test->getTitle()));
+					$new_path = $this->file_helper->getScanPathByTestId($identification->getTestId());
+					$this->file_helper->moveFile($path_to_file, $new_path . $file);
+				}
+				catch(ilObjectNotFoundException $e)
+				{
+					$this->log->warn(sprintf('No test with this id (%s) found on this platform.', $identification->getTestId()));
+					$this->files_not_for_this_test[] = $file;
+				}
+			}
+			else
+			{
+				$this->log->warn(sprintf('PDF with id (%s) is no longer valid.', $identification->getPdfId()));
+				$this->files_not_for_this_test[] = $file;
+			}
+		}
+		else
+		{
+			$this->log->info('Auto move is not activated, skipping check.');
+		}
 	}
 
 	/**
@@ -695,9 +726,6 @@ class ilScanAssessmentScanProcess
 		return false;
 	}
 
-	/**
-	 * @return bool
-	 */
 	protected function releaseScanLock()
 	{
 		if(file_exists($this->getScanLockFilePath()))

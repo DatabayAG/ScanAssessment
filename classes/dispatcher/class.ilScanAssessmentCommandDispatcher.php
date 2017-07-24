@@ -110,6 +110,7 @@ class ilScanAssessmentCommandDispatcher
 	 */
 	protected function requireController($controller)
 	{
+		/** @noinspection PhpIncludeInspection */
 		require_once $this->getControllerPath() . "class.$controller.php";
 	}
 

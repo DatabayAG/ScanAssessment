@@ -46,11 +46,11 @@ class ilScanAssessmentReturnDataGUI extends ilScanAssessmentController
 		{
 			if(!$revision_state)
 			{
-				$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanRevisionGUI.default');
+				$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'));
 			}
 			else
 			{
-				$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentScanUserMappingGUI.default');
+				$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'));
 			}
 		}
 	}

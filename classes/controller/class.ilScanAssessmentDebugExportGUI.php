@@ -100,7 +100,10 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		ilUtil::rCopy($this->file_helper->getResultsXmlPath(), $results);
 		ilUtil::rCopy($this->file_helper->getScanPath(), $scans);
 	}
-	
+
+	/**
+	 * @return bool
+	 */
 	protected function exportTestObject()
 	{
 		if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
@@ -113,8 +116,9 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		}
 		else
 		{	require_once 'Modules/Test/classes/class.ilTestExport.php';
+			/** @noinspection Annotator */
 			$test_exp = new ilTestExport($this->test, 'xml');
-			$src = $test_exp->buildExportFile();
+			$src      = $test_exp->buildExportFile();
 		}
 
 		if($src)

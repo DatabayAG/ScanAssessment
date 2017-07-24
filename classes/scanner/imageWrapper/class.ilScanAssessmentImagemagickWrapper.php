@@ -304,7 +304,7 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 	}
 
 	/**
-	 * @param      $image
+	 * @param self $image
 	 * @param      $src_x
 	 * @param      $src_y
 	 * @param      $dest_x
@@ -332,7 +332,8 @@ class ilScanAssessmentImagemagickWrapper implements ilScanAssessmentImageWrapper
 		}
 		$height = $image->getImageSizeY() - $src_y - $dest_y;
 		$width = $image->getImageSizeX() - $src_x - $dest_x;
-		$scaled_image = new Imagick($width, $height);
+		$scaled_image = new Imagick($image);
+		$scaled_image->cropImage(0,0 , $height, $width);
 		$scaled_image->newImage(100, 100, new ImagickPixel('white'));
 		$scaled_image->compositeImage($image, Imagick::COMPOSITE_OVER, $src_x, $src_y);
 		if($filename != null)

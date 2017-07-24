@@ -87,6 +87,11 @@ class ilScanAssessmentGlobalSettings
 	private $log_level = ilLogLevel::DEBUG;
 
 	/**
+	 * @var int
+	 */
+	protected $auto_move_files = 0;
+
+	/**
 	 *
 	 */
 	private function __construct()
@@ -128,6 +133,7 @@ class ilScanAssessmentGlobalSettings
 		$marked_area_unchecked		= $this->settings->get('marked_area_unchecked') ? $this->settings->get('marked_area_unchecked') : $this->marked_area_unchecked;
 		$save_file_type				= $this->settings->get('save_file_type') ? $this->settings->get('save_file_type') : $this->save_file_type;
 		$log_level					= $this->settings->get('log_level') ? $this->settings->get('log_level') : $this->log_level;
+		$auto_move					= $this->settings->get('auto_move') ? $this->settings->get('auto_move') : $this->auto_move_files;
 
 		if(strlen($institution))
 		{
@@ -148,6 +154,7 @@ class ilScanAssessmentGlobalSettings
 		$this->setMarkedAreaUnchecked($marked_area_unchecked);
 		$this->setSaveFileType($save_file_type);
 		$this->setLogLevel($log_level);
+		$this->setAutoMoveFiles($auto_move);
 	}
 
 	/**
@@ -186,6 +193,7 @@ class ilScanAssessmentGlobalSettings
 		$this->settings->set('marked_area_unchecked',	$this->getMarkedAreaUnchecked());
 		$this->settings->set('save_file_type',			$this->getSaveFileType());
 		$this->settings->set('log_level',				$this->getLogLevel());
+		$this->settings->set('auto_move',				$this->getAutoMoveFiles());
 	}
 
 	public function getConfiguredLengthOfMatriculationNumber()
@@ -429,5 +437,21 @@ class ilScanAssessmentGlobalSettings
 	public function setLogLevel($log_level)
 	{
 		$this->log_level = $log_level;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getAutoMoveFiles()
+	{
+		return $this->auto_move_files;
+	}
+
+	/**
+	 * @param int $auto_move_files
+	 */
+	public function setAutoMoveFiles($auto_move_files)
+	{
+		$this->auto_move_files = $auto_move_files;
 	}
 }

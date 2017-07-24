@@ -46,7 +46,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		
 		if( !$activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
 		{
-			$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentUserPackagesPdfGUI.default');
+			$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'));
 		}
 	}
 

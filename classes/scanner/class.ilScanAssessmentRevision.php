@@ -77,7 +77,7 @@ class ilScanAssessmentRevision
 			{
 				$page	= (int) $parts[0];
 				$qid	= (int) $parts[1];
-				$aid	= 0;
+
 				self::removeOldFreestyleData($pdf_id, $test_id, $page, $qid);
 				$id	= $ilDB->nextId(self::scan_data_table);
 				$ilDB->insert(self::scan_data_table,

@@ -357,7 +357,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	}
 
 	/**
-	 * @param      $image
+	 * @param self $image
 	 * @param      $src_x
 	 * @param      $src_y
 	 * @param      $dest_x

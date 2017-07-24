@@ -96,6 +96,7 @@ class ilScanAssessmentPlugin extends ilUserInterfaceHookPlugin
 		$cron_plugin_path = 'Customizing/global/plugins/Services/Cron/CronHook/ScanAssessmentCron/classes/class.ilScanAssessmentCronPlugin.php';
 		if(file_exists($cron_plugin_path))
 		{
+			/** @noinspection PhpIncludeInspection */
 			require_once $cron_plugin_path;
 			$cron_plugin = new ilScanAssessmentCronPlugin();
 			if($cron_plugin->isActive())

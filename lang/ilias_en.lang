@@ -178,3 +178,5 @@ scas_create_missing#:#Create Missing PDFs
 scas_reset_return_results#:#Reset Return Results
 scas_matriculation_detected#:#Detected matriculation number
 scas_first_page_details#:#More details
+scas_auto_move#:#Move images to the correct test object
+scas_auto_move_info#:#If activated images will be moved automatically to the correct test object.

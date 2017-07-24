@@ -178,3 +178,5 @@ scas_create_missing#:#Erzeuge fehlende PDFs
 scas_reset_return_results#:#Ergebnisrückführung zurücksetzen
 scas_matriculation_detected#:#Erkannte Matrikelnummer
 scas_first_page#:#Weitere Informationen
+scas_auto_move#:#Verschiebe Bilder in den richtigen Test
+scas_auto_move_info#:#Wenn aktiviert werden Bilder welche zu einem anderen Test gehören automatisch verschoben, sollte der passende Test auf der Plattform gefunden werden.
