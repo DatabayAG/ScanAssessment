@@ -24,6 +24,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 	const FILE_TYPE = '.pdf';
 
 	/**
+	 * @var int
+	 */
+	protected $has_checkboxes;
+
+	/**
 	 * @var 
 	 */
 	protected $path_for_pdfs;
@@ -303,6 +308,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	/**
 	 * @param $pdf_h
 	 * @param $question_builder
+	 * @param $identification
 	 */
 	private function addAnswerData($pdf_h, $question_builder, $identification)
 	{

@@ -235,7 +235,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 
 			$im2 = $im;
 			$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
-			$matriculation = array();
+			$matriculation = $this->buildMatriculationArray();
 			$positions = $this->getMatriculationPosition();
 			foreach($positions as $key => $col)
 			{
@@ -292,6 +292,20 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 	}
 
+	/**
+	 * @return array
+	 */
+	protected function buildMatriculationArray()
+	{
+		$size = ilScanAssessmentGlobalSettings::getInstance()->getConfiguredLengthOfMatriculationNumber();
+		$mat_array = array();
+		for($i = 0; $i < $size; $i++)
+		{
+			$mat_array[$i] = '_';
+		}
+		return $mat_array;
+	}
+	
 	/**
 	 * @param $matriculation
 	 */

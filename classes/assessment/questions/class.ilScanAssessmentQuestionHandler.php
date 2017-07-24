@@ -70,8 +70,9 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	}
 
 	/**
-	 * @param assQuestion $question
-	 * @param             $counter
+	 * @param $question
+	 * @param $counter
+	 * @return array
 	 */
 	public function writeAnswersWithCheckboxToPdf($question, $counter)
 	{}
@@ -86,6 +87,8 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	/**
 	 * @param $question
 	 * @param $answers
+	 * @param $columns
+	 * @return array
 	 */
 	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)
 	{}
