@@ -66,7 +66,7 @@ scas_scan_completed#:#Scanning complete
 scas_scan_completed_info#:#Scanning complete
 scas_results_returned#:#Results returned to test
 scas_results_returned_info#:#Results returned to test
-scas_previous_step_unfulfilled#:#This Step is unfulfilled.
+scas_previous_step_unfulfilled#:#A previous Step is unfulfilled.
 scas_create#:#Create PDFs
 scas_remove_all#:#Delete all PDFs
 scas_fixed_participants#:#The setting "Fixed participants" is active

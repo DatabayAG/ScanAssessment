@@ -144,6 +144,15 @@ abstract class ilScanAssessmentController
 	}
 
 	/**
+	 * @param      $txt
+	 * @param null $class_and_command
+	 */
+	protected function Failure($txt, $class_and_command = null)
+	{
+		ilUtil::sendFailure($txt, true);
+	}
+
+	/**
 	 * @param $class_and_command
 	 */
 	protected function redirect($class_and_command)

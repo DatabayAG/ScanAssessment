@@ -41,7 +41,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('debug');
+		$ilTabs->activateTab('debug');
 
 		$form = new ilPropertyFormGUI();
 		$form->setShowTopButtons(false);
@@ -49,6 +49,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('export'));
+
 		return $form;
 	}
 
@@ -142,7 +143,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('debug');
+		$ilTabs->activateTab('tab_debug');
 		if(!($form instanceof ilPropertyFormGUI))
 		{
 			$form  = $this->getForm();
@@ -157,6 +158,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();
+
 	}
 
 	/**

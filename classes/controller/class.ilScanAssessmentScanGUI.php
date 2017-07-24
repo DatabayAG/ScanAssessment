@@ -46,7 +46,7 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		
 		if( !$activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentUserPackagesPdfGUI.default');
+			$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentUserPackagesPdfGUI.default');
 		}
 	}
 
@@ -163,11 +163,11 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		}
 		else if ($value == $scan_process::LOCKED)
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
+			#$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
 		}
 		else
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'));
+			#$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'));
 		}
 	}
 

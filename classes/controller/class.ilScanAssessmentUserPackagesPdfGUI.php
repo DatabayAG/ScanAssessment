@@ -105,12 +105,24 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 	{
 		$form->addCommandButton(__CLASS__ . '.downloadMultiplePdfs', $pluginObject->txt('scas_download_pdf'));
 
-		$number = $this->configuration->getCountDocuments();
 		$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
-		if($actual < $number)
+		if($this->test->getFixedParticipants() == 0)
 		{
-			$form->addCommandButton(__CLASS__ . '.createMissingPdfs', $pluginObject->txt('scas_create_missing'));
+			$number = $this->configuration->getCountDocuments();
+			if($actual < $number)
+			{
+				$form->addCommandButton(__CLASS__ . '.createMissingPdfs', $pluginObject->txt('scas_create_missing'));
+			}
 		}
+		else
+		{
+			$participants = $this->test->getInvitedUsers();
+			#if($actual < count($participants))
+			{
+				$form->addCommandButton(__CLASS__ . '.createMissingFixedPdfs', $pluginObject->txt('scas_create_missing'));
+			}
+		}
+
 		$form->addCommandButton(__CLASS__ . '.deletePDFs', $pluginObject->txt('scas_remove_all'));
 	}
 
@@ -228,6 +240,21 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 			$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
 		}
 	}
+	
+	public function createMissingFixedPdfsCmd()
+	{
+		$participants = $this->test->getInvitedUsers();;
+		$actual = $this->file_helper->countFilesInDirectory($this->file_helper->getPdfPath());
+		if($actual < count($participants))
+		{
+			$ids = $this->getAlreadyCreatedFixedParticipantPdfs();
+			$pdf_builder = new ilScanAssessmentPdfAssessmentBuilder($this->test);
+			$diff = array_diff_key($participants, $ids);
+
+			$pdf_builder->createFixedParticipantsPdf($diff);
+		}
+		$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
+	}
 
 	public function createDemoPdfAndCutToImagesCmd()
 	{
@@ -274,6 +301,27 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 
 		$ilDB->manipulate('DELETE FROM pl_scas_pdf_data_qpl WHERE ' . $ilDB->in('pdf_id', $pdf_ids, false, 'integer'));
 		$ilDB->manipulate('DELETE FROM pl_scas_pdf_data WHERE ' . $ilDB->in('obj_id', array($test_id), false, 'integer'));
+	}
+
+	protected function getAlreadyCreatedFixedParticipantPdfs()
+	{
+		global $ilDB;
+
+		$usr = array();
+		$test_id = $this->test->getId();
+
+		$res = $ilDB->queryF(
+			'SELECT usr_id FROM pl_scas_pdf_data
+			WHERE obj_id = %s ',
+			array('integer'),
+			array($test_id)
+		);
+
+		while($row = $ilDB->fetchAssoc($res))
+		{
+			$usr[$row['usr_id']] = $row['usr_id'];
+		}
+		return $usr;
 	}
 
 	public function downloadPdfCmd()

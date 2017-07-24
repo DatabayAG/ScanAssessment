@@ -65,7 +65,7 @@ scas_scan_completed#:#Scannen abgeschlossen
 scas_scan_completed_info#:#Scannen abgeschlossen
 scas_results_returned#:#Ergebnisse an Test übergeben
 scas_results_returned_info#:#Ergebnisse an Test übergeben
-scas_previous_step_unfulfilled#:#Dieser Schritt ist noch nicht abgeschlossen.
+scas_previous_step_unfulfilled#:#Ein vorheriger Schritt ist noch nicht abgeschlossen.
 scas_create#:#PDFs generieren
 scas_remove_all#:#Alle PDFs löschen
 scas_fixed_participants#:#Die Einstellung "Nur ausgewählte Teilnehmer" ist aktiviert
