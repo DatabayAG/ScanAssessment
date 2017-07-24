@@ -540,8 +540,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getBottomBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -609,8 +610,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getTopBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -674,8 +676,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getLeftBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -743,8 +746,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getRightBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{

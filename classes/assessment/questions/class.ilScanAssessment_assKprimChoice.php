@@ -31,7 +31,8 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param assKprimChoice $question
+	 * @param assQuestion $question
+	 * @param             $counter
 	 * @return array
 	 */
 	public function writeAnswersWithCheckboxToPdf($question, $counter)
@@ -100,8 +101,9 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param assKprimChoice $question
-	 * @param $answers
+	 * @param assQuestion $question
+	 * @param             $answers
+	 * @param             $columns
 	 * @return array
 	 */
 	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)

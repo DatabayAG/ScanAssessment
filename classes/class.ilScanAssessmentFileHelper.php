@@ -79,6 +79,7 @@ class ilScanAssessmentFileHelper
 	}
 
 	/**
+	 * @param $test_id
 	 * @return string
 	 */
 	public function getScanPathByTestId($test_id)

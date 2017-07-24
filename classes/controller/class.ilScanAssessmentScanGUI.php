@@ -163,11 +163,11 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		}
 		else if ($value == $scan_process::LOCKED)
 		{
-			#$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_lock_file_found'));
 		}
 		else
 		{
-			#$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'));
+			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_no_files_found'));
 		}
 	}
 

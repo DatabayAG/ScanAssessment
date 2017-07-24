@@ -117,7 +117,7 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		else
 		{
 			$participants = $this->test->getInvitedUsers();
-			#if($actual < count($participants))
+			if($actual < count($participants))
 			{
 				$form->addCommandButton(__CLASS__ . '.createMissingFixedPdfs', $pluginObject->txt('scas_create_missing'));
 			}
@@ -219,13 +219,16 @@ class ilScanAssessmentUserPackagesPdfGUI extends ilScanAssessmentUserPackagesGUI
 		}
 		else
 		{
-		    $number = $this->configuration->getCountDocuments();
-		    if ($number > 0) {
-                $pdf_builder->createNonPersonalisedPdf($number);
-                $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
-            } else {
-                $this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_zero_count'));
-            }
+			$number = $this->configuration->getCountDocuments();
+			if($number > 0)
+			{
+				$pdf_builder->createNonPersonalisedPdf($number);
+				$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_created'));
+			}
+			else
+			{
+				$this->redirectAndInfo($this->getCoreController()->getPluginObject()->txt('scas_pdfs_zero_count'));
+			}
 		}
 	}
 	
