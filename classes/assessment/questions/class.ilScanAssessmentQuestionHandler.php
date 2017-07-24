@@ -48,6 +48,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	/**
 	 * @param assQuestion $question
 	 * @param             $counter
+	 * @return array
 	 */
 	public function writeQuestionToPdf($question, $counter)
 	{
@@ -70,7 +71,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	}
 
 	/**
-	 * @param $question
+	 * @param assQuestion $question
 	 * @param $counter
 	 * @return array
 	 */
@@ -85,7 +86,7 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 	{}
 
 	/**
-	 * @param $question
+	 * @param assQuestion $question
 	 * @param $answers
 	 * @param $columns
 	 * @return array

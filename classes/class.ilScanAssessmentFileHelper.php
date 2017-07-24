@@ -81,6 +81,16 @@ class ilScanAssessmentFileHelper
 	/**
 	 * @return string
 	 */
+	public function getScanPathByTestId($test_id)
+	{
+		$path = ilUtil::getDataDir() . self::SCAN_ASSESSMENT . 'tst_' . $test_id . self::SCANS;
+		$this->ensurePathExists($path);
+		return $path;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getScanTempPath()
 	{
 		$path = $this->getScanPath() . self::TEMP;

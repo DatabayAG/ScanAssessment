@@ -65,15 +65,35 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
+	 * @param $x
+	 * @param $marker_positions ilScanAssessmentVector[]
+	 * @return int
+	 */
+	protected function addXPosition($x, $marker_positions)
+	{
+		return $x + $marker_positions[0]->getPosition()->getX();
+	}
+
+	/**
+	 * @param $y
+	 * @param $marker_positions ilScanAssessmentVector[]
+	 * @return int
+	 */
+	protected function addYPosition($y, $marker_positions)
+	{
+		return $y + $marker_positions[0]->getPosition()->getY();
+	}
+	
+	/**
 	 * @param $im
-	 * @param ilScanAssessmentMarkerDetection $marker_positions
+	 * @param $marker_positions ilScanAssessmentVector[]
 	 * @param $qr_position
 	 * @return array
 	 */
 	protected function findAnswers(&$im, $marker_positions, $qr_position)
 	{
 		$corrected = $this->getCorrectedPositionFromMarker($marker_positions, $qr_position);
-		$corrected = $this->getCorrectedPosition();
+
 		$im2 = $im;
 		$this->log->debug(sprintf('Starting to scan checkboxes...'));
 		$answers = $this->getAnswerPositions();
@@ -104,8 +124,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			{
 				if($value['type'] == 'ilScanAssessment_assSingleChoice' || $value['type'] == 'ilScanAssessment_assMultipleChoice')
 				{
-					$answer_x = ($value['x']) * ($corrected->getX())  + $marker_positions[0]->getPosition()->getX();
-					$answer_y = ($value['y'] ) * ($corrected->getY()) + $marker_positions[0]->getPosition()->getY();
+					$answer_x = $this->addXPosition(($value['x'] * $corrected->getX()), $marker_positions);
+					$answer_y = $this->addYPosition(($value['y'] * $corrected->getY()), $marker_positions);
 
 					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s], corrected at [%s, %ss].', $value['x'], $value['y'], $answer_x, $answer_y));
 
@@ -127,10 +147,10 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				}
 				else if ($value['type'] == 'ilScanAssessment_assKprimChoice')
 				{
-					$answer_correct_x = ($value['correct']['x']) * ($corrected->getX()) + $marker_positions[0]->getPosition()->getX();
-					$answer_correct_y = ($value['correct']['y']) * ($corrected->getY()) + $marker_positions[0]->getPosition()->getY();
-					$answer_wrong_x = ($value['wrong']['x']) * ($corrected->getX()) + $marker_positions[0]->getPosition()->getX();
-					$answer_wrong_y = ($value['wrong']['y']) * ($corrected->getY()) + $marker_positions[0]->getPosition()->getY();
+					$answer_correct_x = $this->addXPosition(($value['correct']['x'] * $corrected->getX()), $marker_positions);
+					$answer_correct_y = $this->addYPosition(($value['correct']['y'] * $corrected->getY()), $marker_positions);
+					$answer_wrong_x = $this->addXPosition(($value['wrong']['x'] * $corrected->getX()), $marker_positions);
+					$answer_wrong_y = $this->addYPosition(($value['wrong']['y'] * $corrected->getY()), $marker_positions);
 
 					$first_point_correct  = new ilScanAssessmentPoint($answer_correct_x, $answer_correct_y);
 					$second_point_correct = new ilScanAssessmentPoint($answer_correct_x + (2.5 * $corrected->getX()), $answer_correct_y + (2.5 * $corrected->getY()));
@@ -218,15 +238,15 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
 		$this->findMatriculation($im, $corrected, $marker_positions);
-		$this->cropHeader($im, $corrected);
+		$this->cropHeader($corrected);
 
 		return $this->checkbox_container;
 	}
 
 	/**
 	 * @param $im
-	 * @param $corrected
-	 * @param $marker_positions
+	 * @param ilScanAssessmentPoint $corrected
+	 * @param ilScanAssessmentVector[] $marker_positions
 	 */
 	protected function findMatriculation(&$im, $corrected, $marker_positions)
 	{
@@ -267,10 +287,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
-	 * @param $im
 	 * @param ilScanAssessmentPoint $corrected
 	 */
-	protected function cropHeader(&$im, $corrected)
+	protected function cropHeader($corrected)
 	{
 		$header = $this->getPageAndHeightForHeader();
 		if($this->qr_identification->getPageNumber() == $header['page'])
@@ -283,7 +302,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			$first_point  = new ilScanAssessmentPoint(0, 0);
 			$second_point = new ilScanAssessmentPoint($head_x, $head_y);
 
-			$im2 = $this->image_helper->imageCropByPoints( $this->image_helper->getImage(),$first_point, $second_point);
+			$im2 = $this->image_helper->imageCropByPoints($this->image_helper->getImage(),$first_point, $second_point);
 
 			$file_helper = new ilScanAssessmentFileHelper($this->qr_identification->getTestId());
 			$path = $file_helper->getRevisionPath() . '/qpl/' . $this->qr_identification->getPdfId() . '/head/';
@@ -474,7 +493,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
-	 * @return array
+	 * @return array | int
 	 */
 	private function getPageForMatriculation()
 	{

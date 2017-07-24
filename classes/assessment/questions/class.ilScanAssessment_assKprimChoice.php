@@ -8,7 +8,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 {
 	/**
-	 * @param      $question
+	 * @param assKprimChoice $question
 	 * @param      $answer_position
 	 * @param      $answer_text
 	 * @param      $x1
@@ -73,7 +73,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param assSingleChoice | assMultipleChoice $question
+	 * @param assKprimChoice $question
 	 * @param             $counter
 	 * @return array
 	 */
@@ -100,7 +100,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param $question
+	 * @param assKprimChoice $question
 	 * @param $answers
 	 * @return array
 	 */

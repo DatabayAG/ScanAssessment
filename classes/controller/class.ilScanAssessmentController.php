@@ -139,8 +139,8 @@ abstract class ilScanAssessmentController
 		{
 			$class_and_command = $this->getDefaultClassAndCommand();
 		}
-		#ilUtil::sendInfo($txt, true);
-		#$this->redirect($class_and_command);
+		ilUtil::sendInfo($txt, true);
+		$this->redirect($class_and_command);
 	}
 
 	/**

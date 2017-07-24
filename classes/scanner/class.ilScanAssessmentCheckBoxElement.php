@@ -277,9 +277,6 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected function detectBorder($im)
 	{
-		//TODO: remove this
-		return;
-		//TODO: remove this
 		$center_x = $this->getFirstPoint()->getX();
 		$center_y = $this->getFirstPoint()->getY();
 		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));

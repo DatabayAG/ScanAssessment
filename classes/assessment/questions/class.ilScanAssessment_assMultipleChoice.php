@@ -7,7 +7,7 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assMultipleChoice extends ilScanAssessment_assSingleChoice 
 {
 	/**
-	 * @param     $question
+	 * @param assQuestion $question
 	 * @param     $answer_position
 	 * @param     $answer_text
 	 * @param     $x

@@ -104,7 +104,7 @@ class ilScanAssessmentScanProcess
 	 * @param ilScanAssessmentScanner $scanner
 	 * @param ilScanAssessmentLog $log
 	 * @param ilScanAssessmentVector[] $marker
-	 * @param ilScanAssessmentVector $qr_pos
+	 * @param $qr_pos
 	 * @return bool
 	 */
 	protected function checkIfMustBeCropped($scanner, $log, $marker, $qr_pos)
@@ -505,7 +505,19 @@ class ilScanAssessmentScanProcess
 				$file = basename($org);
 				if($file != 'rescaled'  . $this->internal_file_type)
 				{
-					$this->files_not_for_this_test[] = $file;
+					try
+					{
+						$test = new ilObjTest($identification->getTestId(), false);
+						$this->log->warn(sprintf('Found test with this id (%s) on this platform, trying to move file to correct folder.', $identification->getTestId()));
+						$new_path = $this->file_helper->getScanPathByTestId($identification->getTestId());
+						$this->file_helper->moveFile($org, $new_path . basename($org));
+					}
+					catch(ilObjectNotFoundException $e )
+					{
+						$this->log->warn(sprintf('No test with this id (%s) found on this platform.', $identification->getTestId()));
+						$this->files_not_for_this_test[] = $file;
+					}
+
 				}
 				return false;
 			}
@@ -538,6 +550,11 @@ class ilScanAssessmentScanProcess
 		$this->file_helper->ensurePathExists($this->path_to_done);
 	}
 
+	/**
+	 * @param $path
+	 * @param $callback
+	 * @return int
+	 */
 	private function traverse($path, $callback)
 	{
 		$return_value = self::NOT_FOUND;
@@ -620,7 +637,10 @@ class ilScanAssessmentScanProcess
 		}
 		return false;
 	}
-	
+
+	/**
+	 * @param $path
+	 */
 	protected function convertFilesAfterScanning($path)
 	{
 		/** @var splfileinfo $filename */

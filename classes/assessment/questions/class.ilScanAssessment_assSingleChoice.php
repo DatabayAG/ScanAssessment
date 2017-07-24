@@ -8,7 +8,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 {
 
 	/**
-	 * @param      $question
+	 * @param assQuestion $question
 	 * @param      $answer_position
 	 * @param      $answer_text
 	 * @param      $x
@@ -91,9 +91,9 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param $question
-	 * @param $answers
-	 * @param $columns
+	 * @param assQuestion $question
+	 * @param             $answers
+	 * @param             $columns
 	 * @return array
 	 */
 	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)
