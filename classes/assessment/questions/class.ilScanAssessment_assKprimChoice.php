@@ -8,13 +8,14 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 {
 	/**
-	 * @param     $question
-	 * @param     $answer_position
-	 * @param     $answer_text
-	 * @param     $x1
-	 * @param     $x2
-	 * @param     $y
-	 * @param int $end_x
+	 * @param      $question
+	 * @param      $answer_position
+	 * @param      $answer_text
+	 * @param      $x1
+	 * @param      $x2
+	 * @param      $y
+	 * @param int  $end_x
+	 * @param null $ident_string
 	 * @return array
 	 */
 	protected function appendAnswer($question, $answer_position, $answer_text, $x1, $x2, $y, $end_x = 0, $ident_string = null)
@@ -63,8 +64,10 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x1 = 34;
 			$x2 = 39;
 			$y	= $this->pdf_helper->pdf->GetY() - $y_diff  + 0.8;
-
-			$answer_positions[] = $this->appendAnswer($question, $answer->getPosition(), $answer->getAnswerText(), $x1, $x2, $y);
+			$x1_relative = $x1 - PDF_TOPLEFT_SYMBOL_X;
+			$x2_relative = $x2 - PDF_TOPLEFT_SYMBOL_X;
+			$y_relative = $y - PDF_TOPLEFT_SYMBOL_Y;
+			$answer_positions[] = $this->appendAnswer($question, $answer->getPosition(), $answer->getAnswerText(), $x1_relative, $x2_relative, $y_relative);
 		}
 		return $answer_positions;
 	}
@@ -122,9 +125,12 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$x1 = $this->pdf_helper->pdf->GetX() + $pos_x;
 			$x2 = $x1 + 5;
 			$y	= $this->pdf_helper->pdf->GetY();
+			$x1_relative = $pos_x - PDF_TOPLEFT_SYMBOL_X;
+			$x2_relative = $pos_x + 5 - PDF_TOPLEFT_SYMBOL_X;
+			$y_relative = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8 - PDF_TOPLEFT_SYMBOL_Y;
 			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 15, $pos_y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getPosition(), $answer['answer']->getAnswerText(), $x1, $x2, $y, $x2 + 15, $answer['identifier']);
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getPosition(), $answer['answer']->getAnswerText(), $x1_relative, $x2_relative, $y_relative, $x2 + 15, $answer['identifier']);
 			$this->pdf_helper->pdf->Ln();
 		}
 

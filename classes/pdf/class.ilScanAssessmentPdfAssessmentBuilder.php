@@ -18,10 +18,11 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAsse
  */
 class ilScanAssessmentPdfAssessmentBuilder
 {
-	
+
 	const PAGE_SIZE_LEFT = 30;
 
 	const FILE_TYPE = '.pdf';
+
 	/**
 	 * @var 
 	 */
@@ -84,7 +85,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
 		$this->path_for_zip		= $this->file_helper->getPdfZipPath();
 		$this->map				= new ilScanAssessmentPdfMap();
-		$config					=  new ilScanAssessmentTestConfiguration($this->test->getId());
+		$config					= new ilScanAssessmentTestConfiguration($this->test->getId());
 		$this->config			= $config;
 		if($config->getShuffle() == 1)
 		{

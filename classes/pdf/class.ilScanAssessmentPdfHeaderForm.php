@@ -227,7 +227,9 @@ class ilScanAssessmentPdfHeaderForm
 							}
 							$this->pdf->Rect($x2, $y2, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D');
 							#$positions['value_rows'][$j][$i] = new ilScanAssessmentVector(new ilScanAssessmentPoint($x2, $y2), PDF_ANSWERBOX_W);
-							$positions['value_rows'][$j][$i] = array( 'x' => $x2, 'y' => $y2, 'w' => PDF_ANSWERBOX_W);
+							$x_relative = $x2 - PDF_TOPLEFT_SYMBOL_X;
+							$y_relative = $y2 - PDF_TOPLEFT_SYMBOL_Y;
+							$positions['value_rows'][$j][$i] = array( 'x' => $x_relative, 'y' => $y_relative, 'w' => PDF_ANSWERBOX_W);
 						}
 						if($format[$j] === self::SPACER && $i === 0)
 						{
