@@ -634,7 +634,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 					continue;
 				}
 			}
-			$a = ilScanAssessmentPlugin::getInstance()->getVersion();
+
 			$ilDB->insert('pl_scas_pdf_data_qpl',
 				array(
 					'pdf_id'	=> array('integer', $identification->getPdfId()),
