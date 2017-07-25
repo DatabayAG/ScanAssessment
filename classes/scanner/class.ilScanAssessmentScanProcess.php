@@ -556,17 +556,34 @@ class ilScanAssessmentScanProcess
 			$file = basename($path_to_file);
 			if($identification->getTestId() != null)
 			{
-				try
+				$exists = ilObject2::_exists($identification->getTestId());
+				$type = ilObject::_lookupType($identification->getTestId(), false);
+
+				if($exists && $type == 'tst')
 				{
-					$test = new ilObjTest($identification->getTestId(), false);
-					$this->log->warn(sprintf('Found test with this id (%s) with title (%s) on this platform, trying to move file to correct folder.', $identification->getTestId(), $test->getTitle()));
-					$new_path = $this->file_helper->getScanPathByTestId($identification->getTestId());
-					$this->file_helper->moveFile($path_to_file, $new_path . $file);
+					try
+					{
+						$test = new ilObjTest($identification->getTestId(), false);
+						$this->log->warn(sprintf('Found test with this id (%s) with title (%s) on this platform, trying to move file to correct folder.', $identification->getTestId(), $test->getTitle()));
+						$new_path = $this->file_helper->getScanPathByTestId($identification->getTestId());
+						$this->file_helper->moveFile($path_to_file, $new_path . $file);
+					}
+					catch(ilObjectNotFoundException $e)
+					{
+						$this->log->warn(sprintf('No test with this id (%s) found on this platform.', $identification->getTestId()));
+						$this->files_not_for_this_test[] = $file;
+					}
 				}
-				catch(ilObjectNotFoundException $e)
+				else
 				{
-					$this->log->warn(sprintf('No test with this id (%s) found on this platform.', $identification->getTestId()));
-					$this->files_not_for_this_test[] = $file;
+					if($exists)
+					{
+						$this->log->warn(sprintf('Found id (%s) is a object from type %s and not a test, skipping.', $identification->getTestId(), $type));
+					}
+					else
+					{
+						$this->log->warn(sprintf('No object with id (%s) found on this platform, skipping.', $identification->getTestId()));
+					}
 				}
 			}
 			else
