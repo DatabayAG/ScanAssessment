@@ -182,7 +182,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
         $tiff_dpi_maximum->setInfo($this->getPluginObject()->txt('scas_tiff_dpi_maximum_info'));
         $form->addItem($tiff_dpi_maximum);
 
-        if(!class_exists(Imagick))
+        if(!class_exists('Imagick'))
         {
             $tiff_support->setInfo($this->getPluginObject()->txt('scas_tiff_no_imagemagick_info'));
             $tiff_support->setDisabled(true);
