@@ -634,12 +634,14 @@ class ilScanAssessmentPdfAssessmentBuilder
 					continue;
 				}
 			}
+			$a = ilScanAssessmentPlugin::getInstance()->getVersion();
 			$ilDB->insert('pl_scas_pdf_data_qpl',
 				array(
 					'pdf_id'	=> array('integer', $identification->getPdfId()),
 					'page'		=> array('integer', $key),
 					'qpl_data'	=> array('text', json_encode($value)),
-					'has_checkboxes' => array('integer', $checkboxes)
+					'has_checkboxes' => array('integer', $checkboxes),
+					'plugin_version' => array('text', ilScanAssessmentPlugin::getInstance()->getVersion())
 				));
 		}
 	}

@@ -391,7 +391,21 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'header_page'))
 		array(
 			'notnull'=> false,
 			'type'   => 'integer',
-			'length' => '4',
+			'length' => '25',
+			'default' => 0
+		)
+	);
+}
+?>
+<#24>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_pdf_data_qpl', 'plugin_version'))
+{
+	$ilDB->addTableColumn('pl_scas_pdf_data_qpl', 'plugin_version',
+		array(
+			'notnull'=> false,
+			'type'   => 'text',
+			'length' => '100',
 			'default' => 0
 		)
 	);
