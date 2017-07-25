@@ -282,7 +282,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 						}
 						else
 						{
-							$matriculation[$key] = $matriculation[$key] . '/' . $row;
+							$matriculation[$key] = 'x';
 							$this->log->warn(sprintf('Duplicate entry for key (%s) found for matriculation number.', $key));
 						}
 					}
