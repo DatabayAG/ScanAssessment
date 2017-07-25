@@ -276,7 +276,15 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 					if($marked == 2)
 					{
-						$matriculation[$key] = $row;
+						if($matriculation[$key] == '_')
+						{
+							$matriculation[$key] = $row;
+						}
+						else
+						{
+							$matriculation[$key] = $matriculation[$key] . '/' . $row;
+							$this->log->warn(sprintf('Duplicate entry for key (%s) found for matriculation number.', $key));
+						}
 					}
 				}
 			}

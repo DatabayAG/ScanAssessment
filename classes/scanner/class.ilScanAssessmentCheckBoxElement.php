@@ -277,8 +277,8 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected function detectBorder($im)
 	{
-		$center_x = $this->getFirstPoint()->getX();
-		$center_y = $this->getFirstPoint()->getY();
+		$center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
+		$center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
 		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));
 		$size     = array(
 			$this->getSecondPoint()->getX() - $this->getFirstPoint()->getX(),
@@ -350,7 +350,8 @@ class ilScanAssessmentCheckBoxElement
 			$this->trimBorderWhite();
 		}
 
-		$this->trimBorderBlack();
+		//Todo: check why this fails so heavy now!
+		#$this->trimBorderBlack();
 
         $new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
         $new_center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
