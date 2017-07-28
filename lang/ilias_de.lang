@@ -65,7 +65,7 @@ scas_scan_completed#:#Scannen abgeschlossen
 scas_scan_completed_info#:#Scannen abgeschlossen
 scas_results_returned#:#Ergebnisse an Test übergeben
 scas_results_returned_info#:#Ergebnisse an Test übergeben
-scas_previous_step_unfulfilled#:#Dieser Schritt ist noch nicht abgeschlossen.
+scas_previous_step_unfulfilled#:#Ein vorheriger Schritt ist noch nicht abgeschlossen.
 scas_create#:#PDFs generieren
 scas_remove_all#:#Alle PDFs löschen
 scas_fixed_participants#:#Die Einstellung "Nur ausgewählte Teilnehmer" ist aktiviert
@@ -160,7 +160,7 @@ scas_debug_export#:#Debug Export
 scas_min_value_black#:#Minimaler Schwarzwert
 scas_min_value_black_info#:#Minimaler Wert ab wann eine Farbe als Schwarz angesehen wir. Zwischen 0 und 255.
 scas_min_marked_area#:#Minimaler Markierungswert
-scas_min_marked_area_info#:##Wert wann eine Checkbox als verändert angesehen wird. Zwischen 0.00 und 1.00
+scas_min_marked_area_info#:#Wert wann eine Checkbox als verändert angesehen wird. Zwischen 0.00 und 1.00
 scas_marked_area_checked#:#Markiert
 scas_marked_area_checked_info#:#Wert wann eine Checkbox als markiert angesehen wird. Zwischen 0.00 und 1.00
 scas_marked_area_unchecked#:#Nicht Markiert
@@ -178,3 +178,5 @@ scas_create_missing#:#Erzeuge fehlende PDFs
 scas_reset_return_results#:#Ergebnisrückführung zurücksetzen
 scas_matriculation_detected#:#Erkannte Matrikelnummer
 scas_first_page#:#Weitere Informationen
+scas_auto_move#:#Verschiebe Bilder in den richtigen Test
+scas_auto_move_info#:#Wenn aktiviert werden Bilder welche zu einem anderen Test gehören automatisch verschoben, sollte der passende Test auf der Plattform gefunden werden.

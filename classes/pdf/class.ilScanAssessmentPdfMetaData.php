@@ -107,7 +107,7 @@ class ilScanAssessmentPdfMetaData extends ilScanAssessmentUserPackagesConfigurat
 	}
 
 	/**
-	 * @return string
+	 * @return ilScanAssessmentIdentification
 	 */
 	public function getIdentificationObject()
 	{

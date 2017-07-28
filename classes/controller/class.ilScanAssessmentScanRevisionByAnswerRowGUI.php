@@ -219,6 +219,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 	 * @param $checked_answers
 	 * @param $answer_id
 	 * @param $template
+	 * @param $type
 	 */
 	protected function answerIsChecked($checked_answers, $answer_id, $template, $type)
 	{

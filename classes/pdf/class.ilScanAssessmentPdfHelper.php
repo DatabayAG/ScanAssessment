@@ -19,7 +19,7 @@ require_once 'Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/
 class ilScanAssessmentPdfHelper
 {
 	/**
-	 * @var ilPdfAppendMarker
+	 * @var ilScanAssessmentPdfAppendMarker
 	 */
 	public $pdf;
 
@@ -49,7 +49,7 @@ class ilScanAssessmentPdfHelper
 	 */
 	protected function initializePDFStructure($data)
 	{
-		$this->pdf = new ilPDFAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
+		$this->pdf = new ilScanAssessmentPdfAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
 		$this->pdf->setMetadata($data);
 		$this->pdf->SetCreator($data->getAuthor());
 		$this->pdf->SetAuthor($data->getAuthor());

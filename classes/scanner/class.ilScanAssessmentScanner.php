@@ -100,7 +100,7 @@ class ilScanAssessmentScanner
 	}
 
 	/**
-	 * @param $marker_positions
+	 * @param ilScanAssessmentVector[] $marker_positions
 	 * @param $qr_position
 	 * @return ilScanAssessmentPoint
 	 */

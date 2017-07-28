@@ -43,7 +43,7 @@ class ilScanAssessmentLayoutGUI extends ilScanAssessmentController
 		$activated = new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		if(! $activated->isFulfilled())
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentDefaultGUI.default');
+			$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'));
 		}
 	}
 	

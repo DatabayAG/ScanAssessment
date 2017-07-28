@@ -8,7 +8,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 {
 
 	/**
-	 * @param      $question
+	 * @param assQuestion $question
 	 * @param      $answer_position
 	 * @param      $answer_text
 	 * @param      $x
@@ -50,11 +50,16 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 		{
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->pdf->Rect(34, $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
 			$x = 34;
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8;
+
+			$this->pdf_helper->pdf->Rect($x, $y, PDF_ANSWERBOX_W, PDF_ANSWERBOX_H, 'D', array('all' => $this->circleStyle));
+
+			$x_relative = $x - PDF_TOPLEFT_SYMBOL_X;
+			$y_relative = $y - PDF_TOPLEFT_SYMBOL_Y;
+
 			$this->pdf_helper->writeHTML($answer->getAnswertext());
-			$answer_positions[] = $this->appendAnswer($question, $answer->getOrder(), $answer->getAnswertext(), $x, $y);
+			$answer_positions[] = $this->appendAnswer($question, $answer->getOrder(), $answer->getAnswertext(), $x_relative, $y_relative);
 		}
 		return $answer_positions;
 	}
@@ -86,8 +91,9 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 	}
 
 	/**
-	 * @param $question
-	 * @param $answers
+	 * @param assQuestion $question
+	 * @param             $answers
+	 * @param             $columns
 	 * @return array
 	 */
 	public function writeAnswersCheckboxForIdentifierToPdf($question, $answers, $columns)
@@ -102,7 +108,10 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			$y = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN - 0.2;
 			$this->pdf_helper->writeHTMLCell(0, 0, ($columns * 25) - 20, $y, $answer['identifier'], 0, 0, 0, TRUE, '', TRUE);
 			//$this->pdf_helper->pdf->Cell($x, $y, $answer['identifier']);
-			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x, $y, $x + 25, $answer['identifier']);
+			$x_relative = $x - PDF_TOPLEFT_SYMBOL_X;
+			$y_relative = $this->pdf_helper->pdf->GetY() + PDF_CHECKBOX_MARGIN + 0.8 - PDF_TOPLEFT_SYMBOL_Y;
+
+			$answer_positions[] = $this->appendAnswer($question, $answer['answer']->getOrder(), $answer['answer']->getAnswerText(), $x_relative, $y_relative, $x + 25, $answer['identifier']);
 			$this->pdf_helper->pdf->Ln();
 		}
 		return $answer_positions;

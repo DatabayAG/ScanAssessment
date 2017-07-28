@@ -18,10 +18,16 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/class.ilScanAsse
  */
 class ilScanAssessmentPdfAssessmentBuilder
 {
-	
+
 	const PAGE_SIZE_LEFT = 30;
 
 	const FILE_TYPE = '.pdf';
+
+	/**
+	 * @var int
+	 */
+	protected $has_checkboxes;
+
 	/**
 	 * @var 
 	 */
@@ -84,7 +90,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 		$this->path_for_pdfs	= $this->file_helper->getPdfPath();
 		$this->path_for_zip		= $this->file_helper->getPdfZipPath();
 		$this->map				= new ilScanAssessmentPdfMap();
-		$config					=  new ilScanAssessmentTestConfiguration($this->test->getId());
+		$config					= new ilScanAssessmentTestConfiguration($this->test->getId());
 		$this->config			= $config;
 		if($config->getShuffle() == 1)
 		{
@@ -101,7 +107,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	protected function addQuestionUsingTransaction($pdf_h, $question_builder, $question, $counter)
 	{
-		/** @var tcpdf $pdf */
+		/** @var TCPDF $pdf */
 		$pdf = $pdf_h->pdf;
 
 		$pdf->setCellMargins(PDF_CELL_MARGIN);
@@ -141,7 +147,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	protected function addQuestionWithoutCheckboxUsingTransaction($pdf_h, $question_builder, $question, $counter)
 	{
-		/** @var tcpdf $pdf */
+		/** @var TCPDF $pdf */
 		$pdf = $pdf_h->pdf;
 
 		$pdf->setCellMargins(PDF_CELL_MARGIN);
@@ -241,7 +247,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 
 	/**
 	 * @param $pdf_h
-	 * @param $questions
+	 * @param assQuestion[] $questions
 	 * @param $question_builder
 	 */
 	private function addQuestionWithCheckbox($pdf_h, $questions, $question_builder)
@@ -302,6 +308,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	/**
 	 * @param $pdf_h
 	 * @param $question_builder
+	 * @param ilScanAssessmentIdentification $identification
 	 */
 	private function addAnswerData($pdf_h, $question_builder, $identification)
 	{
@@ -612,8 +619,8 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	protected function saveQuestionData($data)
 	{
-		$ident = new ilScanAssessmentIdentification();
-		$ident->parseIdentificationString($data->getIdentification());
+		$identification = new ilScanAssessmentIdentification();
+		$identification->parseIdentificationString($data->getIdentification());
 
 		global $ilDB;
 		foreach($this->map->getQuestionPositions() as $key => $value)
@@ -627,12 +634,14 @@ class ilScanAssessmentPdfAssessmentBuilder
 					continue;
 				}
 			}
+
 			$ilDB->insert('pl_scas_pdf_data_qpl',
 				array(
-					'pdf_id'	=> array('integer', $ident->getPdfId()),
+					'pdf_id'	=> array('integer', $identification->getPdfId()),
 					'page'		=> array('integer', $key),
 					'qpl_data'	=> array('text', json_encode($value)),
-					'has_checkboxes' => array('integer', $checkboxes)
+					'has_checkboxes' => array('integer', $checkboxes),
+					'plugin_version' => array('text', ilScanAssessmentPlugin::getInstance()->getVersion())
 				));
 		}
 	}

@@ -41,7 +41,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('debug');
+		$ilTabs->activateTab('debug');
 
 		$form = new ilPropertyFormGUI();
 		$form->setShowTopButtons(false);
@@ -49,6 +49,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 
 		$form->setFormAction($pluginObject->getFormAction(__CLASS__ . '.saveForm'));
 		$form->addCommandButton(__CLASS__ . '.saveForm', $this->lng->txt('export'));
+
 		return $form;
 	}
 
@@ -99,7 +100,10 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		ilUtil::rCopy($this->file_helper->getResultsXmlPath(), $results);
 		ilUtil::rCopy($this->file_helper->getScanPath(), $scans);
 	}
-	
+
+	/**
+	 * @return bool
+	 */
 	protected function exportTestObject()
 	{
 		if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
@@ -112,8 +116,9 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		}
 		else
 		{	require_once 'Modules/Test/classes/class.ilTestExport.php';
+			/** @noinspection Annotator */
 			$test_exp = new ilTestExport($this->test, 'xml');
-			$src = $test_exp->buildExportFile();
+			$src      = $test_exp->buildExportFile();
 		}
 
 		if($src)
@@ -142,7 +147,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $ilTabs;
-		$ilTabs->setTabActive('debug');
+		$ilTabs->activateTab('tab_debug');
 		if(!($form instanceof ilPropertyFormGUI))
 		{
 			$form  = $this->getForm();
@@ -157,6 +162,7 @@ class ilScanAssessmentDebugExportGUI extends ilScanAssessmentController
 		$tpl->setVariable('STATUS', $sidebar);
 
 		return $tpl->get();
+
 	}
 
 	/**

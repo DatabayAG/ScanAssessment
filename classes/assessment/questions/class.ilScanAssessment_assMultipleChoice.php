@@ -7,12 +7,13 @@ ilScanAssessmentPlugin::getInstance()->includeClass('assessment/questions/class.
 class ilScanAssessment_assMultipleChoice extends ilScanAssessment_assSingleChoice 
 {
 	/**
-	 * @param     $question
-	 * @param     $answer_position
-	 * @param     $answer_text
-	 * @param     $x
-	 * @param     $y
-	 * @param int $end_x
+	 * @param assQuestion $question
+	 * @param             $answer_position
+	 * @param             $answer_text
+	 * @param             $x
+	 * @param             $y
+	 * @param int         $end_x
+	 * @param null        $ident_string
 	 * @return array
 	 */
 	protected function appendAnswer($question, $answer_position, $answer_text, $x, $y, $end_x = 0, $ident_string = null)

@@ -65,14 +65,35 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
+	 * @param $x
+	 * @param $marker_positions ilScanAssessmentVector[]
+	 * @return int
+	 */
+	protected function addXPosition($x, $marker_positions)
+	{
+		return $x + $marker_positions[0]->getPosition()->getX();
+	}
+
+	/**
+	 * @param $y
+	 * @param $marker_positions ilScanAssessmentVector[]
+	 * @return int
+	 */
+	protected function addYPosition($y, $marker_positions)
+	{
+		return $y + $marker_positions[0]->getPosition()->getY();
+	}
+	
+	/**
 	 * @param $im
-	 * @param $marker_positions
+	 * @param $marker_positions ilScanAssessmentVector[]
 	 * @param $qr_position
 	 * @return array
 	 */
 	protected function findAnswers(&$im, $marker_positions, $qr_position)
 	{
 		$corrected = $this->getCorrectedPositionFromMarker($marker_positions, $qr_position);
+
 		$im2 = $im;
 		$this->log->debug(sprintf('Starting to scan checkboxes...'));
 		$answers = $this->getAnswerPositions();
@@ -103,10 +124,10 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			{
 				if($value['type'] == 'ilScanAssessment_assSingleChoice' || $value['type'] == 'ilScanAssessment_assMultipleChoice')
 				{
-					$answer_x = ($value['x']) * ($corrected->getX());
-					$answer_y = ($value['y']) * ($corrected->getY());
+					$answer_x = $this->addXPosition(($value['x'] * $corrected->getX()), $marker_positions);
+					$answer_y = $this->addYPosition(($value['y'] * $corrected->getY()), $marker_positions);
 
-					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s], corrected at [%s, $s].', $value['x'], $value['y'], $answer_x, $answer_y));
+					$this->log->debug(sprintf('Checkbox uncorrected at [%s, %s], corrected at [%s, %ss].', $value['x'], $value['y'], $answer_x, $answer_y));
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
 					$second_point = new ilScanAssessmentPoint($answer_x + (PDF_ANSWERBOX_W * $corrected->getX()), $answer_y + (PDF_ANSWERBOX_H * $corrected->getY()));
@@ -126,10 +147,10 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 				}
 				else if ($value['type'] == 'ilScanAssessment_assKprimChoice')
 				{
-					$answer_correct_x = ($value['correct']['x']) * ($corrected->getX());
-					$answer_correct_y = ($value['correct']['y']) * ($corrected->getY());
-					$answer_wrong_x = ($value['wrong']['x']) * ($corrected->getX());
-					$answer_wrong_y = ($value['wrong']['y']) * ($corrected->getY());
+					$answer_correct_x = $this->addXPosition(($value['correct']['x'] * $corrected->getX()), $marker_positions);
+					$answer_correct_y = $this->addYPosition(($value['correct']['y'] * $corrected->getY()), $marker_positions);
+					$answer_wrong_x = $this->addXPosition(($value['wrong']['x'] * $corrected->getX()), $marker_positions);
+					$answer_wrong_y = $this->addYPosition(($value['wrong']['y'] * $corrected->getY()), $marker_positions);
 
 					$first_point_correct  = new ilScanAssessmentPoint($answer_correct_x, $answer_correct_y);
 					$second_point_correct = new ilScanAssessmentPoint($answer_correct_x + (2.5 * $corrected->getX()), $answer_correct_y + (2.5 * $corrected->getY()));
@@ -150,7 +171,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					
 					$first_point_wrong  = new ilScanAssessmentPoint($answer_wrong_x, $answer_wrong_y);
 					$second_point_wrong = new ilScanAssessmentPoint($answer_wrong_x + (2.5 * $corrected->getX()), $answer_wrong_y + (2.5 * $corrected->getY()));
-					$aid_wrong = $value['correct']['position'];
+					$aid_wrong = $value['wrong']['position'];
 					$checkbox = new ilScanAssessmentCheckBoxElement($first_point_wrong, $second_point_wrong, $this->image_helper);
 					$marked = $checkbox->isMarked($im, true);
 					$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point_wrong->getX(), $first_point_wrong->getY(), $second_point_wrong->getX(), $second_point_wrong->getY(), $this->translate_mark[$marked]));
@@ -216,8 +237,8 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		$this->log->debug(sprintf('..done scanning checkboxes.'));
 		$this->image_helper->drawTempImage($im2, $this->path_to_save . '/answer_detection' . ilScanAssessmentGlobalSettings::getInstance()->getInternFileType());
 
-		$this->findMatriculation($im, $corrected);
-		$this->cropHeader($im, $corrected);
+		$this->findMatriculation($im, $corrected, $marker_positions);
+		$this->cropHeader($corrected);
 
 		return $this->checkbox_container;
 	}
@@ -225,23 +246,24 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	/**
 	 * @param $im
 	 * @param ilScanAssessmentPoint $corrected
+	 * @param ilScanAssessmentVector[] $marker_positions
 	 */
-	protected function findMatriculation(&$im, $corrected)
+	protected function findMatriculation(&$im, $corrected, $marker_positions)
 	{
 		if($this->qr_identification->getPageNumber() == $this->getPageForMatriculation())
 		{
 
 			$im2 = $im;
 			$this->log->debug(sprintf('Starting to scan matriculation checkboxes...'));
-			$matriculation = array();
+			$matriculation = $this->buildMatriculationArray();
 			$positions = $this->getMatriculationPosition();
 			foreach($positions as $key => $col)
 			{
 				/** @var ilScanAssessmentVector $vector */
 				foreach($col as $row => $vector)
 				{
-					$answer_x = ($vector['x']) * ($corrected->getX());
-					$answer_y = ($vector['y']) * ($corrected->getY());
+					$answer_x = ($vector['x']) * ($corrected->getX()) + $marker_positions[0]->getPosition()->getX();
+					$answer_y = ($vector['y']) * ($corrected->getY()) + $marker_positions[0]->getPosition()->getY();
 
 					$first_point  = new ilScanAssessmentPoint($answer_x, $answer_y);
 					$second_point = new ilScanAssessmentPoint($answer_x + ($vector['w'] * $corrected->getX()), $answer_y + ($vector['w'] * $corrected->getY()));
@@ -254,7 +276,15 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 					if($marked == 2)
 					{
-						$matriculation[$key] = $row;
+						if($matriculation[$key] == '_')
+						{
+							$matriculation[$key] = $row;
+						}
+						else
+						{
+							$matriculation[$key] = 'x';
+							$this->log->warn(sprintf('Duplicate entry for key (%s) found for matriculation number.', $key));
+						}
 					}
 				}
 			}
@@ -265,10 +295,9 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
-	 * @param $im
 	 * @param ilScanAssessmentPoint $corrected
 	 */
-	protected function cropHeader(&$im, $corrected)
+	protected function cropHeader($corrected)
 	{
 		$header = $this->getPageAndHeightForHeader();
 		if($this->qr_identification->getPageNumber() == $header['page'])
@@ -281,7 +310,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 			$first_point  = new ilScanAssessmentPoint(0, 0);
 			$second_point = new ilScanAssessmentPoint($head_x, $head_y);
 
-			$im2 = $this->image_helper->imageCropByPoints( $this->image_helper->getImage(),$first_point, $second_point);
+			$im2 = $this->image_helper->imageCropByPoints($this->image_helper->getImage(),$first_point, $second_point);
 
 			$file_helper = new ilScanAssessmentFileHelper($this->qr_identification->getTestId());
 			$path = $file_helper->getRevisionPath() . '/qpl/' . $this->qr_identification->getPdfId() . '/head/';
@@ -290,6 +319,20 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 		}
 	}
 
+	/**
+	 * @return array
+	 */
+	protected function buildMatriculationArray()
+	{
+		$size = ilScanAssessmentGlobalSettings::getInstance()->getConfiguredLengthOfMatriculationNumber();
+		$mat_array = array();
+		for($i = 0; $i < $size; $i++)
+		{
+			$mat_array[$i] = '_';
+		}
+		return $mat_array;
+	}
+	
 	/**
 	 * @param $matriculation
 	 */
@@ -458,7 +501,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 	}
 
 	/**
-	 * @return array
+	 * @return array | int
 	 */
 	private function getPageForMatriculation()
 	{

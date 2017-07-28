@@ -43,10 +43,13 @@ class ilScanAssessmentScanGUI extends ilScanAssessmentController
 		$activated		= new ilScanAssessmentIsActivatedStep($this->getCoreController()->getPluginObject(), $this->test);
 		$layout			= new ilScanAssessmentLayoutStep($this->getCoreController()->getPluginObject(), $this->test);
 		$user_packages	= new ilScanAssessmentUserPackagesExportedStep($this->getCoreController()->getPluginObject(), $this->test);
-		
-		if( !$activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
+		$cmd = ilUtil::stripSlashes($_GET['cmd']);
+		if(strtolower($cmd) === 'ilscanassessmentscangui.default')
 		{
-			$this->redirectAndFailure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'), 'ilScanAssessmentUserPackagesPdfGUI.default');
+			if( !$activated->isFulfilled() || !$layout->isFulfilled() || !$user_packages->isFulfilled())
+			{
+				$this->Failure($this->getCoreController()->getPluginObject()->txt('scas_previous_step_unfulfilled'));
+			}
 		}
 	}
 

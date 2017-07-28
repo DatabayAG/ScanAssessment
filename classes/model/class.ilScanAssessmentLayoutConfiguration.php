@@ -25,6 +25,7 @@ class ilScanAssessmentLayoutConfiguration extends ilScanAssessmentTestConfigurat
 			$file_helper = new ilScanAssessmentFileHelper($test_obj_id);
 			$this->path_to_layout = $file_helper->getLayoutPath();
 		}
+		parent::__construct($test_obj_id);
 	}
 
 	public function read()

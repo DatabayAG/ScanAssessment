@@ -64,6 +64,7 @@ class ilScanAssessmentCheckBoxAnalyser
 	 * @param $image
 	 * @param $x
 	 * @param $y
+	 * @param $size
 	 * @param $threshold
 	 * @param $image_helper
 	 */

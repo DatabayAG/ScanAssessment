@@ -234,7 +234,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 
 		if(!isset($_GET['autoCompleteField']))
 		{
-			$a_fields = array('login','firstname','lastname','email', 'recipients');
+			$a_fields = array('login','firstname','lastname','email', 'recipients', 'matriculation');
 			$result_field = 'login';
 		}
 		else

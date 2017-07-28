@@ -321,7 +321,22 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	function imageCrop($image, $vector)
 	{
-		return imagecrop($image, array('x' => $vector->getPosition()->getX(), 'y' => $vector->getPosition()->getY(), 'width' => $vector->getLength(), 'height' => $vector->getLength()));
+		$x = $vector->getPosition()->getX();
+		if($x <= 0)
+		{
+			$x = 1;
+		}
+		$y = $vector->getPosition()->getY();
+		if($y <= 0)
+		{
+			$y = 1;
+		}
+		$length = $vector->getLength();
+		if($length <= 0)
+		{
+			$length = 1;
+		}
+		return imagecrop($image, array('x' => $x, 'y' => $y, 'width' => $length, 'height' => $length));
 	}
 
 	/**
@@ -357,7 +372,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	}
 
 	/**
-	 * @param      $image
+	 * @param self $image
 	 * @param      $src_x
 	 * @param      $src_y
 	 * @param      $dest_x

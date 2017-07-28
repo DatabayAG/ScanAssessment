@@ -24,6 +24,7 @@ class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguratio
 			$file_helper = new ilScanAssessmentFileHelper($test_obj_id);
 			$this->path_to_scan = $file_helper->getScanPath();
 		}
+		parent::__construct($test_obj_id);
 	}
 
 	public function read()

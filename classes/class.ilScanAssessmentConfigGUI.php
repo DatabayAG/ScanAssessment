@@ -106,7 +106,8 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				'marked_area_checked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked(),
 				'marked_area_unchecked'		=> ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked(),
 				'save_file_type'			=> ilScanAssessmentGlobalSettings::getInstance()->getSaveFileType(),
-				'log_level'					=> ilScanAssessmentGlobalSettings::getInstance()->getLogLevel()
+				'log_level'					=> ilScanAssessmentGlobalSettings::getInstance()->getLogLevel(),
+				'auto_move'					=> ilScanAssessmentGlobalSettings::getInstance()->getAutoMoveFiles()
 			));
 		}
 		$this->tpl->setContent($form->getHTML());
@@ -181,7 +182,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
         $tiff_dpi_maximum->setInfo($this->getPluginObject()->txt('scas_tiff_dpi_maximum_info'));
         $form->addItem($tiff_dpi_maximum);
 
-        if(!class_exists(Imagick))
+        if(!class_exists('Imagick'))
         {
             $tiff_support->setInfo($this->getPluginObject()->txt('scas_tiff_no_imagemagick_info'));
             $tiff_support->setDisabled(true);
@@ -229,6 +230,10 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$log_level->setOptions($options);
 		$form->addItem($log_level);
 
+		$auto_move = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_auto_move'), 'auto_move');
+		$auto_move->setInfo($this->getPluginObject()->txt('scas_auto_move_info'));
+		$form->addItem($auto_move);
+
 		$enable_debug_export = new ilCheckboxInputGUI($this->getPluginObject()->txt('scas_enable_debug_export'), 'scas_enable_debug_export');
 		$enable_debug_export->setInfo($this->getPluginObject()->txt('scas_enable_debug_export_info'));
 		$form->addItem($enable_debug_export);
@@ -261,6 +266,7 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 				ilScanAssessmentGlobalSettings::getInstance()->setEnableDebugExportTab($form->getInput('scas_enable_debug_export'));
 				ilScanAssessmentGlobalSettings::getInstance()->setSaveFileType($form->getInput('save_file_type'));
 				ilScanAssessmentGlobalSettings::getInstance()->setLogLevel($form->getInput('log_level'));
+				ilScanAssessmentGlobalSettings::getInstance()->setAutoMoveFiles($form->getInput('auto_move'));
 				ilScanAssessmentGlobalSettings::getInstance()->save();
 				$this->ctrl->redirect($this, 'configure');
 			}

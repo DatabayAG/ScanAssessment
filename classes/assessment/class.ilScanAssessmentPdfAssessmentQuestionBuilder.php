@@ -71,6 +71,7 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	/**
 	 * @param assQuestion $question
 	 * @param $counter
+	 * @return array
 	 */
 	public function addQuestionToPdf($question, $counter)
 	{
@@ -85,6 +86,7 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	/**
 	 * @param assQuestion $question
 	 * @param $counter
+	 * @return array
 	 */
 	public function addQuestionToPdfWithoutCheckbox($question, $counter)
 	{
@@ -97,9 +99,10 @@ class ilScanAssessmentPdfAssessmentQuestionBuilder
 	}
 
 	/**
-	 * @param $question
+	 * @param assQuestion $question
 	 * @param $answers
 	 * @param $columns
+	 * @return array
 	 */
 	public function addCheckboxToPdf($question, $answers, $columns)
 	{

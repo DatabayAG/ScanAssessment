@@ -49,6 +49,11 @@ abstract class ilScanAssessmentController
 	 * @var ilObjuser
 	 */
 	protected $user;
+	
+	/**
+	 * @var ilObjTest
+	 */
+	protected $test;
 
 	/**
 	 * @var ilDB
@@ -139,8 +144,16 @@ abstract class ilScanAssessmentController
 		{
 			$class_and_command = $this->getDefaultClassAndCommand();
 		}
-		#ilUtil::sendInfo($txt, true);
-		#$this->redirect($class_and_command);
+		ilUtil::sendFailure($txt, true);
+		$this->redirect($class_and_command);
+	}
+
+	/**
+	 * @param      $txt
+	 */
+	protected function Failure($txt)
+	{
+		ilUtil::sendFailure($txt, true);
 	}
 
 	/**

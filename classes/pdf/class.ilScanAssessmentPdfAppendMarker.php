@@ -12,10 +12,10 @@ else
 	require_once 'libs/composer/vendor/tecnickcom/tcpdf/tcpdf.php';
 }
 /**
- * Class ilPDFAppendMarker
+ * Class ilScanAssessmentPdfAppendMarker
  * @author Guido Vollbach <gvollbach@databay.de>
  */
-class ilPDFAppendMarker extends TCPDF{
+class ilScanAssessmentPdfAppendMarker extends TCPDF{
 
 	
 	/**

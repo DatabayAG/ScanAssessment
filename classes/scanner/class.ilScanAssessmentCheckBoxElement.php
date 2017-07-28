@@ -19,6 +19,10 @@ class ilScanAssessmentCheckBoxElement
 	const SEARCH_ROUNDS = 10;
 	const SEARCH_INCREMENT = 3;
 
+	/**
+	 * @var array
+	 */
+
 	protected $color_mapping;
 	/**
 	 * @var ilScanAssessmentPoint
@@ -65,7 +69,10 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected $search_rounds;
 
-    private $border_line;
+	/**
+	 * @var ilScanAssessmentReliableLineDetector
+	 */
+    protected $border_line;
 
     /**
 	 * ilScanAssessmentCheckBoxElement constructor.
@@ -83,9 +90,9 @@ class ilScanAssessmentCheckBoxElement
 			self::UNCHECKED => $this->image_helper->getPink(),
 			self::CHECKED   => $this->image_helper->getGreen()
 		);
-		$this->correction_length = ($this->image_helper->getImageSizeY() / 297) * 1.43846153846;
-		$this->search_rounds     = ($this->image_helper->getImageSizeY() / 297);
-		$this->min_value_black   = ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack();
+		$this->correction_length     = ($this->image_helper->getImageSizeY() / 297) * 1.43846153846;
+		$this->search_rounds         = ($this->image_helper->getImageSizeY() / 297);
+		$this->min_value_black       = ilScanAssessmentGlobalSettings::getInstance()->getMinValueBlack();
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
@@ -277,8 +284,8 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected function detectBorder($im)
 	{
-		$center_x = $this->getFirstPoint()->getX();
-		$center_y = $this->getFirstPoint()->getY();
+		$center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
+		$center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
 		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));
 		$size     = array(
 			$this->getSecondPoint()->getX() - $this->getFirstPoint()->getX(),
@@ -350,9 +357,11 @@ class ilScanAssessmentCheckBoxElement
 			$this->trimBorderWhite();
 		}
 
-		$this->trimBorderBlack();
-
-        $new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
+		//Todo: check why this fails so heavy now!
+		#$this->trimBorderBlack();
+		//Todo: check why this fails so heavy now!
+        
+		$new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
         $new_center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
 
         $this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
@@ -540,8 +549,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getBottomBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -609,8 +619,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getTopBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -674,8 +685,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getLeftBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
@@ -743,8 +755,9 @@ class ilScanAssessmentCheckBoxElement
 	 * @param     $im
 	 * @param     $center_x
 	 * @param     $center_y
+	 * @param     $length
 	 * @param int $length_multiplier
-	 * @return ilScanAssessmentVector
+	 * @return bool|ilScanAssessmentVector
 	 */
 	protected function getRightBorderPosition($im, $center_x, $center_y, $length, $length_multiplier = 1)
 	{
