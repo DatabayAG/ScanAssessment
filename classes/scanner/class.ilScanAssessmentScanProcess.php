@@ -109,7 +109,6 @@ class ilScanAssessmentScanProcess
 	 */
 	protected function checkIfMustBeCropped($scanner, $log, $marker, $qr_pos)
 	{
-		return false;
 		$corrected = $scanner->getCorrectedPosition();
 		$x1        = $marker[0]->getPosition()->getX();
 		$x2        = $marker[1]->getPosition()->getX();
@@ -348,8 +347,16 @@ class ilScanAssessmentScanProcess
 		$marker = $this->detectMarker($scanner, $log);
 		if($marker != false)
 		{
-			$this->rotateFileForNewMarkerDetection($log, $scanner);
+			$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file'  . $this->internal_file_type;
+			if(file_exists($rotate_file))
+			{
+				$log->debug('Rotated file found, using that for further processing.');
+				$img = $scanner->image_helper->createNewImageInstanceFromFileName($rotate_file);
+				$scanner->image_helper->drawTempImage($img, $this->file_helper->getScanTempPath() . 'new_file'  . $this->internal_file_type);
 
+				unlink($rotate_file);
+				$this->rescale = 0;
+			}
 			$qr_pos = $this->detectQrCode($log);
             if ($qr_pos === false) {
                 $this->log->warn('No QR Code found!');
@@ -529,24 +536,6 @@ class ilScanAssessmentScanProcess
 			$this->path_to_done	= $path . $identifier;
 		}
 		$this->file_helper->ensurePathExists($this->path_to_done);
-	}
-
-	/**
-	 * @param $log
-	 * @param $scanner
-	 */
-	protected function rotateFileForNewMarkerDetection($log, $scanner)
-	{
-		$rotate_file = $this->file_helper->getScanTempPath() . '/rotate_file' . $this->internal_file_type;
-		if(file_exists($rotate_file))
-		{
-			$log->debug('Rotated file found, using that for further processing.');
-			$img = $scanner->image_helper->createNewImageInstanceFromFileName($rotate_file);
-			$scanner->image_helper->drawTempImage($img, $this->file_helper->getScanTempPath() . 'new_file' . $this->internal_file_type);
-
-			unlink($rotate_file);
-			$this->rescale = 0;
-		}
 	}
 
 	private function traverse($path, $callback)
