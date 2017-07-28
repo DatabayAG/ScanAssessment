@@ -125,7 +125,7 @@ class ilScanAssessmentScanUserMappingGUI extends ilScanAssessmentScanGUI
 		$accordion_identification = new ilAccordionGUI();
 		if($matriculation_activated == 1)
 		{
-			if($detected_matriculation != null && $detected_matriculation != 0)
+			if($detected_matriculation != null && $detected_matriculation != "0")
 			{
 				$acor_title = $pluginObject->txt('scas_first_page') . ' (' . $pluginObject->txt('scas_matriculation_detected') . ': ' . $detected_matriculation . ')';
 			}

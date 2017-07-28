@@ -276,7 +276,7 @@ class ilScanAssessmentAnswerScanner extends ilScanAssessmentScanner
 					#$this->log->debug(sprintf('Checkbox at [%s, %s], [%s, %s] is %s.', $first_point->getX(), $first_point->getY(), $second_point->getX(), $second_point->getY(), $this->translate_mark[$marked]));
 					if($marked == 2)
 					{
-						if($matriculation[$key] == '_')
+						if(trim($matriculation[$key]) == '_')
 						{
 							$matriculation[$key] = $row;
 						}
