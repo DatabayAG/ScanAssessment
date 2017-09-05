@@ -391,7 +391,7 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data', 'header_page'))
 		array(
 			'notnull'=> false,
 			'type'   => 'integer',
-			'length' => '25',
+			'length' => '4',
 			'default' => 0
 		)
 	);
