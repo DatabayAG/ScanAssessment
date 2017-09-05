@@ -2,7 +2,6 @@
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/class.ilScanAssessmentScanner.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('scanner/geometry/class.ilScanAssessmentArea.php');
 ilScanAssessmentPlugin::getInstance()->includeClass('class.ilScanAssessmentGlobalSettings.php');
-ilScanAssessmentPlugin::getInstance()->includeClass('scanner/imageWrapper/class.ilScanAssessmentCheckBoxAnalyser.php');
 
 
 /**
@@ -69,11 +68,6 @@ class ilScanAssessmentCheckBoxElement
 	 */
 	protected $search_rounds;
 
-	/**
-	 * @var ilScanAssessmentReliableLineDetector
-	 */
-    protected $border_line;
-
     /**
 	 * ilScanAssessmentCheckBoxElement constructor.
 	 * @param ilScanAssessmentPoint        $first_point
@@ -96,8 +90,6 @@ class ilScanAssessmentCheckBoxElement
 		$this->min_marked_area       = ilScanAssessmentGlobalSettings::getInstance()->getMinMarkedArea();
 		$this->marked_area_checked   = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaChecked();
 		$this->marked_area_unchecked = ilScanAssessmentGlobalSettings::getInstance()->getMarkedAreaUnchecked();
-
-        $this->border_line = new ilScanAssessmentReliableLineDetector($image_helper, $this->min_value_black, 0.4);
 	}
 
 	/**
@@ -158,7 +150,6 @@ class ilScanAssessmentCheckBoxElement
 		$black = 0;
 		$white = 0;
 		$total = 0;
-		$this->detectBorder($im);
 		for($x = $this->getFirstPoint()->getX(); $x < $this->getSecondPoint()->getX(); $x++)
 		{
 			for($y = $this->getFirstPoint()->getY(); $y < $this->getSecondPoint()->getY(); $y++)
@@ -181,140 +172,6 @@ class ilScanAssessmentCheckBoxElement
 		}
 		ilScanAssessmentLog::getInstance()->debug(sprintf('Checkbox pixels total %s, black %s, white %s.', $total, $black, $white));
 		return new ilScanAssessmentArea($total, $white, $black);
-	}
-
-	protected function detectBox($im, $x, $y, $size, $threshold)
-	{
-	    $x0 = $x;
-
-		while($x - $x0 < $size[0] / 2)
-		{
-			// echo "@" . $x . ", " . $y . "<br>";
-
-			$x = $this->scanline($im, $x, $y, $threshold);
-			if($x === false)
-			{
-				break;
-			}
-
-			$pixels = new ilScanAssessmentCheckBoxAnalyser(
-			    $im, $x, $y, $size, $threshold, $this->image_helper);
-
-			$r = $pixels->detectRectangle();
-			if($r)
-			{
-				return $r;
-			}
-
-			list($x, $y) = $pixels->rightmost();
-			$x += 1;
-		}
-
-		return false;
-	}
-
-	function scanline($image, $x0, $y, $threshold)
-	{
-		$w = imagesx($image);
-		for($x = $x0; $x < $w; $x++)
-		{
-			if($this->image_helper->getGrey(new ilScanAssessmentPoint($x, $y)) < $threshold)
-			{
-				return $x;
-			}
-		}
-		return false;
-	}
-
-	protected function trimBorder($what)
-    {
-        // removing borders seems to make detection thresholds more resilient to noise.
-        // ignoring the black borders of a checkbox and using only inner pixels for
-        // calculating the blackness ratio of a checkbox, is a good idea as the border
-        // pixels might be jagged or contain varying noise; thus, one empty checkbox's
-        // blackness ratio might be higher than another empty one's due to slightly
-        // different border pixels and thus skew the detected blackness levels.
-
-        $x0 = $this->getFirstPoint()->getX();
-        $y0 = $this->getFirstPoint()->getY();
-        $x1 = $this->getSecondPoint()->getX();
-        $y1 = $this->getSecondPoint()->getY();
-
-        $s = 0.2; // maximum factor to remove
-        $max_dx = intval($s * ($x1 - $x0));
-        $max_dy = intval($s * ($y1 - $y0));
-        $max_x0 = $x0 + $max_dx;
-        $min_x1 = $x1 - $max_dx;
-        $max_y0 = $y0 + $max_dy;
-        $min_y1 = $y1 - $max_dy;
-
-        while($y0 < $max_y0 && $this->border_line->horizontal($x0, $x1, $y0) === $what)
-        {
-            $y0++;
-        }
-        while($y1 > $min_y1 && $this->border_line->horizontal($x0, $x1, $y1) === $what)
-        {
-            $y1--;
-        }
-        while($x0 < $max_x0 && $this->border_line->vertical($x0, $y0, $y1) === $what)
-        {
-            $x0++;
-        }
-        while($x1 > $min_x1 && $this->border_line->vertical($x1, $y0, $y1) === $what)
-        {
-            $x1--;
-        }
-
-        $this->setFirstPoint(new ilScanAssessmentPoint($x0, $y0));
-        $this->setSecondPoint(new ilScanAssessmentPoint($x1, $y1));
-    }
-
-    protected function trimBorderBlack()
-    {
-        $this->trimBorder(true);
-    }
-
-    protected function trimBorderWhite()
-    {
-        $this->trimBorder(false);
-    }
-
-	/**
-	 * @param $im
-	 */
-	protected function detectBorder($im)
-	{
-		$center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
-		$center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
-		ilScanAssessmentLog::getInstance()->debug(sprintf('New Center is [%s, %s].',$center_x, $center_y));
-		$size     = array(
-			$this->getSecondPoint()->getX() - $this->getFirstPoint()->getX(),
-			$this->getSecondPoint()->getY() - $this->getFirstPoint()->getY());
-		$box      = $this->detectBox($im, $center_x, $center_y, $size, 100);
-		if($box)
-		{
-			list($x0, $y0, $x1, $y1) = $box;
-			$this->setFirstPoint(new ilScanAssessmentPoint($x0, $y0));
-			$this->setSecondPoint(new ilScanAssessmentPoint($x1, $y1));
-		}
-		else
-		{
-			ilScanAssessmentLog::getInstance()->err(sprintf('No real box found!.'));
-			$this->trimBorderWhite();
-		}
-
-		//Todo: check why this fails so heavy now!
-		#$this->trimBorderBlack();
-		//Todo: check why this fails so heavy now!
-        
-		$new_center_x = ($this->getFirstPoint()->getX() + $this->getSecondPoint()->getX()) / 2;
-        $new_center_y = ($this->getFirstPoint()->getY() + $this->getSecondPoint()->getY()) / 2;
-
-        $this->image_helper->drawPixel($im, new ilScanAssessmentPoint($new_center_x, $new_center_y), $this->image_helper->getPink());
-		$this->image_helper->drawPixel($im, new ilScanAssessmentPoint($center_x, $center_y), $this->image_helper->getGreen());
-
-		ilScanAssessmentLog::getInstance()->debug(sprintf('Old center was [%s, %s] new center is [%s, %s]', $center_x, $center_y, $new_center_x, $new_center_y));
-
 	}
 
 	/**
