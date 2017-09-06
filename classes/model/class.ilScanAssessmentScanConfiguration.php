@@ -45,7 +45,12 @@ class ilScanAssessmentScanConfiguration extends ilScanAssessmentTestConfiguratio
 			$extension = pathinfo($this->uploaded_file['name'], PATHINFO_EXTENSION);
 			if($extension == 'zip')
 			{
-				ilUtil::unzip($this->path_to_scan .'/'. $this->uploaded_file['name'], false, true);
+				$file = $this->path_to_scan .'/'. $this->uploaded_file['name'];
+				ilUtil::unzip($file, false, true);
+				if(file_exists($file))
+				{
+					unlink($file);
+				}
 			}
 		}
 	}
