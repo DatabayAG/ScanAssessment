@@ -125,17 +125,29 @@ class ilScanAssessmentConfigGUI extends ilPluginConfigGUI
 		$form->setFormAction($this->ctrl->getFormAction($this, 'showConfigurationForm'));
 		$form->setShowTopButtons(true);
 
-		$info = new ilNonEditableValueGUI($this->getPluginObject()->txt('scas_gd_library'));
-		$info->setValue($this->getPluginObject()->txt('scas_gd_not_installed'));
+		$gd = new ilNonEditableValueGUI($this->getPluginObject()->txt('scas_gd_library'));
+		$gd->setValue($this->getPluginObject()->txt('scas_gd_not_installed'));
 		if(extension_loaded('gd'))
 		{
-			$info->setValue($this->getPluginObject()->txt('scas_gd_installed'));
+			$gd->setValue($this->getPluginObject()->txt('scas_gd_installed'));
 		}
 		else
 		{
 			ilUtil::sendFailure($this->getPluginObject()->txt('scas_gd_must_installed'), true);
 		}
-		$form->addItem($info);
+		$form->addItem($gd);
+
+		$bcmath = new ilNonEditableValueGUI($this->getPluginObject()->txt('scas_bcmath_library'));
+		$bcmath->setValue($this->getPluginObject()->txt('scas_bcmath_not_installed'));
+		if(extension_loaded('bcmath'))
+		{
+			$bcmath->setValue($this->getPluginObject()->txt('scas_bcmath_installed'));
+		}
+		else
+		{
+			ilUtil::sendInfo($this->getPluginObject()->txt('scas_bcmath_should_installed'), true);
+		}
+		$form->addItem($bcmath);
 
 		$institution = new ilTextInputGUI($this->getPluginObject()->txt('scas_institution'), 'institution');
 		$form->addItem($institution);

@@ -156,7 +156,7 @@ class ilScanAssessmentGDWrapper implements ilScanAssessmentImageWrapper
 	 */
 	public function rotate($rad)
 	{
-		$white = imagecolorallocate($this->getImage(), 0,255,255);
+		$white = imagecolorallocate($this->getImage(), 255,255,255);
 		/**
 		 * since there seems to be a problem with gd 2.1.0 with the default interpolation (IMG_BILINEAR_FIXED)
 		 * we use an alternative interpolation here

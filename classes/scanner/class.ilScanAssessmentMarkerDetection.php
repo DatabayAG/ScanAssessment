@@ -125,13 +125,21 @@ class ilScanAssessmentMarkerDetection extends ilScanAssessmentScanner
 			return false;
 		}
 
-		$dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
-		$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
+		if(function_exists('bcsub'))
+		{
+			$dx = bcsub($locate_bottom_left->getPosition()->getX() , $locate_top_left->getPosition()->getX());
+			$dy = bcsub($locate_bottom_left->getPosition()->getY() , $locate_top_left->getPosition()->getY());
+		}
+		else
+		{
+			$dx = $locate_bottom_left->getPosition()->getX() - $locate_top_left->getPosition()->getX();
+			$dy = $locate_bottom_left->getPosition()->getY() - $locate_top_left->getPosition()->getY();
+		}
 		$this->log->debug(sprintf('dX,dY [%s, %s] => atan %s.', $dx, $dy, atan2($dx, $dy)));
 
 		$rad = rad2deg(atan2($dx, $dy));
 		$this->log->debug(sprintf('Rotation (%s).', $rad));
-		if($rotated == false && abs($rad) > 0.05)
+		if($rotated == false && abs($rad) > 0.099)
 		{
 			$this->log->debug(sprintf('Image seems to be rotated (%s).', $rad));
 			$im = $this->image_helper->rotate($rad * -1);
