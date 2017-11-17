@@ -1,5 +1,7 @@
 <!-- BEGIN checkbox -->
-<div class="col-xs-12 text_center" style="padding:2px"><img  style="max-width:100%;" src="{IMAGE}" style="padding:2px"/>
+<div class="col-xs-12 text_center" style="padding:2px">
+	<!-- BEGIN multiple_single_checked --><div class="alert alert-danger" role="alert">{ERROR_SINGLE_CHOICE_MULTI_MARK}</div><!-- END multiple_single_checked -->
+	<img  style="max-width:100%;" src="{IMAGE}" style="padding:2px"/>
 	<!-- BEGIN ilScanAssessment_assSingleChoice -->
 	<div class="answer_block"><input class="answer_element" type="checkbox" name="{ANSWER_ID}" value="{ANSWER_ID}" <!-- BEGIN checked_single -->checked="checked"<!-- END checked_single --> />{VALUE}</div>
 	<!-- END ilScanAssessment_assSingleChoice -->

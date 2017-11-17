@@ -127,6 +127,7 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 	 */
 	protected function addAnswersToTemplate($pdf_id, $page, $answers, $checked_answers, $template)
 	{
+		$valid_count_of_checked = 0;
 		foreach($answers as $key => $data)
 		{
 			if($data['type'] == 'ilScanAssessment_assSingleChoice' || $data['type'] == 'ilScanAssessment_assMultipleChoice')
@@ -140,9 +141,24 @@ class ilScanAssessmentScanRevisionByAnswerRowGUI  extends ilScanAssessmentScanRe
 				{
 					$answer_value = '(' . $data['ident'] . ') ' . $answer_value;
 				}
+
 				$template->setVariable('VALUE', $answer_value);
 				$template->setVariable('ANSWER_ID', 'revision[' . $name . ']');
 				$template->parseCurrentBlock();
+				if($data['type'] == 'ilScanAssessment_assSingleChoice')
+				{
+					if(array_key_exists($name, $checked_answers))
+					{
+						$valid_count_of_checked++;
+						if($valid_count_of_checked > 1)
+						{
+							$template->setCurrentBlock('multiple_single_checked');
+							$template->setVariable('ERROR_SINGLE_CHOICE_MULTI_MARK', $this->getCoreController()->getPluginObject()->txt('scas_error_multi_mark_single'));
+							$template->parseCurrentBlock();
+							ilUtil::sendFailure($this->getCoreController()->getPluginObject()->txt('scas_error_on_pages'));
+						}
+					}
+				}
 			}
 			else if($data['type'] == 'ilScanAssessment_assKprimChoice')
 			{
