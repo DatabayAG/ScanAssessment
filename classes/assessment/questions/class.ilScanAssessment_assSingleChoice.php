@@ -83,7 +83,7 @@ class ilScanAssessment_assSingleChoice extends ilScanAssessmentQuestionHandler
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
 			$ident_string = $counter . $this->getLetterFromNumber($answer_counter);
-			$this->pdf_helper->writeHTML('(' . $ident_string . ') ' . $answer->getAnswertext());
+			$this->pdf_helper->writeHTML('(' . $ident_string . ') ' . $this->removeUnwantedTag($answer->getAnswertext()));
 			$answers[] = array('identifier' => $ident_string, 'question' => $question, 'answer' => $answer);
 			$answer_counter++;
 		}

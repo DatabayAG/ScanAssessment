@@ -92,7 +92,7 @@ class ilScanAssessment_assKprimChoice extends ilScanAssessmentQuestionHandler
 			$ident_string = $counter . $this->getLetterFromNumber($answer_counter);
 			/** @var ASS_AnswerSimple $answer */
 			$this->pdf_helper->pdf->setCellMargins(23, PDF_CHECKBOX_MARGIN);
-			$this->pdf_helper->writeHTML('(' . $ident_string . ') ' . $answer->getAnswertext());
+			$this->pdf_helper->writeHTML('(' . $ident_string . ') ' . $this->removeUnwantedTag($answer->getAnswertext()));
 
 			$answers[] = array('identifier' => $ident_string, 'question' => $question, 'answer' => $answer);
 			$answer_counter++;

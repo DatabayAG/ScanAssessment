@@ -53,7 +53,7 @@ class ilScanAssessmentPdfHeaderForm
 		$this->pdf				= $pdf;
 		$this->metadata			= $metadata;
 		$this->pdf_mode			= $pdf_mode;
-		$this->global_settings	= ilScanAssessmentGlobalSettings::getInstance(); 
+		$this->global_settings	= ilScanAssessmentGlobalSettings::getInstance();
 	}
 
 	/**

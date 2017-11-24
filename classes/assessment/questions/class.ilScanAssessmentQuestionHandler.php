@@ -178,4 +178,13 @@ class ilScanAssessmentQuestionHandler implements ilScanAssessmentQuestion
 		$alphabet = range('a', 'z');
 		return $alphabet[$number];
 	}
+
+	/**
+	 * @param $string
+	 * @return string
+	 */
+	protected function removeUnwantedTag($string)
+	{
+		return preg_replace('(<p>|<\/p>)', '', $string);
+	}
 }
