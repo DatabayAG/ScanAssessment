@@ -333,7 +333,11 @@ class ilScanAssessmentPdfAssessmentBuilder
 				}
 			}
 		}
-		$this->addPageWithQrCode($pdf_h);
+		
+		if(sizeof($freestyle_temp) > 0)
+		{
+			$this->addPageWithQrCode($pdf_h);
+		}
 		foreach($freestyle_temp as $question)
 		{
 			$this->addAnswerImageToAnswerSheetUsingTransaction($pdf_h, $question_builder, $question);
