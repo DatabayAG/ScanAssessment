@@ -132,13 +132,13 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 	public function Header() 
 	{
 		$this->pageNr++;
-		$this->SetY(20);
+		$this->SetY(24);
+		$this->SetAbsY(24);
 		$this->SetFont(PDF_DEFAULT_FONT, '', PDF_DEFAULT_FONT_SIZE_HEAD, '', TRUE);
 		$this->SetTextColor(0);
 		$this->SetDrawColor(0, 0, 0);
 		$this->SetFillColor(255, 255, 255);
 		$this->SetLineWidth(0.6);
-		$this->Ln();
 		$this->Cell(40, 7, '', 1, 0, 'C', 1);
 		$this->Cell(120, 7, ilScanAssessmentGlobalSettings::getInstance()->getInstitution(), 1, 0, 'C', 1);
 		$date = '';
@@ -154,7 +154,7 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 			$this->Ln(1);
 			$this->Cell(40, 8, ' ' . $this->metadata->getAuthor(), 'LTB', 0, 'L', 1);
 			$this->Cell(120, 8, $this->metadata->getTestTitle(), 'TB', 0, 'C', 1);
-			$this->Cell(20, 8, 'FB0', 'RTB', 0, 'C', 1);
+			$this->Cell(20, 8, '', 'RTB', 0, 'C', 1);
 			$this->Ln();
 			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata, $this->metadata->getPdfMode());
 			$header_form->insertIdentification();
