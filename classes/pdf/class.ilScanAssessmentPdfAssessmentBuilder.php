@@ -225,7 +225,7 @@ class ilScanAssessmentPdfAssessmentBuilder
 	 */
 	public function createPdf($data)
 	{
-		$pdf_h = new ilScanAssessmentPdfHelper($data);
+		$pdf_h = new ilScanAssessmentPdfHelper($data, $this->config);
 		$this->map = new ilScanAssessmentPdfMap();
 		$question_builder = new ilScanAssessmentPdfAssessmentQuestionBuilder($this->test, $pdf_h);
 		$questions = $question_builder->instantiateQuestions($this->shuffle);

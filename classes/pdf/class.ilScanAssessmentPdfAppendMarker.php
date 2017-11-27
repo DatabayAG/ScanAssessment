@@ -54,6 +54,11 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 	protected $headAdded = false;
 
 	/**
+	 * @var ilScanAssessmentTestConfiguration
+	 */
+	protected $config;
+
+	/**
 	 * @return ilScanAssessmentPdfMetaData
 	 */
 	public function getMetadata()
@@ -63,10 +68,12 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 
 	/**
 	 * @param ilScanAssessmentPdfMetaData $metadata
+	 * @param ilScanAssessmentTestConfiguration $config
 	 */
-	public function setMetadata($metadata)
+	public function setMetadata($metadata, $config)
 	{
 		$this->metadata = $metadata;
+		$this->config   = $config;
 	}
 
 	protected $add_head;
@@ -154,11 +161,18 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 			$this->Ln(1);
 			$this->Cell(40, 8, ' ' . $this->metadata->getAuthor(), 'LTB', 0, 'L', 1);
 			$this->Cell(120, 8, $this->metadata->getTestTitle(), 'TB', 0, 'C', 1);
-			$this->Cell(20, 8, '', 'RTB', 0, 'C', 1);
+
+			$text = '';
+			if(strlen($this->config->getDepartment()))
+			{
+				$text = $this->config->getDepartment();
+			}
+
+			$this->Cell(20, 8, $text, 'RTB', 0, 'C', 1);
 			$this->Ln();
 			$header_form = new ilScanAssessmentPdfHeaderForm($this, $this->metadata, $this->metadata->getPdfMode());
 			$header_form->insertIdentification();
-			$a = $header_form->getMatriculationPositions();
+			$header_form->getMatriculationPositions();
 		}
 		$this->Ln(5);
 		$this->SetMargins(PDF_MARGIN_LEFT, $this->GetY(), PDF_MARGIN_RIGHT);

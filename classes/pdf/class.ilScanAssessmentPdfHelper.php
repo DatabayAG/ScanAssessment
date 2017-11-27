@@ -34,23 +34,25 @@ class ilScanAssessmentPdfHelper
 	protected $add_head;
 
 	/**
-	 * ilScannAssessmentPdfHelper constructor.
+	 * ilScanAssessmentPdfHelper constructor.
 	 * @param ilScanAssessmentPdfMetaData $data
+	 * @param ilScanAssessmentTestConfiguration $config
 	 */
-	public function __construct(ilScanAssessmentPdfMetaData $data) 
+	public function __construct(ilScanAssessmentPdfMetaData $data, $config) 
 	{
-		$this->qr_images_path = ilUtil::getDataDir() .'/temp_qr_images';
-		$this->initializePDFStructure($data);
+		$this->qr_images_path = ilUtil::getDataDir() . '/temp_qr_images';
+		$this->initializePDFStructure($data, $config);
 		$this->setAddHead(false);
 	}
 
 	/**
 	 * @param ilScanAssessmentPdfMetaData $data
+	 * @param ilScanAssessmentTestConfiguration $config
 	 */
-	protected function initializePDFStructure($data)
+	protected function initializePDFStructure($data, $config)
 	{
 		$this->pdf = new ilScanAssessmentPdfAppendMarker(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, TRUE, 'UTF-8', FALSE);
-		$this->pdf->setMetadata($data);
+		$this->pdf->setMetadata($data, $config);
 		$this->pdf->SetCreator($data->getAuthor());
 		$this->pdf->SetAuthor($data->getAuthor());
 

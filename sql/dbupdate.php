@@ -411,3 +411,15 @@ if(!$ilDB->tableColumnExists('pl_scas_pdf_data_qpl', 'plugin_version'))
 	);
 }
 ?>
+<#25>
+<?php
+if(!$ilDB->tableColumnExists('pl_scas_test_config', 'department'))
+{
+	$ilDB->addTableColumn('pl_scas_test_config', 'department',
+		array(
+			'type'    => 'text',
+			'length'  => '100'
+		)
+	);
+}
+?>

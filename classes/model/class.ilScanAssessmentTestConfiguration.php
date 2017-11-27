@@ -55,6 +55,16 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 	protected $pdf_mode;
 
 	/**
+	 * @var string
+	 * @con_is_primary  false
+	 * @con_is_unique   false
+	 * @con_has_field   true
+	 * @con_fieldtype   text
+	 * @con_length      100
+	 */
+	protected $department;
+
+	/**
 	 * @return int
 	 */
 	public function getShuffle()
@@ -86,6 +96,21 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		$this->pdf_mode = $pdf_mode;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getDepartment()
+	{
+		return $this->department;
+	}
+
+	/**
+	 * @param string $department
+	 */
+	public function setDepartment($department)
+	{
+		$this->department = $department;
+	}
 
 	/**
 	 * @return int
@@ -258,6 +283,7 @@ class ilScanAssessmentTestConfiguration extends ActiveRecord implements ilScanAs
 		$this->setActive((int)$form->getInput('active'));
 		$this->setShuffle((int)$form->getInput('shuffle'));
 		$this->setPdfMode((int)$form->getInput('pdf_mode'));
+		$this->setDepartment(ilUtil::stripSlashes($form->getInput('department')));
 	}
 
 	/**

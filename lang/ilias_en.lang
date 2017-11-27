@@ -186,3 +186,4 @@ scas_auto_move#:#Move images to the correct test object
 scas_error_multi_mark_single#:#There are too many checked boxes for a single choice question
 scas_auto_move_info#:#If activated images will be moved automatically to the correct test object.
 scas_error_on_pages#:#There was an error detected on at least one page.
+scas_department#:#Department

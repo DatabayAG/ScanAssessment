@@ -53,6 +53,9 @@ class ilScanAssessmentDefaultGUI extends ilScanAssessmentController
 		$active->setInfo($pluginObject->txt('scas_active_info'));
 		$active->setValue(1);
 		$form->addItem($active);
+		
+		$department = new ilTextInputGUI($pluginObject->txt('scas_department'), 'department');
+		$form->addItem($department);
 
 		$select_mode = new ilSelectInputGUI($pluginObject->txt('scas_mode'), 'pdf_mode');
 		$select_mode->setInfo($pluginObject->txt('scas_mode_info'));
