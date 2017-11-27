@@ -1,4 +1,4 @@
-# ILIAS ScanAssessment Plugin 0.1.0
+# ILIAS ScanAssessment Plugin 0.1.1
 * For ILIAS versions: 5.1.0 - 5.2.999
 
 ## Important notice
