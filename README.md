@@ -8,6 +8,11 @@ Please evaluate the functions of this plugin to ensure your hardware (e.g. scann
 * PHP GD library
 * PHP BC MATH
 
+## Repositories connected to the ScanAssessment Plugin
+* [Question Plugin for ScanAssessment](https://github.com/DatabayAG/assFreestyleScanQuestion)
+* [CronHook Plugin ScanAssessment](https://github.com/DatabayAG/ScanAssessmentCron)  
+
+
 ## Installation Instructions
 1. Clone this repository to <ILIAS_DIRECTORY>/Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/ScanAssessment
 2. Login to ILIAS with an administrator account (e.g. root)
