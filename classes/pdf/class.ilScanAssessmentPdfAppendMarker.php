@@ -102,10 +102,10 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 					'cap'   => 'butt',
 					'join'  => 'miter',
 					'dash'  => 0,
-					'color' => array(0, 0, 0)
+					'color' => array(0)
 				);
 
-				$innerColor = array(0, 0, 0);
+				$innerColor = array(0);
 				$this->addTopLeftMarker($circleStyle, $innerColor);
 				$this->addBottomLeftMarker($circleStyle, $innerColor);
 				$log = ilScanAssessmentLog::getInstance();
@@ -121,7 +121,7 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 	 */
 	protected function addTopLeftMarker($circleStyle, $innerColor)
 	{
-		$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+		$this->Circle(PDF_TOPLEFT_SYMBOL_X, PDF_TOPLEFT_SYMBOL_Y, PDF_TOPLEFT_SYMBOL_W, 0, 359, 'DF', $circleStyle, $innerColor);
 	}
 
 	/**
@@ -130,7 +130,7 @@ class ilScanAssessmentPdfAppendMarker extends TCPDF{
 	 */
 	protected function addBottomLeftMarker($circleStyle, $innerColor)
 	{
-		$this->Circle(PDF_BOTTOMLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_BOTTOMLEFT_SYMBOL_W, 0, 360, 'DF', $circleStyle, $innerColor);
+		$this->Circle(PDF_BOTTOMLEFT_SYMBOL_X, $this->getPageHeight() + PDF_BOTTOMLEFT_SYMBOL_Y, PDF_BOTTOMLEFT_SYMBOL_W, 0, 359, 'DF', $circleStyle, $innerColor);
 	}
 
 	/**
